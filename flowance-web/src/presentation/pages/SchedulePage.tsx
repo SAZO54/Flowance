@@ -21,7 +21,7 @@ export function SchedulePage({events, projects, filter, period, onFilterChange, 
   return <div className="schedule-page">
     <div className="schedule-titlebar">
       <div><p className="eyebrow">SCHEDULE</p><h1>スケジュール</h1><p>案件ごとの予定と実績を、週・月単位で確認できます。</p></div>
-      <div className="schedule-actions"><div className="week-nav"><button aria-label="前の週"><ChevronLeft size="1.125rem"/></button><strong>6月29日 — 7月5日</strong><button aria-label="次の週"><ChevronRight size="1.125rem"/></button></div><button className="add-btn" onClick={onAdd}><Plus size="1.0625rem"/>予定を追加</button></div>
+      <div className="schedule-actions"><button className="add-btn" onClick={onAdd}><Plus size="1.0625rem"/>予定を追加</button></div>
     </div>
 
     <div className="schedule-stats">
@@ -32,7 +32,7 @@ export function SchedulePage({events, projects, filter, period, onFilterChange, 
 
     <div className="schedule-content-grid">
       <section className="calendar-card schedule-calendar">
-        <div className="card-head"><div><h2>{period === 'week' ? '今週のカレンダー' : '月間カレンダー'}</h2><p>予定と実績をひとつの場所で。</p></div><div className="segmented"><button className={period==='week'?'active':''} onClick={()=>onPeriodChange('week')}>週</button><button className={period==='month'?'active':''} onClick={()=>onPeriodChange('month')}>月</button></div></div>
+        <div className="card-head"><div><h2>{period === 'week' ? '今週のカレンダー' : '月間カレンダー'}</h2><p>予定と実績をひとつの場所で。</p></div><div className="calendar-controls"><div className="week-nav compact-week-nav"><button aria-label="前の週"><ChevronLeft size="1.125rem"/></button><strong>6月29日 — 7月5日</strong><button aria-label="次の週"><ChevronRight size="1.125rem"/></button></div><div className="segmented"><button className={period==='week'?'active':''} onClick={()=>onPeriodChange('week')}>週</button><button className={period==='month'?'active':''} onClick={()=>onPeriodChange('month')}>月</button></div></div></div>
         <div className="filters"><button className={filter==='all'?'selected':''} onClick={()=>onFilterChange('all')}>すべて</button>{projects.map(project=><button key={project.id} className={filter===project.id?'selected':''} onClick={()=>onFilterChange(project.id)}><i style={{background:project.color}}/>{project.name}</button>)}</div>
         {period === 'week' ? <WeekCalendar events={visibleEvents} projects={projects}/> : <MonthView/>}
       </section>

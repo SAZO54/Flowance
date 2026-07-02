@@ -113,7 +113,7 @@ export function App() {
           onStopTimer={() => {setTimerOn(false); setSeconds(0)}}
           onAdd={() => setModal(true)}
         /> : active === 'finance' ? <FinancePage projects={projects} financeTransactions={financeTransactions}/> : active === 'invoices' ? <InvoicesPage invoices={invoices}/> : active === 'clients' ? <ClientsPage clients={clients}/> : active === 'analytics' ? <AnalyticsPage projects={projects}/> : active === 'settings' ? <SettingsPage/> : <>
-        <div className="welcome"><div><p className="eyebrow">THURSDAY, JULY 2</p><h1>おはよう、あかりさん <span>✦</span></h1><p>今週もいい流れです。予定の <b>68%</b> が完了しています。</p></div><div className="week-nav"><button><ChevronLeft size="1.125rem"/></button><strong>6月29日 — 7月5日</strong><button><ChevronRight size="1.125rem"/></button></div></div>
+        <div className="welcome"><div><p className="eyebrow">THURSDAY, JULY 2</p><h1>おはよう、あかりさん <span>✦</span></h1><p>今週もいい流れです。予定の <b>68%</b> が完了しています。</p></div></div>
 
         <div className="metrics">
           <article className="metric mint"><div className="metric-top"><span>今月の売上予定</span><CircleDollarSign size="1.1875rem"/></div><strong>¥1,250,000</strong><p><em>+12.4%</em> 先月比</p><div className="spark"><i/><i/><i/><i/><i/><i/><i/><i/><i/><i/></div></article>
@@ -124,7 +124,7 @@ export function App() {
 
         <div className="workspace-grid">
           <section className="calendar-card">
-            <div className="card-head"><div><h2>今週のスケジュール</h2><p>予定と実績をひとつの場所で。</p></div><div className="segmented"><button className={period==='week'?'active':''} onClick={()=>setPeriod('week')}>週</button><button className={period==='month'?'active':''} onClick={()=>setPeriod('month')}>月</button></div></div>
+            <div className="card-head"><div><h2>今週のスケジュール</h2><p>予定と実績をひとつの場所で。</p></div><div className="calendar-controls"><div className="week-nav compact-week-nav"><button aria-label="前の週"><ChevronLeft size="1.125rem"/></button><strong>6月29日 — 7月5日</strong><button aria-label="次の週"><ChevronRight size="1.125rem"/></button></div><div className="segmented"><button className={period==='week'?'active':''} onClick={()=>setPeriod('week')}>週</button><button className={period==='month'?'active':''} onClick={()=>setPeriod('month')}>月</button></div></div></div>
             <div className="filters"><button className={filter==='all'?'selected':''} onClick={()=>setFilter('all')}>すべて</button>{projects.map(p=><button key={p.id} className={filter===p.id?'selected':''} onClick={()=>setFilter(p.id)}><i style={{background:p.color}}/>{p.name}</button>)}</div>
             {period === 'week' ? <WeekCalendar events={filterEventsByProject(events, filter)} projects={projects}/> : <MonthView/>}
           </section>
