@@ -1,9 +1,9 @@
 import type { Client, EventItem, FinanceTransaction, Invoice, Project, ProjectDetail, WorkRecord } from '../domain/models'
 
 export const projects: Project[] = [
-  { id: 'a', name: 'SaaS リニューアル', client: 'Nova Works', color: '#426c5a', soft: '#dbe9df' },
-  { id: 'b', name: 'ECサイト改善', client: 'Mellow Inc.', color: '#d36f86', soft: '#f8dce2' },
-  { id: 'c', name: 'ブランドサイト', client: 'Aster Studio', color: '#a47a35', soft: '#f1e5c6' },
+  { id: 'a', name: 'SaaS リニューアル', clientId: 'nova', client: 'Nova Works', color: '#426c5a', soft: '#dbe9df' },
+  { id: 'b', name: 'ECサイト改善', clientId: 'mellow', client: 'Mellow Inc.', color: '#d36f86', soft: '#f8dce2' },
+  { id: 'c', name: 'ブランドサイト', clientId: 'aster', client: 'Aster Studio', color: '#a47a35', soft: '#f1e5c6' },
 ]
 
 export const initialEvents: EventItem[] = [
@@ -51,7 +51,7 @@ export const workRecords: WorkRecord[] = [
 ]
 
 export const projectDetails: Record<string, ProjectDetail> = {
-  a: {status: 'active', statusLabel: '進行中', progress: 72, budget: '¥720,000', deadline: '7月31日', usedHours: 72, targetHours: 100},
-  b: {status: 'active', statusLabel: '進行中', progress: 58, budget: '¥380,000', deadline: '8月15日', usedHours: 46, targetHours: 80},
-  c: {status: 'attention', statusLabel: '確認待ち', progress: 43, budget: '¥450,000', deadline: '8月30日', usedHours: 34, targetHours: 80},
+  a: {status: 'active', statusLabel: '進行中', progress: 72, budget: '¥720,000', startDate: '2026-04-01', endDate: '2026-07-31', usedHours: 72, targetHours: 100},
+  b: {status: 'active', statusLabel: '進行中', progress: 58, budget: '¥380,000', startDate: '2026-06-01', endDate: '2026-08-15', usedHours: 46, targetHours: 80},
+  c: {status: 'attention', statusLabel: '確認待ち', progress: 43, budget: '¥450,000', startDate: '2026-07-01', endDate: '2026-08-30', usedHours: 34, targetHours: 80},
 }
