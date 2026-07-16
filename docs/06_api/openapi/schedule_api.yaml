@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: Flowance Schedule API
+  version: 1.2.0
+  description: Flowance Phase1 のカレンダー・週次予定・個別作業予定・予定生成 API。カレンダーイベントは projectId / userId を返し、案件名やユーザー名は別 API で解決する。
+servers: [{ url: http://localhost:8000 }]
+security: [{ accessTokenCookie: [] }]
+tags: [{ name: Calendar }, { name: WeeklySchedules }, { name: WorkSchedules }]
+paths:
+  /api/v1/calendar/events:
+    get:
+      tags: [Calendar]
+      summary: カレンダーイベント取得
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string, format: date-time } }
+        - { name: to, in: query, required: true, schema: { type: string, format: date-time } }
+        - { name: projectIds, in: query, style: form, explode: false, schema: { type: array, items: { type: string, format: uuid } } }
+        - { name: userIds, in: query, style: form, explode: false, schema: { type: array, items: { type: string, format: uuid } } }
+        - { name: mode, in: query, schema: { type: string, enum: [planned, actual, both], default: both } }
+        - { name: status, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/CalendarEvent' } } } } } } } }
+  /api/v1/projects/{projectId}/weekly-schedules:
+    get:
+      tags: [WeeklySchedules]
+      summary: 週次予定一覧取得
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/WeeklySchedule' } } } } } } } }
+    post:
+      tags: [WeeklySchedules]
+      summary: 週次予定登録
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateWeeklyScheduleRequest' } } } }
+      responses: { '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/WeeklySchedule' } } } } }
+  /api/v1/projects/{projectId}/weekly-schedules/bulk:
+    post:
+      tags: [WeeklySchedules]
+      summary: 週次予定一括登録
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/CreateWeeklyScheduleRequest' } } } } } } }
+      responses: { '201': { description: Created, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/WeeklySchedule' } }, warnings: { type: array, items: { $ref: '#/components/schemas/Warning' } } } } } } } }
+  /api/v1/projects/{projectId}/weekly-schedules/{weeklyScheduleId}:
+    patch:
+      tags: [WeeklySchedules]
+      summary: 週次予定更新
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }, { name: weeklyScheduleId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateWeeklyScheduleRequest' } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/WeeklySchedule' } } } } }
+    delete:
+      tags: [WeeklySchedules]
+      summary: 週次予定削除
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }, { name: weeklyScheduleId, in: path, required: true, schema: { type: string, format: uuid } }, { name: version, in: query, required: true, schema: { type: integer, minimum: 1 } }]
+      responses: { '204': { description: No Content } }
+  /api/v1/work-schedules:
+    get:
+      tags: [WorkSchedules]
+      summary: 個別作業予定一覧取得
+      parameters: [{ name: from, in: query, required: true, schema: { type: string, format: date-time } }, { name: to, in: query, required: true, schema: { type: string, format: date-time } }, { name: projectId, in: query, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/WorkSchedule' } } } } } } } }
+    post:
+      tags: [WorkSchedules]
+      summary: 個別作業予定登録
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateWorkScheduleRequest' } } } }
+      responses: { '201': { description: Created, content: { application/json: { schema: { type: object, properties: { item: { $ref: '#/components/schemas/WorkSchedule' }, warnings: { type: array, items: { $ref: '#/components/schemas/Warning' } } } } } } } }
+  /api/v1/work-schedules/generate:
+    post:
+      tags: [WorkSchedules]
+      summary: 週次予定から個別作業予定を生成
+      description: 週次予定テンプレートを指定期間へ展開して個別作業予定を生成する。dryRun=true の場合はDBへ保存せず、候補・スキップ件数・warningsのみ返す。生成期間上限の初期値は100日。
+      parameters:
+        - { name: Idempotency-Key, in: header, required: false, schema: { type: string, format: uuid }, description: dryRun=false の生成実行時に推奨する冪等性キー }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/GenerateWorkSchedulesRequest' }
+      responses:
+        '200': { description: Generated or dry-run result, content: { application/json: { schema: { $ref: '#/components/schemas/GenerateWorkSchedulesResponse' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /api/v1/work-schedules/{workScheduleId}:
+    get:
+      tags: [WorkSchedules]
+      summary: 個別作業予定詳細取得
+      parameters: [{ name: workScheduleId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/WorkSchedule' } } } } }
+    patch:
+      tags: [WorkSchedules]
+      summary: 個別作業予定更新
+      parameters: [{ name: workScheduleId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateWorkScheduleRequest' } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { item: { $ref: '#/components/schemas/WorkSchedule' }, warnings: { type: array, items: { $ref: '#/components/schemas/Warning' } } } } } } } }
+    delete:
+      tags: [WorkSchedules]
+      summary: 個別作業予定削除
+      parameters: [{ name: workScheduleId, in: path, required: true, schema: { type: string, format: uuid } }, { name: version, in: query, required: true, schema: { type: integer, minimum: 1 } }]
+      responses: { '204': { description: No Content } }
+components:
+  securitySchemes:
+    accessTokenCookie: { type: apiKey, in: cookie, name: access_token }
+  schemas:
+    CalendarEvent: { type: object, required: [id, type, projectId, userId, title, startAt, endAt, status, version], properties: { id: { type: string, format: uuid }, type: { type: string, enum: [SCHEDULE, WORK_RECORD] }, projectId: { type: string, format: uuid }, userId: { type: string, format: uuid }, title: { type: string }, startAt: { type: string, format: date-time }, endAt: { type: string, format: date-time }, status: { type: string }, isGenerated: { type: boolean }, isManuallyOverridden: { type: boolean }, sourceId: { type: string, format: uuid, nullable: true }, version: { type: integer } } }
+    CreateWeeklyScheduleRequest: { type: object, required: [userId, dayOfWeek, startTime, endTime, breakMinutes, validFrom], properties: { userId: { type: string, format: uuid }, dayOfWeek: { type: integer, minimum: 0, maximum: 6, description: '0=日曜, 1=月曜, 2=火曜, 3=水曜, 4=木曜, 5=金曜, 6=土曜。' }, startTime: { type: string, example: '10:00' }, endTime: { type: string, example: '18:00' }, breakMinutes: { type: integer, minimum: 0, example: 60 }, validFrom: { type: string, format: date }, validUntil: { type: string, format: date, nullable: true } } }
+    UpdateWeeklyScheduleRequest: { allOf: [ { $ref: '#/components/schemas/CreateWeeklyScheduleRequest' }, { type: object, required: [version], properties: { version: { type: integer } } } ] }
+    WeeklySchedule: { allOf: [ { $ref: '#/components/schemas/UpdateWeeklyScheduleRequest' }, { type: object, required: [id, projectId], properties: { id: { type: string, format: uuid }, projectId: { type: string, format: uuid } } } ] }
+    CreateWorkScheduleRequest: { type: object, required: [projectId, title, scheduledStartAt, scheduledEndAt], properties: { projectId: { type: string, format: uuid }, title: { type: string }, scheduledStartAt: { type: string, format: date-time }, scheduledEndAt: { type: string, format: date-time }, notes: { type: string, nullable: true } } }
+    UpdateWorkScheduleRequest: { allOf: [ { $ref: '#/components/schemas/CreateWorkScheduleRequest' }, { type: object, required: [version], properties: { version: { type: integer } } } ] }
+    WorkSchedule: { allOf: [ { $ref: '#/components/schemas/UpdateWorkScheduleRequest' }, { type: object, required: [id, status], properties: { id: { type: string, format: uuid }, status: { type: string, enum: [PLANNED, CANCELLED] }, isGenerated: { type: boolean } } } ] }
+    GenerateWorkSchedulesRequest:
+      type: object
+      required: [projectId, fromDate, toDate]
+      properties:
+        projectId: { type: string, format: uuid }
+        fromDate: { type: string, format: date }
+        toDate: { type: string, format: date, description: fromDate から最大100日まで指定可能。 }
+        weeklyScheduleIds:
+          type: array
+          items: { type: string, format: uuid }
+          nullable: true
+        dryRun: { type: boolean, default: false, description: true の場合はDBへ保存せず、候補・スキップ件数・warningsのみ返す。 }
+    GenerateWorkSchedulesResponse:
+      type: object
+      required: [dryRun, createdCount, skippedCount, warningCount, items, warnings]
+      properties:
+        dryRun: { type: boolean }
+        createdCount: { type: integer, minimum: 0 }
+        skippedCount: { type: integer, minimum: 0 }
+        warningCount: { type: integer, minimum: 0 }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/WorkSchedule' }
+        warnings:
+          type: array
+          items: { $ref: '#/components/schemas/Warning' }
+    ErrorResponse:
+      type: object
+      required: [code, message, details, traceId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: array, items: { type: object } }
+        traceId: { type: string, format: uuid }
+    Warning: { type: object, required: [code, message, severity], properties: { code: { type: string, example: WARNING_SCHEDULE_OVERLAP }, message: { type: string }, targetId: { type: string, format: uuid, nullable: true }, conflictIds: { type: array, items: { type: string, format: uuid } }, severity: { type: string, enum: [WARNING] } } }
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    ValidationError:
+      description: Validation Error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
