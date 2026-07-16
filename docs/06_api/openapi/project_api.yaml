@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: Flowance Projects API
+  version: 1.1.0
+  description: 案件 API。案件期間は案件管理上の予定期間として保持し、契約期間とは分離する。アイコン削除は iconAction=DELETE。
+servers: [{ url: http://localhost:8000 }]
+security: [{ accessTokenCookie: [] }]
+paths:
+  /api/v1/projects:
+    get:
+      summary: 案件一覧取得
+      parameters:
+        - { name: query, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [ACTIVE, PAUSED, COMPLETED, ARCHIVED] } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 20, maximum: 100 } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, -name, revenue, -revenue, updatedAt, -updatedAt] } }
+      responses: { '200': { description: OK } }
+    post:
+      summary: 案件登録
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/CreateProjectRequest' } }
+          multipart/form-data: { schema: { $ref: '#/components/schemas/CreateProjectMultipartRequest' } }
+      responses: { '201': { description: Created, headers: { Location: { schema: { type: string } } } } }
+  /api/v1/projects/{projectId}:
+    get:
+      summary: 案件詳細取得
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: OK } }
+    patch:
+      summary: 案件更新
+      description: iconFileでアイコン更新、iconAction=DELETEで初期アイコンへ戻す。
+      parameters: [{ name: projectId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: '#/components/schemas/UpdateProjectRequest' } }
+          multipart/form-data: { schema: { $ref: '#/components/schemas/UpdateProjectMultipartRequest' } }
+      responses: { '200': { description: OK }, '409': { description: Version Conflict } }
+    delete:
+      summary: 案件無効化
+      parameters:
+        - { name: projectId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: version, in: query, required: true, schema: { type: integer, minimum: 1 } }
+      responses: { '204': { description: No Content } }
+components:
+  securitySchemes: { accessTokenCookie: { type: apiKey, in: cookie, name: access_token } }
+  schemas:
+    CreateProjectRequest: { type: object, required: [clientId, name, status], properties: { name: { type: string }, clientId: { type: string, format: uuid }, description: { type: string, nullable: true }, labelColor: { type: string }, startDate: { type: string, format: date, nullable: true }, endDate: { type: string, format: date, nullable: true }, workloadRate: { type: integer, nullable: true }, status: { type: string, enum: [ACTIVE, PAUSED, COMPLETED, ARCHIVED] }, notes: { type: string, nullable: true } } }
+    CreateProjectMultipartRequest: { allOf: [ { $ref: '#/components/schemas/CreateProjectRequest' }, { type: object, properties: { iconFile: { type: string, format: binary } } } ] }
+    UpdateProjectRequest: { allOf: [ { $ref: '#/components/schemas/CreateProjectRequest' }, { type: object, required: [version], properties: { version: { type: integer }, iconAction: { type: string, enum: [KEEP, DELETE] } } } ] }
+    UpdateProjectMultipartRequest: { allOf: [ { $ref: '#/components/schemas/UpdateProjectRequest' }, { type: object, properties: { iconFile: { type: string, format: binary } } } ] }

@@ -30,8 +30,11 @@ const {clients: initialClients, financeTransactions, initialEvents, invoices, pr
 const nav = [
   ['overview', 'ダッシュボード', LayoutDashboard, '/dashboard'], ['schedule', 'スケジュール', CalendarDays, '/schedule'],
   ['projects', '案件', BriefcaseBusiness, '/case'], ['work', '稼働記録', Clock3, '/timelog'],
-  ['finance', '収支', CircleDollarSign, '/balance'], ['invoices', '請求書', FileText, '/invoice'],
-  ['clients', 'クライアント', Users, '/client'], ['analytics', '分析', PieChart, '/analytics'],
+  // TODO: フェーズ2で対応
+  // ['finance', '収支', CircleDollarSign, '/balance'], ['invoices', '請求書', FileText, '/invoice'],
+  ['clients', 'クライアント', Users, '/client'],
+  // TODO: フェーズ2で対応
+  // ['analytics', '分析', PieChart, '/analytics'],
 ] as const
 
 const pathToPage: Record<string, string> = Object.fromEntries(nav.map(([id,,,path]) => [path, id]))
@@ -130,9 +133,9 @@ export function App() {
       <div className="brand"><span className="brand-mark"><i/><i/><i/></span><span>flowance</span></div>
       <nav>
         <p className="nav-label">WORKSPACE</p>
-        {nav.slice(0, 6).map(([id, label, Icon, path]) => <Link href={path} key={id} className={active === id || (id === 'clients' && active.startsWith('client-')) || (id === 'projects' && active === 'project-create') ? 'active' : ''}><Icon size="1.125rem"/><span>{label}</span>{id === 'invoices' && <b>3</b>}</Link>)}
+        {nav.slice(0, 4).map(([id, label, Icon, path]) => <Link href={path} key={id} className={active === id || (id === 'clients' && active.startsWith('client-')) || (id === 'projects' && active === 'project-create') ? 'active' : ''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
         <p className="nav-label lower">INSIGHTS</p>
-        {nav.slice(6).map(([id, label, Icon, path]) => <Link href={path} key={id} className={active === id || (id === 'clients' && active.startsWith('client-')) || (id === 'projects' && active === 'project-create') ? 'active' : ''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
+        {nav.slice(4).map(([id, label, Icon, path]) => <Link href={path} key={id} className={active === id || (id === 'clients' && active.startsWith('client-')) || (id === 'projects' && active === 'project-create') ? 'active' : ''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
       </nav>
       <div className="sidebar-bottom">
         <Link href="/setting" className={active === 'settings' ? 'active' : ''}><Settings size="1.125rem"/>設定</Link>
