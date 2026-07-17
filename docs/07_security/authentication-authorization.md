@@ -95,10 +95,10 @@ Access Token の期限切れ時は、Next.js から `/api/v1/auth/token/refresh`
 | HttpOnly | True |
 | Secure | 本番 True。ローカル開発では環境に応じて False を許容 |
 | SameSite | Lax |
-| Path | `/api/v1/auth/token/refresh` |
+| Path | `/api/v1/auth/` |
 | Max-Age | 14日 |
 
-Refresh Token Cookie の Path は Token 更新 API に限定し、通常 API 呼び出しへ不要に送信されないようにする。
+Refresh Token Cookie の Path は認証 API 配下に限定する。Token 更新とログアウトでは送信されるが、通常の業務 API には送信されない。
 
 ### 5.3 CSRF Cookie
 
