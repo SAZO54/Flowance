@@ -218,7 +218,74 @@ When these appear in existing UI, keep them hidden, commented out, or clearly ma
 
 ---
 
-## 5. Backend Architecture Rules
+## 5. Design System and Color Palette
+
+The UI must use the color palette provided in the approved reference image.
+
+### Approved color palette
+
+```text
+#8DBFD3
+#A5D1E7
+#C3E7F6
+#E5F2FA
+#75A8C7
+```
+
+The fifth color label in the reference image is partially obscured, so `#75A8C7` is taken from the visible swatch color itself.
+
+These colors must be treated as the primary Flowance brand palette.
+
+### Recommended semantic usage
+
+```text
+#75A8C7  Primary action / active state / strong accent
+#8DBFD3  Secondary action / emphasized cards / selected items
+#A5D1E7  Soft accent / hover / secondary surfaces
+#C3E7F6  Light panel / calendar background / informational state
+#E5F2FA  Page background / subtle section background
+```
+
+### CSS variables
+
+```css
+:root {
+  --flowance-primary: #75A8C7;
+  --flowance-secondary: #8DBFD3;
+  --flowance-accent: #A5D1E7;
+  --flowance-soft: #C3E7F6;
+  --flowance-background: #E5F2FA;
+}
+```
+
+### Tailwind theme example
+
+```ts
+colors: {
+  flowance: {
+    100: "#E5F2FA",
+    200: "#C3E7F6",
+    300: "#A5D1E7",
+    400: "#8DBFD3",
+    500: "#75A8C7",
+  },
+}
+```
+
+### UI rules
+
+- Use the approved palette consistently.
+- Do not introduce unrelated strong brand colors without a documented reason.
+- Neutral grays, white, black, success, warning, and error colors may be added for usability.
+- Do not rely on color alone to communicate status.
+- Maintain WCAG-conscious text contrast.
+- Project labels may use user-selected colors, but the default application chrome must use the approved Flowance palette.
+- Use `#E5F2FA` and `#C3E7F6` for soft backgrounds rather than large areas of highly saturated color.
+- Use `#75A8C7` primarily for main actions, active navigation, focused calendar elements, and important highlights.
+
+---
+
+## 6. Backend Architecture Rules
 
 Flowance backend uses Django pragmatically while following Clean Architecture and DDD-inspired responsibility separation.
 
@@ -266,7 +333,7 @@ Rules:
 
 ---
 
-## 6. Domain and Business Rules
+## 7. Domain and Business Rules
 
 Agents must preserve the following Phase1 business decisions.
 
@@ -347,7 +414,7 @@ Contract period overlap rule:
 
 ---
 
-## 7. API Rules
+## 8. API Rules
 
 API design must follow docs/06_api.
 
@@ -375,7 +442,7 @@ OpenAPI rules:
 
 ---
 
-## 8. Frontend Architecture Rules
+## 9. Frontend Architecture Rules
 
 Follow the frontend architecture in docs/03_architecture/frontend-architecture.md.
 
@@ -394,7 +461,7 @@ Phase2 side-menu items such as income and expense, invoices, and analysis should
 
 ---
 
-## 9. Local Development Rules
+## 10. Local Development Rules
 
 Current local development convention:
 
@@ -423,7 +490,7 @@ Connection host rule:
 
 ---
 
-## 10. Database Rules
+## 11. Database Rules
 
 Follow docs/05_database.
 
@@ -444,7 +511,7 @@ Rules:
 
 ---
 
-## 11. Asynchronous Processing Rules
+## 12. Asynchronous Processing Rules
 
 Redis and Celery are Phase1 components.
 
@@ -467,7 +534,7 @@ Rules:
 
 ---
 
-## 12. Testing and Quality Rules
+## 13. Testing and Quality Rules
 
 Follow docs/16_testing.
 
@@ -497,7 +564,7 @@ Before handing off code changes, run the smallest meaningful verification that m
 
 ---
 
-## 13. Git and File Editing Rules
+## 14. Git and File Editing Rules
 
 - Preserve user changes.
 - Check the working tree before broad edits when relevant.
@@ -509,7 +576,7 @@ Before handing off code changes, run the smallest meaningful verification that m
 
 ---
 
-## 14. Documentation Rules
+## 15. Documentation Rules
 
 When changing behavior, update relevant documents if the user asks for documentation sync or if the change clearly affects documented design.
 
@@ -537,7 +604,7 @@ If Notion pages are involved, sync Notion and local docs when requested.
 
 ---
 
-## 15. Decision Priority
+## 16. Decision Priority
 
 When instructions conflict, use this priority:
 
@@ -552,7 +619,7 @@ If a higher-priority instruction conflicts with /docs/, explain the conflict and
 
 ---
 
-## 16. Current Important Reminders
+## 17. Current Important Reminders
 
 - This project is Django / DRF, not Spring Boot.
 - This project uses Django ORM and Django Migration, not JPA or Flyway.
