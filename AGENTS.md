@@ -1,1377 +1,566 @@
 # AGENTS.md
 
+## 0. Mandatory Workflow for Agents
+
+Before executing any request from the chat, agents must first inspect this AGENTS.md and the relevant files under /docs/.
+
+Required workflow:
+
+1. Read this AGENTS.md.
+2. Inspect the relevant files under /docs/.
+3. Treat /docs/ as the current source of truth for Flowance specifications.
+4. Execute the user request in a way that is consistent with /docs/.
+5. If the chat request conflicts with /docs/, clearly explain the conflict and ask for direction before making a conflicting change.
+
+Do not rely only on prior assumptions. Do not rely on outdated technology choices from old conversations. Current project decisions are documented under /docs/.
+
+---
+
 ## 1. Project Overview
 
-Flowance is a full-stack platform for freelancers to manage projects, schedules, actual work hours, revenue, invoices, and payments.
+Flowance is a full-stack platform for freelancers to manage clients, projects, contracts, schedules, actual work records, and monthly settlements.
 
-The service is intended to solve the following core problems:
+Phase1 focuses on helping a freelancer understand planned work, actual work, and expected monthly revenue without implementing the full invoice and payment workflow yet.
 
-- Understand which project is scheduled on which day and at what time
-- Register recurring weekly work schedules
-- Override individual calendar entries
-- Record planned and actual work hours separately
-- Calculate monthly revenue totals
-- Calculate revenue totals by project
-- Support hourly, daily, monthly fixed, and settlement-range contracts
-- Manage invoices and payment status
-- Visualize workload, revenue, and client concentration
+Phase1 target capabilities:
 
-Flowance is also a production-oriented portfolio project intended to demonstrate practical backend engineering, including domain modeling, authentication, authorization, transaction management, concurrency control, aggregation, testing, CI/CD, and observability.
+- Authentication and authorization
+- Organization and basic role management
+- Client management
+- Project management
+- Client and project icons
+- Contract management
+- Weekly schedules and individual work schedules
+- Calendar display
+- Work records
+- Monthly settlement calculation
+- Audit logs
+- Optimistic locking
+- Idempotency for important commands
+- OpenAPI documentation
+- Redis and Celery based asynchronous processing
 
----
+Phase2 or later capabilities:
 
-## 2. Repository Policy
-
-Flowance must be maintained as a single product-oriented monorepo.
-
-```text
-flowance/
-├── frontend/
-├── backend/
-├── infrastructure/
-├── docs/
-├── compose.yaml
-├── README.md
-└── AGENTS.md
-```
-
-Do not create separate repositories named `flowance_frontend` and `flowance_backend` unless the repository strategy is intentionally changed later.
-
-The repository represents one product consisting of multiple applications.
-
-- `frontend`: Next.js application
-- `backend`: Spring Boot API
-- `infrastructure`: Docker, AWS, Terraform, monitoring, and deployment configuration
-- `docs`: requirements, API documentation, architecture, ER diagrams, and design decisions
+- Invoice management
+- Payment management
+- Income and expense view
+- Analysis dashboard
+- PDF invoice generation
+- ACCOUNTANT role
+- Advanced accounting integrations
 
 ---
 
-## 3. Technology Stack
+## 2. Repository Structure
 
-### Frontend
+Flowance is maintained as a single product-oriented repository.
+
+Current main directories:
+
+    flowance/
+      AGENTS.md
+      docs/
+      flowance-api/
+      flowance-web/
+
+Directory roles:
+
+- docs: Requirements, design documents, API design, database design, architecture, security, operations, testing, and ADRs.
+- flowance-api: Django / DRF backend API and Celery worker.
+- flowance-web: Next.js frontend.
+
+When a directory name in older documents differs from the current repository, prefer the actual current directory names while preserving the architecture described in /docs/.
+
+Do not split Flowance into separate repositories unless the user explicitly decides to change the repository strategy.
+
+---
+
+## 3. Phase1 Technology Stack
+
+### 3.1 Frontend
+
+Use the following frontend stack:
 
 - Next.js
+- React
 - TypeScript
 - App Router
 - Tailwind CSS
-- shadcn/ui
-- TanStack Query
+- shadcn/ui when useful
+- TanStack Query when useful
 - React Hook Form
 - Zod
-- FullCalendar
-- ECharts or Recharts
+- FullCalendar or equivalent calendar UI
 - Vitest
 - React Testing Library
 - Playwright
 
-### Backend
+Frontend responsibilities:
 
-- Java
-- Spring Boot
-- Spring Security
-- Spring Data JPA
-- Hibernate
-- Bean Validation
-- Flyway
-- OpenAPI
-- Swagger UI
-- JUnit 5
-- Mockito
-- Spring Boot Test
-- Testcontainers
-
-### Data and Infrastructure
-
-- PostgreSQL
-- Redis
-- Docker
-- Docker Compose
-- GitHub Actions
-- AWS
-- Terraform
-- OpenTelemetry
-- Prometheus
-- Grafana
-
-Redis, AWS, Terraform, Prometheus, Grafana, and advanced observability are not mandatory for the MVP. Add them according to the development phase rather than prematurely.
-
----
-
-## 4. Architecture
-
-### 4.1 Responsibility Separation
-
-The frontend is responsible for:
-
-- Rendering pages and components
-- Calendar interactions
+- Page rendering
+- UI state
 - Form handling
-- Client-side validation
-- API communication
-- Loading states
-- Error states
-- Presentation-oriented state
+- Client-side validation as assistance only
+- Calendar interaction
+- API communication through infrastructure adapters
+- Loading and error presentation
 - Responsive UI
 
-The backend is responsible for:
+Frontend must not be the only place where business rules are enforced.
+
+### 3.2 Backend
+
+Use the following backend stack:
+
+- Python
+- Django
+- Django REST Framework
+- Django ORM
+- Django Authentication
+- Django Migration
+- PostgreSQL
+- Redis
+- Celery
+- Pillow
+- Django Storage API
+- Cloudflare R2 for production file storage
+- Gunicorn for production application serving
+- pytest
+- Ruff
+- mypy
+
+Do not use the old Java / Spring Boot / JPA / Flyway stack for this project.
+
+Backend responsibilities:
 
 - Authentication
 - Authorization
-- Business logic
-- Database operations
-- Contract validation
-- Work-hour calculation
-- Revenue calculation
-- Monthly aggregation
-- Invoice and payment processing
-- Transactions
-- Concurrency control
-- Audit logs
-- Background processing
-
-Do not duplicate business rules in both Next.js and Spring Boot.
-
-Core business operations must go through the Spring Boot API.
-
-### 4.2 Backend Architecture
-
-Use a modular monolith with feature-based packaging.
-
-```text
-backend/src/main/java/<base-package>/
-├── authentication/
-├── organization/
-├── client/
-├── project/
-├── contract/
-├── workschedule/
-├── workrecord/
-├── settlement/
-├── invoice/
-├── payment/
-├── audit/
-└── shared/
-```
-
-Each feature may contain:
-
-```text
-domain/
-application/
-infrastructure/
-presentation/
-```
-
-Avoid a project-wide package structure that separates all controllers, services, repositories, and entities when doing so scatters one feature across the entire codebase.
-
-### 4.3 Frontend Architecture
-
-Adopt Clean Architecture principles for the frontend.
-
-Organize the frontend so that business rules, application use cases, infrastructure concerns, and UI components remain clearly separated. Dependencies must point inward toward the domain and application layers.
-
-frontend/src/
-├── app/
-│   ├── routes/
-│   ├── layouts/
-│   └── providers/
-│
-├── domain/
-│   ├── entities/
-│   ├── value-objects/
-│   ├── repositories/
-│   └── services/
-│
-├── application/
-│   ├── use-cases/
-│   ├── ports/
-│   ├── dto/
-│   └── mappers/
-│
-├── infrastructure/
-│   ├── api/
-│   ├── repositories/
-│   ├── auth/
-│   ├── storage/
-│   └── config/
-│
-├── presentation/
-│   ├── features/
-│   ├── components/
-│   ├── hooks/
-│   ├── forms/
-│   └── view-models/
-│
-├── shared/
-│   ├── components/
-│   ├── constants/
-│   ├── types/
-│   ├── utils/
-│   └── validation/
-│
-└── styles/
-
-Layer responsibilities:
-
-domain: Framework-independent business concepts, entities, value objects, repository interfaces, and domain services
-application: Application use cases, ports, DTOs, and mapping between domain and presentation or infrastructure models
-infrastructure: Spring Boot API clients, repository implementations, authentication adapters, browser storage, and environment configuration
-presentation: Next.js pages, feature UI, forms, hooks, view models, and user interaction logic
-shared: Reusable UI components and utilities that do not belong to a specific business feature
-app: Next.js App Router entry points, layouts, route groups, providers, loading states, and error boundaries
-
-Dependencies must follow these rules:
-
-presentation → application → domain
-infrastructure → application/domain
-domain → no outer layer
-
-The domain layer must not import:
-
-React
-Next.js
-TanStack Query
-React Hook Form
-Zod schemas tied to UI forms
-FullCalendar
-Browser APIs
-API client implementations
-
-Repository contracts must be declared in the domain or application layer, while their API-based implementations must be placed in the infrastructure layer.
-
-Example:
-
-domain/repositories/ProjectRepository.ts
-infrastructure/repositories/ApiProjectRepository.ts
-application/use-cases/GetProjects.ts
-presentation/features/projects/
-
-Do not call the backend API directly from page components or reusable UI components. API access must go through infrastructure adapters and application use cases.
-
-Use Server Components by default for:
-
-Route entry points
-Layouts
-Initial data loading
-Read-only summaries
-Static or mostly static content
-Server-side authentication checks
-
-Use Client Components only when required for:
-
-FullCalendar
-Forms
-Drag and drop
-Resize operations
-Modals and dialogs
-Browser APIs
-Interactive charts
-Local interaction state
-Client-side mutations
-Real-time user feedback
-
-Keep Client Components as small and focused as possible. Do not mark an entire page as a Client Component when only one interactive section requires client-side behavior.
-
-Next.js-specific code must remain in the outer presentation or infrastructure layers and must not leak into domain logic.
-
----
-
-## 5. Design System and Color Palette
-
-The UI must use the color palette provided in the approved reference image.
-
-### Approved color palette
-
-```text
-#8DBFD3
-#A5D1E7
-#C3E7F6
-#E5F2FA
-#75A8C7
-```
-
-The fifth color label in the reference image is partially obscured, so `#75A8C7` is taken from the visible swatch color itself.
-
-These colors must be treated as the primary Flowance brand palette.
-
-### Recommended semantic usage
-
-```text
-#75A8C7  Primary action / active state / strong accent
-#8DBFD3  Secondary action / emphasized cards / selected items
-#A5D1E7  Soft accent / hover / secondary surfaces
-#C3E7F6  Light panel / calendar background / informational state
-#E5F2FA  Page background / subtle section background
-```
-
-### CSS variables
-
-```css
-:root {
-  --flowance-primary: #75A8C7;
-  --flowance-secondary: #8DBFD3;
-  --flowance-accent: #A5D1E7;
-  --flowance-soft: #C3E7F6;
-  --flowance-background: #E5F2FA;
-}
-```
-
-### Tailwind theme example
-
-```ts
-colors: {
-  flowance: {
-    100: "#E5F2FA",
-    200: "#C3E7F6",
-    300: "#A5D1E7",
-    400: "#8DBFD3",
-    500: "#75A8C7",
-  },
-}
-```
-
-### UI rules
-
-- Use the approved palette consistently.
-- Do not introduce unrelated strong brand colors without a documented reason.
-- Neutral grays, white, black, success, warning, and error colors may be added for usability.
-- Do not rely on color alone to communicate status.
-- Maintain WCAG-conscious text contrast.
-- Project labels may use user-selected colors, but the default application chrome must use the approved Flowance palette.
-- Use `#E5F2FA` and `#C3E7F6` for soft backgrounds rather than large areas of highly saturated color.
-- Use `#75A8C7` primarily for main actions, active navigation, focused calendar elements, and important highlights.
-
----
-
-## 6. Core Domain Concepts
-
-### User
-
-A person who uses Flowance.
-
-### Organization
-
-A tenant boundary for future team and small-company use.
-
-Even if the first release targets individual freelancers, tenant ownership should be considered in the data model.
-
-### Client
-
-A person or company that commissions work.
-
-### Project
-
-A freelance engagement associated with a client.
-
-A project includes:
-
-- Name
-- Description
-- Label color
-- Status
-- Contract period
-- Workload rate
-- Notes
-
-Suggested statuses:
-
-- Prospect
-- Negotiating
-- Contract scheduled
-- Active
-- Paused
-- Completed
-- Lost
-
-Use enums or similarly constrained values rather than arbitrary strings.
-
-### Project Contract
-
-Contract information must be stored separately from the project.
-
-Do not store only one mutable rate directly on the project.
-
-Contract history is required because rates and terms may change over time.
-
-Supported contract types:
-
-- Hourly
-- Daily
-- Monthly fixed
-- Monthly with settlement range
-- Performance-based
-
-A contract may include:
-
-- Hourly rate
-- Daily rate
-- Monthly rate
-- Currency
-- Tax rate
-- Withholding tax rate
-- Minimum hours
-- Maximum hours
-- Base hours
-- Deduction rate
-- Overtime rate
-- Rounding unit
-- Rounding method
-- Closing day
-- Payment terms
-- Valid-from date
-- Valid-until date
-
-### Weekly Schedule
-
-A reusable weekday-based schedule for a project.
-
-Example:
-
-```text
-Monday: 10:00-18:00
-Tuesday: 10:00-18:00
-Wednesday: Off
-Thursday: 10:00-18:00
-Friday: 10:00-18:00
-```
-
-Support:
-
-- Applying one schedule to selected weekdays
-- Applying a schedule to all weekdays
-- Individual weekday overrides
-- Default break duration
-- Calendar event generation
-
-### Work Schedule
-
-Represents planned work.
-
-Typical fields:
-
-- `scheduledStartAt`
-- `scheduledEndAt`
-- Planned break
-- Project
-- User
-- Status
-- Notes
-- Recurring-generation flag
-- Recurrence source
-
-### Work Record
-
-Represents actual work.
-
-Typical fields:
-
-- `actualStartAt`
-- `actualEndAt`
-- Break duration
-- Actual minutes
-- Billable minutes
-- Billable flag
-- Status
-- Notes
-
-Do not overwrite planned values with actual values.
-
-The system must be able to compare:
-
-- Planned time
-- Actual time
-- Difference
-- Overtime
-- Underwork
-- Planned revenue
-- Actual revenue
-
-### Settlement
-
-Represents a monthly revenue calculation.
-
-A settlement may include:
-
-- Scheduled minutes
-- Actual minutes
-- Billable minutes
-- Base amount
-- Deduction amount
-- Overtime amount
-- Tax amount
-- Withholding amount
-- Total amount
-
-### Invoice
-
-Represents a client invoice.
-
-Suggested statuses:
-
-- Draft
-- Created
-- Issued
-- Sent
-- Awaiting payment
-- Partially paid
-- Paid
-- Overdue
-- Cancelled
-
-### Payment
-
-Represents money received against an invoice.
-
-Support:
-
-- Full payment
-- Partial payment
-- Overpayment
-- Fees
-- Payment date
-- Payment method
-- Sender information
-- Notes
-
----
-
-## 7. Calendar Requirements
-
-The calendar must eventually provide:
-
-- Month view
-- Week view
-- Day view
-- Project filters
-- Status filters
-- Planned/actual switching
-- Project label colors
-- Drag and drop
-- Resize
-- Time-range selection
-- Event editing
-- Copy to another date
-- Delete
-- Planned-to-actual conversion
-- Break entry
-- Notes
-
-A change to a recurring weekly schedule must not silently overwrite manually modified calendar entries.
-
-Individual overrides must remain distinguishable from generated recurring events.
-
----
-
-## 8. Time Tracking Policy
-
-Flowance must support actual work recording.
-
-For the MVP, actual work may be entered manually:
-
-- Actual start time
-- Actual end time
-- Break duration
-
-A stopwatch-style tracker is not required for the MVP.
-
-A later phase may add:
-
-- Start
-- Pause
-- Resume
-- Stop
-
-Time tracking exists to support:
-
-- Hourly billing
-- Monthly settlement-range calculations
-- Planned versus actual comparisons
-- Overtime and underwork detection
-- Effective hourly rate calculation
-- Monthly work reports
-- Invoice evidence
-
----
-
-## 9. Revenue Calculation Rules
-
-### Monetary Types
-
-Never use floating-point types for money.
-
-Use:
-
-- Java: `BigDecimal`
-- PostgreSQL: `numeric`
-
-The intended initial input range is:
-
-- Minimum: `0`
-- Maximum: `10,000,000 JPY`
-
-Validate this in both frontend and backend.
-
-### Hourly Contract
-
-```text
-billable hours × hourly rate
-```
-
-Billable time is calculated after breaks and rounding rules.
-
-### Daily Contract
-
-Calculate revenue based on billable workdays or configured daily units.
-
-### Monthly Fixed Contract
-
-Use the monthly contract amount while the contract is active.
-
-Future prorating options may include:
-
-- Calendar days
-- Business days
-- Scheduled workdays
-- No proration
-
-### Monthly Settlement Range
-
-A settlement-range contract may include:
-
-- Minimum hours
-- Maximum hours
-- Base hours
-- Deduction rate
-- Overtime rate
-
-Example:
-
-```text
-Monthly rate: 800,000 JPY
-Range: 140-180 hours
-Actual: 190 hours
-Overtime: 10 hours
-Overtime rate: 5,000 JPY
-Total: 850,000 JPY
-```
-
-Support explicitly configured and derived deduction/overtime rates.
-
-### Rounding
-
-Potential units:
-
-- 1 minute
-- 5 minutes
-- 10 minutes
-- 15 minutes
-- 30 minutes
-- 60 minutes
-
-Potential methods:
-
-- Round up
-- Round down
-- Nearest
-- Start time up
-- End time down
-
-Calculation logic belongs in backend domain/application code and must have unit tests.
-
-### Calculation Strategy
-
-Prefer separate implementations.
-
-```text
-RevenueCalculator
-├── HourlyRevenueCalculator
-├── DailyRevenueCalculator
-├── MonthlyFixedRevenueCalculator
-├── MonthlyRangeRevenueCalculator
-└── PerformanceFeeRevenueCalculator
-```
-
-Do not put contract calculation branches in controllers.
-
----
-
-## 10. API Guidelines
-
-Use REST APIs under:
-
-```text
-/api/v1
-```
-
-Example resources:
-
-```text
-/api/v1/auth
-/api/v1/clients
-/api/v1/projects
-/api/v1/projects/{projectId}/contracts
-/api/v1/projects/{projectId}/weekly-schedules
-/api/v1/calendar/events
-/api/v1/work-schedules
-/api/v1/work-records
-/api/v1/settlements
-/api/v1/invoices
-/api/v1/payments
-```
-
-Use consistent HTTP semantics.
-
-- `GET`: read
-- `POST`: create or execute an explicit command
-- `PATCH`: partial update
-- `DELETE`: delete or deactivate where appropriate
-
-Use consistent error responses.
-
-```json
-{
-  "code": "PROJECT_NOT_FOUND",
-  "message": "The requested project was not found.",
-  "details": [],
-  "traceId": "abc123"
-}
-```
-
-Validation error example:
-
-```json
-{
-  "code": "VALIDATION_ERROR",
-  "message": "Please review the submitted values.",
-  "details": [
-    {
-      "field": "monthlyRate",
-      "message": "Monthly rate must be between 0 and 10,000,000."
-    }
-  ]
-}
-```
-
----
-
-## 11. Authentication and Authorization
-
-Preferred browser flow:
-
-```text
-Next.js
-→ Spring Boot authentication API
-→ HttpOnly Cookie
-```
-
-Do not store access tokens in `localStorage`.
-
-Use:
-
-- HttpOnly
-- Secure in production
-- SameSite
-- Appropriate expiration
-
-Planned roles:
-
-- `OWNER`
-- `ADMIN`
-- `MEMBER`
-- `ACCOUNTANT`
-
-Example permissions:
-
-- Project creation: OWNER or ADMIN
-- Work record editing: OWNER, ADMIN, or authorized MEMBER
-- Invoice issuing: OWNER or ACCOUNTANT
-- Organization settings: OWNER
-
-Always enforce authorization in the backend.
-
-Frontend permission checks are presentation logic only.
-
----
-
-## 12. Multi-Tenancy
-
-Tenant-owned data must be scoped by organization.
-
-Do not retrieve tenant-owned entities by ID alone.
-
-Avoid:
-
-```text
-findById(projectId)
-```
-
-Prefer:
-
-```text
-findByIdAndOrganizationId(projectId, organizationId)
-```
-
-Add integration tests for tenant isolation.
-
----
-
-## 13. Concurrency and Consistency
-
-### Optimistic Locking
-
-Use optimistic locking for mutable business data where concurrent updates matter.
-
-```java
-@Version
-private Long version;
-```
-
-Return `409 Conflict` for stale updates.
-
-Candidates include:
-
-- Project
-- Contract
-- Work schedule
-- Work record
-- Settlement
-- Invoice
-
-### Idempotency
-
-Use idempotency keys for operations that must not be duplicated.
-
-Candidates:
-
-- Invoice issuance
-- Payment registration
-- Settlement finalization
-- External integrations
-
-```text
-Idempotency-Key: <uuid>
-```
-
-### Transactions
-
-Use transactions for logically atomic business operations.
-
-### Outbox Pattern
-
-A later phase may use an outbox table for reliable notifications and external side effects.
-
----
-
-## 14. Audit Logging
-
-Audit important actions:
-
-- Project creation or changes
-- Contract changes
-- Work record changes
-- Settlement recalculation
-- Invoice issuance or cancellation
-- Payment registration
-- Role changes
-
-Audit records should include:
-
-- Actor
-- Organization
-- Entity type
-- Entity ID
-- Action
-- Before value
-- After value
-- Timestamp
-- IP address where appropriate
-- User agent where appropriate
-
-Never log passwords, tokens, or secrets.
-
----
-
-## 15. Date, Time, and Time Zone
-
-Store timestamps in UTC.
-
-Store the user's time zone separately.
-
-Initial default:
-
-```text
-Asia/Tokyo
-```
-
-Support work that crosses midnight.
-
-```text
-22:00-02:00 next day
-```
-
-Take care with:
-
-- Month boundaries
-- Contract boundaries
-- Recurring schedules
-- Non-Japan daylight saving time
-
----
-
-## 16. Database and Migrations
-
-Use PostgreSQL.
-
-Use Flyway for schema migrations.
-
-```text
-V1__create_users.sql
-V2__create_organizations.sql
-V3__create_clients.sql
-V4__create_projects.sql
-V5__create_project_contracts.sql
-V6__create_work_schedules.sql
-V7__create_work_records.sql
-```
-
-Do not modify production schemas manually outside migrations.
-
-Suggested main tables:
-
-```text
-users
-organizations
-organization_members
-clients
-projects
-project_contracts
-project_weekly_schedules
-work_schedules
-work_records
-work_breaks
-monthly_project_settlements
-invoices
-invoice_items
-payments
-audit_logs
-outbox_events
-refresh_tokens
-idempotency_keys
-```
-
-Add indexes based on actual query patterns, especially:
-
-- Organization IDs
-- Project IDs
-- User IDs
-- Work timestamps
-- Settlement year/month
-- Invoice status
-- Payment date
-
----
-
-## 17. Frontend Data Management
-
-Use:
-
-- TanStack Query for server state
-- React Hook Form for form state
-- Zod for client-side validation
-- URL search parameters for shareable filters
-- `useState` or `useReducer` for local UI state
-
-Do not introduce Redux unless there is a demonstrated requirement.
-
-Avoid unnecessary global state.
-
-After mutations, invalidate or update only relevant query keys.
-
----
-
-## 18. UI and UX Guidelines
-
-The product should feel like a professional, calm, and modern SaaS application.
-
-Prioritize:
-
-- Clear visual hierarchy
-- Readable calendar entries
-- Accessible forms
-- Consistent spacing
-- Responsive layouts
-- Keyboard usability
-- Clear loading states
-- Clear empty states
-- Clear validation errors
-- Confirmations for destructive actions
-- Consistent use of the approved blue palette
-
-The visual tone should resemble clear water, air, and light rather than heavy enterprise software.
-
-Use rounded corners and soft surfaces in moderation.
-
-Avoid excessive shadows, gradients, and decorative effects that reduce readability.
-
----
-
-## 19. Testing Requirements
-
-### Backend Unit Tests
-
-Cover:
-
-- Hourly calculation
-- Monthly fixed calculation
-- Settlement range within range
-- Below minimum hours
-- Above maximum hours
-- Break deduction
-- Time rounding
-- Work crossing midnight
-- Work crossing month boundaries
-- Rate changes over time
-- Work before contract start
-- Work after contract end
-- Mid-month contract start
-- Mid-month contract end
-- Tax calculation
-- Withholding calculation
-
-### Backend Integration Tests
-
-Use Testcontainers with PostgreSQL.
-
-Test:
-
-- Repository behavior
-- Aggregation SQL
-- Transactions
-- Optimistic locking
-- Unique constraints
+- Business rules
 - Tenant isolation
-- Flyway migrations
-- Invoice/payment consistency
-- Outbox behavior when introduced
-
-### Frontend Tests
-
-Use Vitest and React Testing Library for:
-
-- Form validation
-- Conditional fields
-- Data rendering
-- Loading states
-- Error states
-- Key interactions
-
-### End-to-End Tests
-
-Use Playwright for critical workflows.
-
-```text
-Log in
-→ Create client
-→ Create project
-→ Add contract
-→ Add weekly schedule
-→ View calendar entries
-→ Record actual work
-→ View monthly settlement
-→ Create invoice
-→ Register payment
-```
-
-Prioritize meaningful business tests over superficial coverage percentages.
-
----
-
-## 20. Local Development
-
-Use Docker Compose for local dependencies.
-
-Possible services:
-
-```text
-frontend
-backend
-postgres
-redis
-mailpit
-prometheus
-grafana
-```
-
-Redis, Prometheus, and Grafana may be omitted until needed.
-
-Provide clear root-level commands for local setup.
-
-Do not commit secrets.
-
-Provide `.env.example` files with placeholders.
-
----
-
-## 21. CI/CD
-
-GitHub Actions should eventually run:
-
-### Pull Requests
-
-- TypeScript type checking
-- ESLint
-- Frontend unit tests
-- Java compilation
-- Backend static analysis
-- Backend unit tests
-- Integration tests
-- Docker build validation
-
-### Main Branch
-
-- Production builds
-- Container image builds
-- Registry push
-- Deployment
-- Database migrations
-- Smoke tests
-
-Do not depend on undocumented local deployment steps.
-
----
-
-## 22. Observability
-
-A later phase should add:
-
-- OpenTelemetry
-- Prometheus
-- Grafana
-- Structured logging
-- Trace IDs
-- Health checks
-
-Useful metrics:
-
-- API request count
-- Error rate
-- p95 latency
-- SQL duration
-- Database pool usage
-- Monthly settlement duration
-- Background job success rate
-- Unprocessed outbox count
-- Redis cache hit rate
-
-Never log:
-
-- Passwords
-- Access tokens
-- Refresh tokens
-- Secret keys
-- Full sensitive personal information
-
----
-
-## 23. Development Phases
-
-### Phase 1: MVP
-
-Implement:
-
-- Registration
-- Login
-- Logout
-- Project creation and editing
-- Project color
-- Hourly and monthly rates
-- Contract period
-- Weekly common schedule
-- Week calendar
-- Month calendar
-- Individual overrides
-- Manual actual-work entry
-- Monthly revenue total
-- Revenue total by project
-- Responsive UI
-
-The Phase 1 core is:
-
-```text
-Projects
-Calendar
-Actual work
-Monthly totals
-Project totals
-```
-
-### Phase 2: Contract and Settlement
-
-Add:
-
-- Planned and actual separation
-- Settlement ranges
-- Deduction calculation
-- Overtime calculation
-- Contract history
-- Contract renewal
-- Mid-month start/end
-- Multiple breaks
-- Time rounding
-- Planned versus actual comparison
-- CSV export
+- Persistence
+- Transaction management
+- Contract validation
+- Schedule generation
+- Work time calculation
+- Settlement calculation
+- File and icon processing coordination
+- Audit logging
 - Optimistic locking
-- Audit logs
-
-### Phase 3: Invoice and Payment
-
-Add:
-
-- Client management
-- Invoice creation
-- Invoice PDF
-- Invoice statuses
-- Payment registration
-- Partial payments
-- Unpaid list
-- Payment deadline notifications
-- Monthly closing
 - Idempotency
-- Outbox pattern
+- API error handling
+- Background task coordination
 
-### Phase 4: Advanced Backend and Operations
+### 3.3 Data and Infrastructure
 
-Add:
+Use the following data and infrastructure components:
 
-- Multi-tenancy
-- Member management
-- Role management
-- Redis
-- Background jobs
-- Batch processing
-- Google Calendar integration
-- OpenTelemetry
-- Prometheus
-- Grafana
-- AWS
-- Terraform
-- Production CI/CD
+- PostgreSQL as the source of truth
+- Redis as Celery broker, short-lived cache, rate-limit storage, or temporary state
+- Celery Worker for asynchronous tasks
+- Docker Compose for local backend-related services
+- Cloudflare R2 for production object storage
+- Cloudflare CDN with custom domain for production image delivery
+- GitHub Actions for CI/CD
 
-### Phase 5: SaaS
-
-Potential additions:
-
-- Free and paid plans
-- Stripe billing
-- Usage limits
-- Team plan
-- Invitations
-- Data export
-- Admin dashboard
-- Product analytics
+Redis, Celery result backend, browser state, and object keys must not be treated as source-of-truth business data.
 
 ---
 
-## 24. Explicit Non-Goals for the MVP
+## 4. Phase1 Scope Rules
 
-Do not implement unless required:
+### 4.1 Implement in Phase1
 
-- Google Calendar synchronization
-- Stripe billing
-- Team invitations
-- Multi-currency
-- Slack notifications
-- LINE notifications
-- Accounting software integrations
-- Microservices
-- Kafka
-- Kubernetes
-- Complex event-driven architecture
-- Advanced BI dashboards
-- Stopwatch-style time tracking
+Agents may implement or modify features related to:
 
-Prefer a complete, tested MVP over many incomplete advanced features.
+- Authentication APIs
+- Cookie based JWT authentication
+- CSRF handling
+- OWNER / ADMIN / MEMBER role checks
+- Organization scoped tenant isolation
+- Clients
+- Projects
+- Icons and file uploads
+- Contracts
+- Weekly schedules
+- Work schedules
+- Schedule generation
+- Calendar event display
+- Work records
+- Monthly settlements
+- Audit logs
+- Error responses
+- OpenAPI YAML
+- Redis / Celery tasks
+- Docker Compose backend environment
+- Testing and CI for Phase1 scope
 
----
+### 4.2 Keep out of Phase1 unless explicitly requested
 
-## 25. Documentation Requirements
+Do not implement the following as Phase1 production features unless the user explicitly changes the scope:
 
-Maintain documentation for:
+- Invoice API
+- Invoice screens
+- Invoice PDF generation
+- Invoice numbering
+- Payment API
+- Payment screens
+- Income and expense screen
+- Analysis dashboard
+- ACCOUNTANT role
+- External accounting integrations
+- External calendar integrations
+- SSO / OAuth / MFA
+- Complex approval workflows
+- Multi-currency settlement
 
-- Product overview
-- Setup
-- Architecture
-- ER diagram
-- API specification
-- Revenue calculation rules
-- Authentication flow
-- Testing strategy
-- Deployment
-- Known limitations
-- Roadmap
-- Color and design-system usage
-
-README should explain key decisions, including:
-
-- Contract data is separate from projects to preserve historical accuracy.
-- Planned and actual work are separate.
-- Optimistic locking prevents silent overwrites.
-- Outbox processing protects consistency between database writes and notifications.
-- Flowance uses the approved blue palette from the supplied visual reference.
-
----
-
-## 26. Coding Guidelines
-
-### General
-
-- Keep functions and classes focused.
-- Use descriptive names.
-- Avoid hidden side effects.
-- Prefer explicit domain concepts.
-- Do not add dependencies without a clear reason.
-- Remove dead code.
-- Do not keep commented-out implementation blocks.
-- Never hard-code secrets.
-
-### Backend
-
-- Keep controllers thin.
-- Put business rules in domain/application services.
-- Validate requests at the boundary.
-- Validate business invariants in the domain/application layer.
-- Use DTOs at API boundaries.
-- Do not return JPA entities directly.
-- Use consistent exception mapping.
-- Use transactions deliberately.
-- Avoid N+1 queries.
-
-### Frontend
-
-- Keep pages and layouts thin.
-- Put feature logic in feature modules.
-- Avoid giant Client Components.
-- Keep API calls in shared or feature-specific clients.
-- Use the Flowance design tokens instead of scattering raw hex values.
-- Prefer reusable form, calendar, card, and table components.
-- Keep loading, empty, and error states consistent.
-- Preserve accessibility when using user-selected project colors.
+When these appear in existing UI, keep them hidden, commented out, or clearly marked as Phase2 according to /docs/.
 
 ---
 
-## 27. Agent Rules
+## 5. Backend Architecture Rules
 
-Any coding agent working on this repository must:
+Flowance backend uses Django pragmatically while following Clean Architecture and DDD-inspired responsibility separation.
 
-1. Read this file before making architectural changes.
-2. Preserve the monorepo structure.
-3. Keep business logic in Spring Boot.
-4. Use the approved Flowance color palette.
-5. Avoid adding advanced infrastructure before its phase.
-6. Add or update tests for business logic changes.
-7. Add Flyway migrations for database changes.
-8. Update documentation when behavior or architecture changes.
-9. Avoid unrelated refactoring in the same task.
-10. Never expose secrets or sensitive data.
-11. Ask for clarification only when a decision cannot be derived from this document or existing project code.
-12. Prefer the simplest implementation that remains compatible with the stated roadmap.
+All backend design and implementation must follow Clean Architecture and Domain-Driven Design principles as defined in /docs/. Agents must model business concepts in the Domain layer first, orchestrate use cases in the Application layer, and keep framework, database, storage, HTTP, and Celery details in outer layers.
+
+Recommended backend app layout:
+
+    flowance-api/
+      config/
+        settings/
+        urls.py
+        celery.py
+        asgi.py
+        wsgi.py
+      apps/
+        accounts/
+        organizations/
+        clients/
+        projects/
+        contracts/
+        schedules/
+        work_records/
+        settlements/
+        files/
+        audit_logs/
+        common/
+
+Within each domain app, prefer this conceptual separation:
+
+- domain: Entities, value objects, domain services, domain exceptions, framework-independent rules.
+- application: Use cases, commands, queries, transaction orchestration, permission orchestration.
+- infrastructure: Django ORM repositories, storage adapters, Celery integration, external adapters.
+- presentation: DRF views, viewsets, serializers, request and response mapping.
+
+Rules:
+
+- Domain code must not depend on Django, DRF, ORM, Redis, Celery, Pillow, Storage, or HTTP.
+- DRF View, ViewSet, and Serializer must not contain complex business decisions.
+- Business rules belong primarily in Domain or Application layers.
+- Database access belongs behind repository or infrastructure boundaries where practical.
+- Use Django ORM and Django Migration as the database implementation mechanism.
+- Use transactions for multi-table business operations.
+- Use optimistic locking with version fields for update APIs that require concurrency control.
+- Use PostgreSQL constraints for data integrity that must not be bypassed.
+
+---
+
+## 6. Domain and Business Rules
+
+Agents must preserve the following Phase1 business decisions.
+
+### 6.1 Authentication and email
+
+- Store original email for display and communication.
+- Use normalized_email for login and uniqueness checks.
+- Normalize email for comparison without losing the original input.
+- JWT must be handled via HttpOnly Cookie.
+- Do not include JWT values in API response bodies.
+- Use CSRF protection for cookie-authenticated unsafe methods.
+
+### 6.2 Roles and permissions
+
+Phase1 roles:
+
+- OWNER
+- ADMIN
+- MEMBER
+
+ACCOUNTANT is Phase2 or later.
+
+Phase1 should keep permission design simple. Fine-grained project-level edit permissions can be expanded later.
+
+### 6.3 Contracts
+
+Phase1 contract types:
+
+- HOURLY
+- MONTHLY_RANGE
+- MONTHLY_FIXED
+- PERFORMANCE
+
+Contract period overlap rule:
+
+- Overlap is forbidden within the same project.
+- Overlap is allowed across different projects.
+- Enforce overlap with both Application validation and PostgreSQL exclusion constraint.
+- Store valid_from and valid_until as ordinary columns.
+- Use daterange expression in the database constraint rather than storing a dedicated DateRangeField unless /docs/ is changed.
+
+### 6.4 Money and settlement
+
+- Use decimal.Decimal in Python.
+- Use DecimalField in Django.
+- Use numeric in PostgreSQL.
+- Do not use float for money.
+- Tax, withholding tax, and total amount rounding must follow the rules in /docs/.
+- Monthly range settlement uses base_minutes difference as the basis for deduction and overtime calculation.
+
+### 6.5 Schedule generation
+
+- day_of_week uses 0=Sunday, 1=Monday, ..., 6=Saturday.
+- Initial generation range limit is 100 days.
+- dryRun must not persist generated schedules.
+- Phase1 schedule title uses the project name.
+- Schedule overlap is allowed with warning in Phase1.
+- Do not overwrite manually overridden schedules during generation.
+
+### 6.6 Work records
+
+- Request receives actualStartAt, actualEndAt, and breaks.
+- Backend calculates actualMinutes and billableMinutes.
+- Frontend must not send calculated actualMinutes or billableMinutes as source-of-truth values.
+- Phase1 is DRAFT-centered.
+- Strict DRAFT / CONFIRMED operation is Phase2 or later unless /docs/ changes.
+
+### 6.7 Files and icons
+
+- Local development uses Django MEDIA_ROOT.
+- Production uses Cloudflare R2 through Django Storage API.
+- Production image delivery uses Cloudflare CDN with custom domain.
+- Store file metadata in PostgreSQL.
+- Do not store file binaries in PostgreSQL.
+- Keep original uploaded image path using a clear column such as original_image_path where relevant.
+- Generated display images should use versioned object keys for cache safety.
+- SVG is not allowed for Phase1 icon upload unless /docs/ changes.
+
+---
+
+## 7. API Rules
+
+API design must follow docs/06_api.
+
+General rules:
+
+- Use /api/v1 prefix.
+- Use JSON request and response bodies except multipart upload and binary downloads.
+- Use consistent ErrorResponse with code, message, details, and traceId.
+- Use 401 for unauthenticated requests.
+- Use 403 for authenticated but unauthorized requests.
+- Use 404 or 403 consistently for cross-tenant access according to the relevant API design.
+- Use 409 for optimistic lock conflict and business conflicts such as contract period overlap.
+- Use 422 or 400 consistently for validation according to API policy.
+- Do not define requestBody for GET, HEAD, or DELETE operations in OpenAPI.
+- DELETE APIs that need version should pass it through query parameter or a dedicated action endpoint, not request body.
+- Creation APIs should normally return 201 Created, Location header, and a useful created resource summary when that helps the client.
+- Important command APIs should support Idempotency-Key when documented.
+
+OpenAPI rules:
+
+- Keep YAML compatible with OpenAPI 3.0.3.
+- Ensure all component references resolve.
+- Ensure Swagger UI can load the YAML.
+- Keep Phase2 APIs out of Phase1 API files unless clearly marked as future reference.
+
+---
+
+## 8. Frontend Architecture Rules
+
+Follow the frontend architecture in docs/03_architecture/frontend-architecture.md.
+
+Rules:
+
+- Use Server Components by default where practical.
+- Use Client Components only for interactivity, browser APIs, forms, calendar interactions, and local UI state.
+- Do not call Django API directly from arbitrary page or UI components.
+- Put API communication in infrastructure adapters.
+- Put use-case orchestration in application layer.
+- Keep domain concepts independent from React, Next.js, TanStack Query, React Hook Form, Zod, FullCalendar, and browser APIs.
+- Client-side validation is for user experience, not the source of truth.
+- Business validation must be enforced by Django.
+
+Phase2 side-menu items such as income and expense, invoices, and analysis should stay hidden or commented out with TODO comments unless scope changes.
+
+---
+
+## 9. Local Development Rules
+
+Current local development convention:
+
+- flowance-web: run Next.js on the host machine.
+- flowance-api: run Django API, Celery Worker, PostgreSQL, and Redis with Docker Compose when possible.
+
+Environment files:
+
+- .env.local is for host-based backend execution.
+- .env.docker is for Docker Compose services.
+- .env may exist as a convenience copy, but Compose should explicitly use .env.docker.
+
+Docker Compose should include:
+
+- api
+- worker
+- postgres
+- redis
+
+Docker Compose should not include the frontend unless the user explicitly changes the local development policy.
+
+Connection host rule:
+
+- Host execution uses localhost for PostgreSQL and Redis.
+- Docker execution uses service names postgres and redis.
+
+---
+
+## 10. Database Rules
+
+Follow docs/05_database.
+
+Rules:
+
+- PostgreSQL is the source of truth.
+- Use Django Migration for schema changes.
+- Prefer backward-compatible migrations.
+- Use UUID primary keys where specified by docs.
+- Use organization_id scoping for tenant-owned data.
+- Use version columns for optimistic locking where required.
+- Use created_at, updated_at, and deleted_at where specified.
+- Use audit_logs for important changes.
+- Use idempotency keys for command deduplication where specified.
+- Use PostgreSQL exclusion constraint for same-project contract period overlap.
+- Do not use Redis as permanent business storage.
+- Do not store file binaries in PostgreSQL.
+
+---
+
+## 11. Asynchronous Processing Rules
+
+Redis and Celery are Phase1 components.
+
+Celery handles:
+
+- Icon image conversion
+- Display image generation
+- Old image deletion
+- Orphan file cleanup
+- Outbox event processing when introduced
+- Other slow or retryable background work documented in /docs/
+
+Rules:
+
+- PostgreSQL background_tasks is the business-visible task state source.
+- Do not expose raw Celery internal state directly as business API state.
+- Tasks must be idempotent where retry is possible.
+- Preserve traceId across API and Celery task boundaries where practical.
+- On file or DB failure, preserve consistency with compensation logic.
+
+---
+
+## 12. Testing and Quality Rules
+
+Follow docs/16_testing.
+
+Backend checks should include where applicable:
+
+- Ruff lint
+- Ruff format check
+- mypy
+- Django System Check
+- Django Migration check
+- pytest
+- PostgreSQL integration tests
+- Redis integration tests
+- Celery task tests
+- OpenAPI validation
+
+Frontend checks should include where applicable:
+
+- TypeScript typecheck
+- ESLint
+- Next.js build
+- Vitest
+- React Testing Library
+- Playwright for key flows
+
+Before handing off code changes, run the smallest meaningful verification that matches the risk of the change. If a check cannot be run, explain why.
+
+---
+
+## 13. Git and File Editing Rules
+
+- Preserve user changes.
+- Check the working tree before broad edits when relevant.
+- Do not use destructive commands such as hard reset unless the user explicitly requests them.
+- Prefer small, focused changes.
+- Do not edit generated or unrelated files unnecessarily.
+- Keep documents and implementation consistent when a change affects both.
+- Use /docs/ as the source for deciding whether a behavior belongs to Phase1.
+
+---
+
+## 14. Documentation Rules
+
+When changing behavior, update relevant documents if the user asks for documentation sync or if the change clearly affects documented design.
+
+Relevant documentation areas:
+
+- docs/01_requirements
+- docs/02_basic-design
+- docs/03_architecture
+- docs/04_domain
+- docs/05_database
+- docs/06_api
+- docs/07_security
+- docs/08_error-handling
+- docs/09_async-processing
+- docs/10_file-management
+- docs/11_cache
+- docs/12_operations
+- docs/13_icon-processing
+- docs/14_schedule-generation
+- docs/15_contract-revenue
+- docs/16_testing
+- docs/adr
+
+If Notion pages are involved, sync Notion and local docs when requested.
+
+---
+
+## 15. Decision Priority
+
+When instructions conflict, use this priority:
+
+1. System and developer instructions from the current Codex session.
+2. Explicit user request in the current chat.
+3. Current /docs/ specifications.
+4. This AGENTS.md.
+5. Existing code conventions.
+6. Older conversation assumptions.
+
+If a higher-priority instruction conflicts with /docs/, explain the conflict and make the smallest safe change needed to satisfy the user.
+
+---
+
+## 16. Current Important Reminders
+
+- This project is Django / DRF, not Spring Boot.
+- This project uses Django ORM and Django Migration, not JPA or Flyway.
+- Phase1 excludes invoices, payments, income and expense, analysis, and ACCOUNTANT role.
+- PostgreSQL is the source of truth.
+- Redis is not source-of-truth storage.
+- Celery is included in Phase1.
+- Cloudflare R2 is the production object storage choice.
+- Cloudflare CDN with custom domain is used for production image delivery.
+- Frontend is Next.js and runs outside Docker Compose in local development.
+- Backend API, Celery Worker, PostgreSQL, and Redis can run through Docker Compose.
