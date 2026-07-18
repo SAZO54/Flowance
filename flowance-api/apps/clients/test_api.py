@@ -33,6 +33,11 @@ class ClientAPITests(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.csrf = self.client.cookies["csrftoken"].value
         self.headers = {"HTTP_X_CSRFTOKEN": self.csrf}
+    def test_urls_follow_openapi_paths(self):
+        client_id = "390fd998-2609-4a3c-8c3a-2e299d407f7c"
+        self.assertEqual(reverse("clients:collection"), "/api/v1/clients")
+        self.assertEqual(reverse("clients:detail", args=[client_id]), f"/api/v1/clients/{client_id}")
+
 
     def create_client(self, **overrides):
         payload = {

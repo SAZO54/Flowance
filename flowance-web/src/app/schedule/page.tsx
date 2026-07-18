@@ -1,5 +1,6 @@
-import { App } from '../App'
+import {ScheduleComposition} from './ScheduleComposition'
+import {AppShell} from '@/presentation/layout/AppShell'
 
 export default function SchedulePage() {
-  return <App />
+  return <AppShell><ScheduleComposition/></AppShell>
 }

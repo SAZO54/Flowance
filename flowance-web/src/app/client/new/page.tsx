@@ -1,5 +1,6 @@
-import { App } from '../../App'
+import { AppShell } from '@/presentation/layout/AppShell'
+import { ClientCreateComposition } from './ClientCreateComposition'
 
 export default function ClientCreatePage() {
-  return <App/>
+  return <AppShell><ClientCreateComposition/></AppShell>
 }

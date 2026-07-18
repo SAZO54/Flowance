@@ -1,5 +1,6 @@
-import { App } from '../App'
+import '@/dashboard-api.css'
+import {DashboardComposition} from './DashboardComposition'
 
 export default function DashboardPage() {
-  return <App />
+  return <DashboardComposition/>
 }

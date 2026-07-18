@@ -1,0 +1,418 @@
+.work-records-api-page .work-titlebar .add-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.work-records-api-page .work-summary article {
+  min-height: 7rem;
+}
+
+.work-records-api-page .work-summary strong {
+  min-height: 1.5rem;
+  font-size: 1.0625rem;
+}
+
+.work-records-api-head {
+  gap: 1rem;
+}
+
+.work-record-api-filters {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.work-record-api-filters label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #7895a3;
+  font-size: 0.75rem;
+}
+
+.work-record-api-filters select {
+  min-width: 9rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fbfeff;
+  color: #294b5b;
+  padding: 0.5rem 1.75rem 0.5rem 0.625rem;
+  font-size: 0.75rem;
+}
+
+.work-record-api-state {
+  min-height: 18rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 2rem;
+  color: #7895a3;
+  text-align: center;
+}
+
+.work-record-api-state p,
+.work-record-api-state strong {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.work-record-api-state strong {
+  color: #527483;
+}
+
+.work-record-api-state[role='status'] > svg {
+  animation: api-list-spin 0.9s linear infinite;
+}
+
+.work-record-api-state button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #4f91ae;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.work-record-api-table {
+  overflow-x: auto;
+}
+
+.work-record-api-row {
+  min-width: 55rem;
+  display: grid;
+  grid-template-columns: 8.75rem minmax(12rem, 1.4fr) 9.5rem 9.5rem 5rem 2.25rem;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.8125rem 1.125rem;
+  border-top: 0.0625rem solid #edf6fa;
+  color: #527483;
+  font-size: 0.75rem;
+}
+
+.work-record-api-row.header {
+  border-top: 0;
+  background: #fbfeff;
+  color: #91a7b1;
+  font-weight: 700;
+}
+
+.work-record-api-row > span,
+.work-record-api-row > strong {
+  min-width: 0;
+}
+
+.work-record-api-row > span:nth-child(3),
+.work-record-api-row > strong {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.work-record-api-row small {
+  overflow: hidden;
+  color: #91a7b1;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-record-api-project {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.work-record-api-project > i {
+  width: 0.1875rem;
+  height: 2rem;
+  flex: none;
+  border-radius: 0.1875rem;
+}
+
+.work-record-api-project > span {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.work-record-api-row > button {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.4375rem;
+  background: #fff;
+  color: #4f91ae;
+}
+
+.record-status.cancelled {
+  background: #edf2f4;
+  color: #718894;
+}
+
+.work-record-api-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-top: 0.0625rem solid #edf6fa;
+  color: #7895a3;
+  font-size: 0.75rem;
+}
+
+.work-record-api-pagination button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #4f91ae;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.work-record-api-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.work-record-modal-backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: #17374666;
+}
+
+.work-record-modal {
+  width: min(45rem, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  border-radius: 0.875rem;
+  background: #fff;
+  box-shadow: 0 1.5rem 4rem #17374638;
+}
+
+.work-record-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 1.25rem;
+  border-bottom: 0.0625rem solid #edf6fa;
+}
+
+.work-record-modal-head p {
+  margin: 0 0 0.25rem;
+  color: #75a8c7;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.work-record-modal-head h2 {
+  margin: 0;
+  color: #294b5b;
+  font-size: 1.0625rem;
+}
+
+.work-record-modal-head > button {
+  border: 0;
+  background: transparent;
+  color: #7895a3;
+}
+
+.work-record-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+  padding: 1.25rem;
+}
+
+.work-record-form-grid label,
+.work-record-break-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  color: #66808c;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.work-record-form-grid label.full {
+  grid-column: 1 / -1;
+}
+
+.work-record-form-grid input,
+.work-record-form-grid select,
+.work-record-form-grid textarea,
+.work-record-break-row input {
+  width: 100%;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fbfeff;
+  color: #294b5b;
+  padding: 0.625rem 0.6875rem;
+  font: inherit;
+  font-size: 0.75rem;
+  outline: 0;
+}
+
+.work-record-form-grid textarea {
+  resize: vertical;
+}
+
+.work-record-form-grid label span i,
+.work-record-break-row label span i {
+  color: #c84f61;
+  font-style: normal;
+}
+
+.work-record-form-grid .work-record-billable {
+  flex-direction: row;
+  align-items: center;
+  align-self: end;
+  min-height: 2.375rem;
+}
+
+.work-record-form-grid .work-record-billable input {
+  width: auto;
+}
+
+.work-record-breaks {
+  padding: 1rem 1.25rem;
+  border-top: 0.0625rem solid #edf6fa;
+}
+
+.work-record-breaks > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.work-record-breaks h3,
+.work-record-breaks p {
+  margin: 0;
+}
+
+.work-record-breaks h3 {
+  color: #294b5b;
+  font-size: 0.8125rem;
+}
+
+.work-record-breaks p {
+  margin-top: 0.25rem;
+  color: #91a7b1;
+  font-size: 0.75rem;
+}
+
+.work-record-breaks > div:first-child > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.4375rem;
+  background: #fff;
+  color: #4f91ae;
+  padding: 0.5rem 0.6875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.work-record-break-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2rem;
+  align-items: end;
+  gap: 0.625rem;
+  margin-top: 0.875rem;
+}
+
+.work-record-break-row > button {
+  width: 2rem;
+  height: 2.375rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #a55461;
+}
+
+.work-record-break-empty {
+  padding: 0.75rem 0;
+}
+
+.work-record-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-top: 0.0625rem solid #edf6fa;
+  background: #fbfeff;
+}
+
+.work-record-modal-actions > div {
+  flex: 1;
+}
+
+.work-record-modal-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #66808c;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.work-record-modal-actions button:last-child {
+  border-color: #75a8c7;
+  background: #75a8c7;
+  color: #fff;
+}
+
+.work-record-modal-actions button.danger {
+  border-color: #f0cbd3;
+  color: #a55461;
+}
+
+.work-record-modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-record-api-state[role='status'] > svg { animation: none; }
+}
+
+@media (max-width: 47.5rem) {
+  .work-records-api-page .work-summary { display: grid; grid-template-columns: 1fr 1fr; }
+  .work-records-api-head { align-items: stretch; flex-direction: column; }
+  .work-record-api-filters { flex-direction: column; }
+  .work-record-api-filters label { justify-content: space-between; }
+  .work-record-api-filters select { flex: 1; }
+  .work-record-form-grid { grid-template-columns: 1fr; }
+  .work-record-form-grid label.full { grid-column: auto; }
+  .work-record-break-row { grid-template-columns: 1fr 2rem; }
+  .work-record-break-row label { grid-column: 1; }
+  .work-record-break-row > button { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+  .work-record-modal-actions { flex-wrap: wrap; }
+}

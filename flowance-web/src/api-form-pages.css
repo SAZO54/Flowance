@@ -1,0 +1,52 @@
+.client-form-fields textarea {
+  width: 100%;
+  resize: vertical;
+  border: 0.0625rem solid #dceef7;
+  background: #fbfeff;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.6875rem;
+  color: #294b5b;
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  outline: 0;
+}
+
+.client-form-fields textarea:focus {
+  border-color: #8dbfd3;
+  box-shadow: 0 0 0 0.1875rem #c3e7f655;
+}
+
+.form-api-error {
+  margin: 1rem 1.5rem 0;
+  border: 0.0625rem solid #f0cbd3;
+  border-radius: 0.5rem;
+  background: #fff5f7;
+  color: #9a5261;
+  padding: 0.75rem 0.875rem;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.form-inline-action {
+  align-self: flex-start;
+  border: 0;
+  background: transparent;
+  color: #4f91ae;
+  padding: 0.125rem 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.client-form-actions button:disabled,
+.client-form-fields select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 47.5rem) {
+  .client-form-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

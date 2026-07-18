@@ -67,7 +67,10 @@ class ProjectAPITests(APITestCase):
         )
 
     def test_create_list_detail_update_and_optimistic_lock(self):
+        self.assertEqual(reverse("projects:collection"), "/api/v1/projects")
+
         created = self.create_project()
+        self.assertEqual(reverse("projects:detail", args=[created.data["id"]]), f"/api/v1/projects/{created.data['id']}")
 
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.data["icon"]["type"], "DEFAULT")

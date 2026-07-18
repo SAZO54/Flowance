@@ -1,6 +1,10 @@
-import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
+import type {Metadata} from 'next'
+import type {ReactNode} from 'react'
 import '../styles.css'
+import '../api-list-pages.css'
+import '../api-form-pages.css'
+import '../client-detail-api.css'
+import '../shell-alignment.css'
 
 export const metadata: Metadata = {
   title: 'Flowance',

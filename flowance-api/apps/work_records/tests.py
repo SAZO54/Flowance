@@ -133,6 +133,11 @@ class WorkRecordAPITests(APITestCase):
     def test_list_detail_update_version_conflict_and_delete(self):
         created = self.create_record()
         record_id = created.data["id"]
+        self.assertEqual(reverse("work_records:collection"), "/api/v1/work-records")
+        self.assertEqual(
+            reverse("work_records:detail", args=[record_id]),
+            f"/api/v1/work-records/{record_id}",
+        )
 
         listed = self.client.get(
             reverse("work_records:collection"),

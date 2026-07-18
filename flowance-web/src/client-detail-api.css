@@ -1,0 +1,115 @@
+.client-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0.75rem;
+}
+
+.client-card-link .client-card {
+  height: 100%;
+}
+
+.client-card-link:focus-visible {
+  outline: 0.1875rem solid #8dbfd3;
+  outline-offset: 0.1875rem;
+}
+
+.client-card-link:focus-visible .client-card {
+  box-shadow: 0 0.875rem 1.875rem #73a9c32e;
+}
+
+.client-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+  color: #91a7b1;
+  font-size: 0.75rem;
+}
+
+.client-card-footer span:last-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  color: #4f91ae;
+  font-weight: 700;
+}
+
+.client-detail-state {
+  min-height: 24rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  text-align: center;
+  color: #7895a3;
+}
+
+.client-detail-state h1 {
+  margin: 0;
+  color: #294b5b;
+  font-size: 1.25rem;
+}
+
+.client-detail-state p {
+  max-width: 32rem;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.client-detail-state button,
+.client-detail-state a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #4f91ae;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.client-detail-state > svg:first-child {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.client-detail-state[role='status'] > svg:first-child {
+  animation: api-list-spin 0.9s linear infinite;
+}
+
+.client-detail-api-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.6fr);
+  gap: 0.875rem;
+  align-items: start;
+}
+
+.client-detail-api-layout > .client-detail-panel {
+  min-height: 100%;
+}
+
+.client-detail-note h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.client-detail-note p {
+  margin-bottom: 0;
+  white-space: pre-wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-detail-state[role='status'] > svg:first-child { animation: none; }
+}
+
+@media (max-width: 68.75rem) {
+  .client-detail-api-layout { grid-template-columns: 1fr; }
+}
