@@ -23,7 +23,7 @@ const useCases: DashboardUseCases = {
 
 export function DashboardComposition() {
   const router = useRouter()
-  return <AppShell onAddWork={() => router.push('/timelog')}>
+  return <AppShell onAddWork={() => router.push('/timelog?action=create')}>
     <DashboardContainer useCases={useCases}/>
   </AppShell>
 }

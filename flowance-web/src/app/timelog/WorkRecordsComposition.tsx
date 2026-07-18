@@ -26,6 +26,6 @@ const useCases: WorkRecordUseCases = {
   delete: (recordId, version) => deleteWorkRecord({workRecordGateway: workRecordApi}, recordId, version),
 }
 
-export function WorkRecordsComposition() {
-  return <WorkRecordsContainer useCases={useCases}/>
+export function WorkRecordsComposition({shouldOpenCreate = false}: {shouldOpenCreate?: boolean}) {
+  return <WorkRecordsContainer useCases={useCases} shouldOpenCreate={shouldOpenCreate}/>
 }

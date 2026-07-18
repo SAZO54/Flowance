@@ -32,7 +32,12 @@ const emptyPagination: WorkRecordPagination = {
   hasPrevious: false,
 }
 
-export function WorkRecordsContainer({useCases}: {useCases: WorkRecordUseCases}) {
+type WorkRecordsContainerProps = {
+  useCases: WorkRecordUseCases
+  shouldOpenCreate?: boolean
+}
+
+export function WorkRecordsContainer({useCases, shouldOpenCreate = false}: WorkRecordsContainerProps) {
   const [projects, setProjects] = useState<ProjectListItem[]>([])
   const [records, setRecords] = useState<WorkRecord[]>([])
   const [pagination, setPagination] = useState<WorkRecordPagination>(emptyPagination)
@@ -44,7 +49,9 @@ export function WorkRecordsContainer({useCases}: {useCases: WorkRecordUseCases})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
-  const [editingRecord, setEditingRecord] = useState<WorkRecord | null | undefined>(undefined)
+  const [editingRecord, setEditingRecord] = useState<WorkRecord | null | undefined>(
+    shouldOpenCreate ? null : undefined,
+  )
 
   const load = useCallback(async () => {
     setProjects([])
