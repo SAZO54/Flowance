@@ -1,8 +1,8 @@
-import '@/work-records-api.css'
-import '@/work-record-danger-action.css'
-import '@/work-record-month-filter.css'
-import '@/dashboard-metrics.css'
-import '@/list-title-and-detail-overrides.css'
+import '@/presentation/features/workRecords/styles/work-records-api.css'
+import '@/presentation/features/workRecords/styles/work-record-danger-action.css'
+import '@/presentation/features/workRecords/styles/work-record-month-filter.css'
+import '@/styles/shared/metric-cards.css'
+import '@/styles/shared/list-title-and-detail-overrides.css'
 import {AppShell} from '@/presentation/layout/AppShell'
 import {WorkRecordsComposition} from './WorkRecordsComposition'
 

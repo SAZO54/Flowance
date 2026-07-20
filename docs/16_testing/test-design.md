@@ -61,6 +61,29 @@ Phase1 では、認証、組織、基本権限、クライアント、案件、�
 | staging merge | PostgreSQL / Redis / Celery を含む統合テスト、Playwright、Smoke Test |
 | main merge | migration check、build、主要 Smoke Test、本番承認 |
 
+### 2.3 テストコード配置
+
+```text
+flowance-api/
+  apps/<app>/tests/
+    domain/               # framework非依存の業務ルール
+    application/          # Use Case、権限、transaction
+    infrastructure/       # Model、Repository、Storage adapter
+    presentation/         # API、Serializer、Middleware、ErrorResponse
+  tests/
+    integration/          # 複数appを横断する業務フロー
+    system/               # 設定、health check、システム境界
+```
+
+配置規則は以下とする。
+
+- 単一appで完結するテストは実装と同じappの `tests/` に置く。
+- app内ではテスト対象レイヤーに対応するサブディレクトリへ分ける。
+- 複数appを横断するテストだけを `flowance-api/tests/integration/` に置く。
+- システム設定やhealth checkなど、特定appが所有しないテストは `flowance-api/tests/system/` に置く。
+- 共通fixtureは必要になった時点でルートの `tests/conftest.py` に置き、app固有fixtureはapp内に保つ。
+- テストファイルは `test_*.py` に統一し、空の `tests.py` は作成しない。
+
 ## 3. テスト対象範囲
 
 ### 3.1 Phase1 テスト対象
@@ -485,3 +508,4 @@ Phase1 完了時には、少なくとも以下がテストで確認されてい�
 | 2026-07-16 | 1.0 | Phase1 用テスト設計書を新規作成。docs 配下の要件、基本設計、アーキテクチャ、DB、API、認証・認可、エラー、非同期、ファイル、キャッシュ、運用、アイコン、予定生成、契約・売上計算の各設計と整合するように整理。 |
 | 2026-07-20 | 1.1 | 週間カレンダーの空表示、時間枠クリック登録、予定編集・削除導線、予定と実績の責務分離、警告・楽観ロックの画面テスト観点を追加。 |
 | 2026-07-20 | 1.2 | 契約4種、テナント・権限、isCurrent、論理削除、契約UI、稼働率互換値保持のテスト観点を追加 |
+| 2026-07-20 | 1.3 | app内レイヤー別テストとルート横断・システムテストのハイブリッド配置を追加 |

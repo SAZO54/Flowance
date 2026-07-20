@@ -10,24 +10,30 @@ Phase1 では、認証、ダッシュボード、スケジュール、案件、�
 
 Next.js App Router を採用する。
 
+```text
 flowance-web/src/
-  app/
-    login/
-    register/
-    dashboard/
-    schedule/
-    case/
-    timelog/
-    client/
-    setting/
-    layout.tsx
-    page.tsx
-  domain/
-  application/
-  infrastructure/
+  app/                              # Route、layout、page entry
+  domain/                           # UI非依存の型・表示ルール
+  application/                      # 画面ユースケース
+  infrastructure/                  # API Adapter
   presentation/
+    components/                     # 共有UI
+    features/
+      clients/
+        styles/                     # クライアント固有のglobal CSS
+      projects/
+        styles/                     # 案件固有のglobal CSS
+      contracts/
+        styles/                     # 契約固有のglobal CSS
+      schedules/
+        styles/                     # スケジュール固有のglobal CSS
+      workRecords/
+        styles/                     # 稼働実績固有のglobal CSS
   shared/
   styles/
+    globals.css                     # 全画面の基礎スタイル
+    shared/                         # 複数機能で共有するUIスタイル
+```
 
 ## 3. レイヤー方針
 
@@ -37,6 +43,15 @@ flowance-web/src/
 - domain はフロントエンド側で共有する型、列挙値、軽量な表示ルールを担当する
 - infrastructure は API Adapter、Cookie / CSRF 連携、外部I/Oを担当する
 - shared は共通UI、hooks、utils、定数を担当する
+
+### 3.1 CSS配置方針
+
+- 全画面の基礎スタイルは `src/styles/globals.css` に置き、root layout から読み込む。
+- フォーム、一覧、日時入力、カードなど複数機能で使うスタイルは `src/styles/shared/` に置く。
+- 特定機能だけが所有するスタイルは `src/presentation/features/<feature>/styles/` に置き、対象Routeから読み込む。
+- 単一コンポーネントに閉じる新規スタイルは、コンポーネントと同じ場所の `*.module.css` を優先する。
+- `domain/` にはCSSを置かず、React、Next.js、CSSへの依存を持ち込まない。
+- 一時的な修正名の `*-override.css` を増やさず、安定した責務を持つ既存ファイルへ統合する。
 
 ## 4. Server Components
 
@@ -206,3 +221,4 @@ Django API には localhost:8000 で接続する。
 | --- | --- | --- |
 | 2026-07-10 | 1.0 | Phase1用のフロントエンドアーキテクチャ設計書へ更新。Next.js App Router、Phase1画面、API Adapter、認証Cookie、ローカル開発構成を整理 |
 | 2026-07-20 | 1.1 | Contracts機能のレイヤー分離と案件配下の契約登録・編集ルートを追加 |
+| 2026-07-20 | 1.2 | CSSを全体・共有・機能固有へ分離する配置方針とCSS Modulesの優先規則を追加 |

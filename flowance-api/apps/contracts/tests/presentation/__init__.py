@@ -1,0 +1,1 @@
+"""Contracts presentation tests."""

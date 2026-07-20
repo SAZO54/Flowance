@@ -1,4 +1,4 @@
-import '@/list-title-and-detail-overrides.css'
+import '@/styles/shared/list-title-and-detail-overrides.css'
 import {Suspense} from 'react'
 import {CaseComposition} from './CaseComposition'
 import {AppShell} from '@/presentation/layout/AppShell'

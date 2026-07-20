@@ -240,6 +240,8 @@ Infrastructure 層で LocalFileStorage と CloudflareR2Storage を実装する�
 
 ローカル環境では、開発効率を優先しつつ、本番 R2 と同じ object_key 設計で保存する。
 
+`flowance-api/media/` 配下はアップロードや画像変換によって生成される実行時データであり、Git の管理対象外とする。ローカル環境間で画像ファイルを共有せず、必要なファイルは各環境の Local Storage に保存する。
+
 ### 7.3 本番環境
 
 本番ストレージは Cloudflare R2 を採用する。
