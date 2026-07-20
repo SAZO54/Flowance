@@ -127,11 +127,18 @@ Phase2 以降で追加する API Adapter:
 | スケジュール | /schedule | 月／週／日カレンダー、予定・実績表示 |
 | 案件一覧 | /case | 案件検索、絞り込み、登録導線 |
 | 案件詳細 | /case/{id} | 案件、契約、予定、稼働、精算確認 |
+| 契約登録 | /case/{id}/contracts/new | 契約形態別フォーム、登録 |
+| 契約編集 | /case/{id}/contracts/{contractId}/edit | 契約取得、更新、論理削除 |
 | 稼働記録 | /timelog | 実績一覧、実績登録・編集 |
 | クライアント一覧 | /client | 顧客検索、登録、編集導線 |
 | クライアント詳細 | /client/{id} | 顧客情報、関連案件確認 |
 | 設定 | /setting | 利用者、組織、表示設定 |
 
+契約画面は案件詳細を入口にするが、責務は次のように独立させる。
+- domain/contract.ts: 契約型・列挙値・表示ラベル
+- application/contracts.ts: 一覧・取得・登録・更新・削除のユースケース境界
+- infrastructure/api/contractApi.ts: Contracts API Adapter
+- presentation/features/contracts: 契約パネル、契約形態別フォーム、再取得・削除確認UI
 ## 10. Phase2 画面
 
 Phase1 では次の画面をサイドメニューから非表示またはコメントアウトする。
@@ -198,3 +205,4 @@ Django API には localhost:8000 で接続する。
 | 日付 | バージョン | 内容 |
 | --- | --- | --- |
 | 2026-07-10 | 1.0 | Phase1用のフロントエンドアーキテクチャ設計書へ更新。Next.js App Router、Phase1画面、API Adapter、認証Cookie、ローカル開発構成を整理 |
+| 2026-07-20 | 1.1 | Contracts機能のレイヤー分離と案件配下の契約登録・編集ルートを追加 |

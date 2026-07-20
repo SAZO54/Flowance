@@ -26,7 +26,7 @@ from apps.files.models import (
 from apps.files.tasks import delete_stored_file, process_client_icon
 from apps.organizations.models import OrganizationRole
 
-from ..domain.icon import generate_default_icon, icon_text
+from ..domain.icon import generate_default_icon
 from ..models import Client, IconStatus, IconType
 
 logger = logging.getLogger(__name__)
@@ -139,7 +139,7 @@ class ClientService:
             updated_by=membership.user,
             **data,
         )
-        default_icon = generate_default_icon(client.name, client.id)
+        default_icon = generate_default_icon(client.id)
         client.default_icon_text = default_icon.text
         client.default_icon_background_color = default_icon.background_color
         client.default_icon_text_color = default_icon.text_color
@@ -207,11 +207,8 @@ class ClientService:
             "version": client.version,
         }
         old_file = client.icon_file
-        old_name = client.name
         for field, value in data.items():
             setattr(client, field, value)
-        if client.name != old_name and client.icon_type == IconType.DEFAULT:
-            client.default_icon_text = icon_text(client.name)
 
         if icon_file:
             stored_file = _store_icon(

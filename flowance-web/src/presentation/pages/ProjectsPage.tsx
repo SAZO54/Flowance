@@ -71,7 +71,8 @@ function ProjectIcon({project}: {project: ProjectListItem}) {
     && project.icon.url
 
   return <span
-    className="project-card-icon"
+    className="project-card-icon entity-default-icon"
+    aria-hidden="true"
     style={{
       background: project.icon.backgroundColor,
       color: project.icon.textColor,
@@ -163,10 +164,6 @@ export function ProjectsPage({
           </div>
           {project.description && <p className="project-card-description">{project.description}</p>}
           <dl>
-            <div>
-              <dt>稼働率目安</dt>
-              <dd>{project.workloadRate == null ? '未設定' : `${project.workloadRate}%`}</dd>
-            </div>
             <div>
               <dt>管理期間</dt>
               <dd>{formatDateRange(project)}</dd>

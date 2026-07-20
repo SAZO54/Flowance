@@ -1,3 +1,4 @@
+import '@/edit-form-hierarchy.css'
 import {ClientEditComposition} from './ClientEditComposition'
 import {AppShell} from '@/presentation/layout/AppShell'
 

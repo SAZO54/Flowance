@@ -4,14 +4,10 @@ import type {
   CreateWorkScheduleCommand,
   CreateWorkScheduleResult,
   ScheduleProject,
+  UpdateWorkScheduleCommand,
+  WorkSchedule,
 } from '../../domain/schedule'
 
-/**
- * Application-layer query contract for the calendar data source.
- *
- * Infrastructure adapters may serialize this query in any suitable way. The
- * application layer intentionally has no knowledge of HTTP or URLSearchParams.
- */
 export type ListCalendarEventsQuery = {
   from: string
   to: string
@@ -24,9 +20,11 @@ export type ListCalendarEventsQuery = {
 export interface ScheduleGateway {
   listCalendarEvents(query: ListCalendarEventsQuery): Promise<CalendarEvent[]>
   createWorkSchedule(command: CreateWorkScheduleCommand): Promise<CreateWorkScheduleResult>
+  getWorkSchedule(workScheduleId: string): Promise<WorkSchedule>
+  updateWorkSchedule(command: UpdateWorkScheduleCommand): Promise<CreateWorkScheduleResult>
+  deleteWorkSchedule(workScheduleId: string, version: number): Promise<void>
 }
 
 export interface ScheduleProjectGateway {
   listScheduleProjects(): Promise<ScheduleProject[]>
 }
-

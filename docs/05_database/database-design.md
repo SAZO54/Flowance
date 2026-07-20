@@ -278,9 +278,9 @@ erDiagram
 | icon_type | varchar(20) | NO | DEFAULT, UPLOADED。 |
 | icon_status | varchar(20) | NO | READY, PENDING, PROCESSING, FAILED。 |
 | icon_file_id | uuid | YES | stored_filesテーブルのidを参照。DEFAULT時はnull、UPLOADED時はnot null。 |
-| default_icon_text | varchar(4) | NO | 初期アイコン文字。 |
-| default_icon_background_color | char(7) | NO | 初期アイコン背景色。 |
-| default_icon_text_color | char(7) | NO | 初期アイコン文字色。 |
+| default_icon_text | varchar(4) | NO | UUIDのSHA-256から決定する動物絵文字。 |
+| default_icon_background_color | char(7) | NO | UUIDのSHA-256から決定する水色系以外の淡色背景。 |
+| default_icon_text_color | char(7) | NO | 互換用文字色。Phase1は #294B5B。 |
 | version | integer | NO | 楽観ロック用。 |
 | created_by_id | uuid | YES | 作成者。 |
 | updated_by_id | uuid | YES | 更新者。 |
@@ -291,7 +291,7 @@ erDiagram
 
 制約・方針:
 
-- クライアント名変更時、初期アイコンはdefault_icon_textのみ再生成し、背景色は維持する。
+- クライアント名変更時もUUIDベースの初期アイコン3項目は変更しない。
 
 ### 8.7 projects
 
@@ -308,14 +308,14 @@ erDiagram
 | status | varchar(20) | NO | ACTIVE, INACTIVE, COMPLETED。 |
 | start_date | date | YES | 案件管理上の開始日。契約期間ではない。 |
 | end_date | date | YES | 案件管理上の終了日。契約期間ではない。 |
-| workload_rate | numeric(5,2) | YES | 稼働率目安。0から100。 |
+| workload_rate | numeric(5,2) | YES | 後方互換用の非推奨項目。0から100。Phase1 UIでは非表示。 |
 | notes | text | YES | 備考。 |
 | icon_type | varchar(20) | NO | DEFAULT, UPLOADED。 |
 | icon_status | varchar(20) | NO | READY, PENDING, PROCESSING, FAILED。 |
 | icon_file_id | uuid | YES | stored_filesテーブルのidを参照。DEFAULT時はnull、UPLOADED時はnot null。 |
-| default_icon_text | varchar(4) | NO | 初期アイコン文字。 |
-| default_icon_background_color | char(7) | NO | 初期アイコン背景色。 |
-| default_icon_text_color | char(7) | NO | 初期アイコン文字色。 |
+| default_icon_text | varchar(4) | NO | UUIDのSHA-256から決定する動物絵文字。 |
+| default_icon_background_color | char(7) | NO | UUIDのSHA-256から決定する水色系以外の淡色背景。 |
+| default_icon_text_color | char(7) | NO | 互換用文字色。Phase1は #294B5B。 |
 | version | integer | NO | 楽観ロック用。 |
 | created_by_id | uuid | YES | 作成者。 |
 | updated_by_id | uuid | YES | 更新者。 |
@@ -326,7 +326,7 @@ erDiagram
 
 制約・方針:
 
-- 案件名変更時、初期アイコンはdefault_icon_textのみ再生成し、背景色は維持する。
+- 案件名変更時もUUIDベースの初期アイコン3項目は変更しない。
 - start_date/end_dateは契約期間ではなく、案件管理上の表示、検索、計画用期間として保持する。
 
 ### 8.8 project_contracts
@@ -371,6 +371,8 @@ erDiagram
 - btree_gist拡張を有効化し、project_idとdaterange式によるexclusion constraintを設定する。
 - DateRangeFieldは持たず、valid_from/valid_untilを正とする。
 - 月額精算幅の控除、超過計算はbase_minutesとの差分を基準にする。
+- 確定済み精算はcalculation_snapshotとcontract_id参照を保持したまま契約の論理削除を許可する。
+- 未確定精算がcontract_idで参照する契約は論理削除を拒否する。
 
 ### 8.9 project_weekly_schedules
 
@@ -750,3 +752,4 @@ Phase1のDBは計算結果を保持し、計算過程はcalculation_snapshotに�
 | 2026-07-14 | 1.2 | 各テーブルの主なカラムを型、NULL、制約・説明付きの表形式へ変更。DB設計書内にER図章を追加。 |
 | 2026-07-11 | 1.1 | Phase1対象へ全面整理。請求書、入金、ACCOUNTANTをPhase2へ移動。Django/DRF/PostgreSQL前提へ統一。normalized_email、Cloudflare R2、Celery/Redis、契約期間重複制約、月額固定契約、成果報酬契約、アイコン元画像保持、DRAFT中心の稼働実績方針を反映。 |
 | 2026-07-09 | 1.0 | 初版作成。 |
+| 2026-07-20 | 1.3 | project_contracts追加項目、期間重複制約、精算参照時の論理削除条件、workload_rate非推奨を反映 |

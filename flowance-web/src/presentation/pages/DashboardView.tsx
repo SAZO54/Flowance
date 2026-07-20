@@ -61,7 +61,7 @@ function ProjectIcon({project}: {project: ProjectListItem}) {
   const showImage = project.icon.type === 'UPLOADED'
     && project.icon.status === 'READY'
     && project.icon.url
-  return <span className="dashboard-project-icon" style={{
+  return <span className="dashboard-project-icon entity-default-icon" aria-hidden="true" style={{
     color: project.icon.textColor,
     background: project.icon.backgroundColor,
   }}>{showImage ? <img src={project.icon.url ?? ''} alt=""/> : project.icon.defaultText}</span>

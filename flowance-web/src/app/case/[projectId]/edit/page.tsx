@@ -1,4 +1,5 @@
 import '@/project-detail-api.css'
+import '@/edit-form-hierarchy.css'
 import {ProjectEditComposition} from './ProjectEditComposition'
 import {AppShell} from '@/presentation/layout/AppShell'
 

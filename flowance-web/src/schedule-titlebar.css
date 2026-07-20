@@ -1,0 +1,12 @@
+.schedule-titlebar .eyebrow {
+  line-height: 1;
+}
+
+.schedule-titlebar .schedule-actions {
+  align-self: flex-start;
+  margin-top: 1.3125rem;
+}
+
+.schedule-page .modal textarea {
+  border-color: #dceef7;
+}

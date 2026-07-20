@@ -191,7 +191,7 @@ Client は Projects の内部実装へ依存しない。案件数、累計売上
 | DateRange | 日付範囲 | from <= until |
 | Month | 精算月 | 月初日として保持、APIではYYYY-MM |
 | ColorCode | 色 | `#RRGGBB` |
-| IconText | 初期アイコン文字 | 1〜4文字 |
+| IconText | UUIDベースの動物絵文字 | 定義済み16種のいずれか |
 | WorkMinutes | 分数 | 0以上 |
 | Version | 楽観ロック値 | 1以上 |
 
@@ -320,11 +320,13 @@ Client / Project のアイコン画像が指定されない場合、初期アイ
 
 生成ルール：
 
-- 名称から表示文字を抽出する
-- 英字の場合は頭文字を大文字化する
-- 日本語の場合は先頭文字または意味のある短縮文字を使用する
-- 背景色は名称またはIDから決定的に生成する
-- 文字色は背景色とのコントラストを満たす色を選択する
+- UUID の SHA-256 ハッシュから決定的に生成する
+- ハッシュの第1バイトを固定16種の動物絵文字へ割り当てる
+- ハッシュの第2バイトを水色系を除く固定淡色8色へ割り当てる
+- 互換用文字色は `#294B5B` とする
+- 名称変更では動物、背景色、互換用文字色を変更しない
+- UPLOADED の場合も同じ値をフォールバックとして保持する
+- 同じ UUID では常に同じ組み合わせを返す
 
 アイコン削除時は `icon_type=DEFAULT`、`icon_file_id=null` に戻す。
 
@@ -369,8 +371,12 @@ SVG は受け付けない。
 | --- | --- | --- |
 | HOURLY | hourly_rate | 請求対象分数 × 時間単価 |
 | MONTHLY_RANGE | monthly_rate、minimum_minutes、maximum_minutes、base_minutes、deduction_rate、overtime_rate | 基準範囲内は月額、下限未満は控除、上限超過は超過加算 |
+| MONTHLY_FIXED | monthly_rate | 月額固定 |
+| PERFORMANCE | performance_amount | 成果報酬額 |
 
-契約期間重複の扱いは未確定事項とする。ただし、精算時点で対象月に有効な契約を一意に決定できなければならない。
+同一案件内の未削除契約は有効期間の重複を禁止する。Application層で事前検証し、PostgreSQLのbtree_gistとdaterange(valid_from, valid_until + 1日, '[)') exclusion constraintでも保証する。別案件の同期間契約は許可する。
+契約の登録・更新・削除はOWNER/ADMIN、閲覧はMEMBER以上に許可する。削除は論理削除とし、未確定精算で参照中の場合はCONTRACT_IN_USEで拒否する。確定済み精算はsnapshotと参照を保持するため削除可能とする。
+現在契約は組織タイムゾーンの当日にACTIVEかつ有効期間内であるかを判定する。
 
 ### 6.6 週次予定生成
 
@@ -578,7 +584,7 @@ totalAmount = taxableAmount + taxAmount - withholdingAmount
 
 | Service | 責務 |
 | --- | --- |
-| IconGenerationService | 初期アイコン文字・背景色・文字色の生成 |
+| IconGenerationService | UUIDベースの動物絵文字・背景色・互換用文字色の生成 |
 | ContractValidationService | 契約種別ごとの必須項目・期間・単価検証 |
 | WorkTimeCalculationService | 実績時間、休憩時間、請求対象時間の計算 |
 | TimeRoundingService | 契約条件に基づく時間丸め |
@@ -627,8 +633,11 @@ totalAmount = taxableAmount + taxAmount - withholdingAmount
 
 | 項目 | 内容 |
 | --- | --- |
-| 契約期間重複 | DB制約、Application検証、PostgreSQL exclusion constraint のどれで禁止するか |
 | 金額端数処理 | 税額、源泉徴収、合計額の丸め方式 |
 | 月額精算の控除計算 | 控除対象を baseMinutes 差分にするか minimumMinutes 差分にするか |
 | MEMBER権限 | 案件単位の編集権限をどこまで細分化するか |
 | 請求・入金 | Phase2 でAPI・画面・状態遷移を再確定する |
+## 12. 変更履歴
+| 日付 | バージョン | 内容 |
+| --- | --- | --- |
+| 2026-07-20 | 1.1 | 契約4種の検証、期間重複制約、現在契約判定、権限、精算参照時の論理削除条件を確定 |

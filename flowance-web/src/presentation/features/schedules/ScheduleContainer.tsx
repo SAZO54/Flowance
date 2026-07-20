@@ -7,6 +7,8 @@ import type {
   CreateWorkScheduleResult,
   ScheduleProject,
   ScheduleWarning,
+  UpdateWorkScheduleCommand,
+  WorkSchedule,
 } from '@/domain/schedule'
 import {
   SchedulePage,
@@ -24,13 +26,12 @@ export type LoadScheduleResult = {
   projects: ScheduleProject[]
 }
 
-/**
- * Presentation が利用するスケジュールのユースケース境界。
- * HTTP Adapter ではなく Application 層で組み立てた関数を注入する。
- */
 export type ScheduleUseCases = {
   load: (query: LoadScheduleQuery) => Promise<LoadScheduleResult>
   create: (command: CreateWorkScheduleCommand) => Promise<CreateWorkScheduleResult>
+  get: (workScheduleId: string) => Promise<WorkSchedule>
+  update: (command: UpdateWorkScheduleCommand) => Promise<CreateWorkScheduleResult>
+  delete: (workScheduleId: string, version: number) => Promise<void>
 }
 
 export type ScheduleContainerProps = {
@@ -60,12 +61,11 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
   const [selectedDate, setSelectedDate] = useState(today)
   const [hasLoaded, setHasLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
+  const [isMutating, setIsMutating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const requestId = useRef(0)
 
-  const load = useCases.load
-  const create = useCases.create
+  const {load, create, get, update, delete: remove} = useCases
 
   const refresh = useCallback(async () => {
     const currentRequestId = ++requestId.current
@@ -96,20 +96,41 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
   const createWorkSchedule = useCallback(async (
     command: CreateWorkScheduleCommand,
   ): Promise<ScheduleWarning[]> => {
-    setIsCreating(true)
-    setError(null)
-
+    setIsMutating(true)
     try {
       const result = await create(command)
       await refresh()
       return result.warnings
-    } catch (cause) {
-      setError(scheduleErrorMessage(cause))
-      throw cause
     } finally {
-      setIsCreating(false)
+      setIsMutating(false)
     }
   }, [create, refresh])
+
+  const updateWorkSchedule = useCallback(async (
+    command: UpdateWorkScheduleCommand,
+  ): Promise<ScheduleWarning[]> => {
+    setIsMutating(true)
+    try {
+      const result = await update(command)
+      await refresh()
+      return result.warnings
+    } finally {
+      setIsMutating(false)
+    }
+  }, [refresh, update])
+
+  const deleteWorkSchedule = useCallback(async (
+    workScheduleId: string,
+    version: number,
+  ): Promise<void> => {
+    setIsMutating(true)
+    try {
+      await remove(workScheduleId, version)
+      await refresh()
+    } finally {
+      setIsMutating(false)
+    }
+  }, [refresh, remove])
 
   return (
     <SchedulePage
@@ -121,7 +142,7 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
       selectedDate={selectedDate}
       hasLoaded={hasLoaded}
       isLoading={isLoading}
-      isCreating={isCreating}
+      isMutating={isMutating}
       error={error}
       onFilterChange={setFilterProjectId}
       onPeriodChange={setPeriod}
@@ -129,6 +150,9 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
       onSelectedDateChange={setSelectedDate}
       onRetry={() => void refresh()}
       onCreate={createWorkSchedule}
+      onGet={get}
+      onUpdate={updateWorkSchedule}
+      onDelete={deleteWorkSchedule}
     />
   )
 }

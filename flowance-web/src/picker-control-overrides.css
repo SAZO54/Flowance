@@ -1,0 +1,77 @@
+.month-picker > input,
+.time-picker > input {
+  width: 100%;
+  padding-right: 2.625rem;
+}
+
+.month-picker > input {
+  cursor: pointer;
+}
+
+.time-picker-head > svg {
+  width: 1rem;
+  height: 1rem;
+  justify-self: center;
+  color: #5799b8;
+}
+
+.time-picker-options option {
+  background: #fbfeff;
+  color: #294b5b;
+  font-weight: 400;
+}
+
+.time-picker-options option:checked {
+  background: #e5f2fa;
+}
+
+.time-picker-done {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3125rem;
+  margin-top: 0.625rem;
+  border: 0.0625rem solid #a5d1e7;
+  border-radius: 0.125rem;
+  background: #fbfeff;
+  color: #5799b8;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.time-picker-done:hover,
+.time-picker-done:focus-visible {
+  background: #edf8fd;
+  outline: none;
+}
+
+.time-picker-done svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+@supports (appearance: base-select) {
+  .time-picker-options select,
+  .time-picker-options select::picker(select) {
+    appearance: base-select;
+  }
+
+  .time-picker-options select::picker(select) {
+    max-height: 12rem;
+    border: 0.0625rem solid #a5d1e7;
+    border-radius: 0.125rem;
+    background: #fbfeff;
+    box-shadow: 0 0.625rem 1.5rem rgb(117 168 199 / 18%);
+  }
+
+  .time-picker-options option {
+    border-radius: 0.125rem;
+    padding: 0.4375rem 0.5rem;
+  }
+
+  .time-picker-options option:hover,
+  .time-picker-options option:focus-visible {
+    background: #edf8fd;
+  }
+}

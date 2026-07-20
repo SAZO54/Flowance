@@ -70,7 +70,7 @@ export function ClientEditForm({client, isSubmitting, error, onCancel, onSave}: 
     })
   }
 
-  return <div className="client-form-page">
+  return <div className="client-form-page edit-form-page">
     <button className="client-form-back" type="button" onClick={onCancel}><ArrowLeft size="1rem"/>{client.name}の詳細</button>
     <div className="client-form-title"><p className="eyebrow">EDIT CLIENT</p><h1>クライアントを編集</h1><p>基本情報、取引状態、アイコンを更新します。</p></div>
     <form className="client-form-card" onSubmit={handleSubmit}>
@@ -78,7 +78,7 @@ export function ClientEditForm({client, isSubmitting, error, onCancel, onSave}: 
       <section className="client-form-section">
         <div className="client-form-section-head"><h2>アイコン</h2><p>新しい画像への変更や初期アイコンへの復元ができます。</p></div>
         <div className="client-icon-field">
-          <div className="client-icon-preview" style={{color: client.icon.textColor, background: client.icon.backgroundColor}}>{iconPreview ? <img src={iconPreview} alt="アイコンのプレビュー"/> : client.icon.defaultText || <ImagePlus size="1.5rem"/>}</div>
+          <div className="client-icon-preview entity-default-icon" aria-hidden="true" style={{color: client.icon.textColor, background: client.icon.backgroundColor}}>{iconPreview ? <img src={iconPreview} alt=""/> : client.icon.defaultText || <ImagePlus size="1.5rem"/>}</div>
           <div>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={selectIcon}/>
             <div className="client-icon-actions"><button type="button" onClick={() => fileInputRef.current?.click()}>{iconPreview ? '画像を変更' : '画像を選択'}</button>{(iconPreview || iconFile) && <button type="button" onClick={clearIcon}><Trash2 size=".875rem"/>初期アイコンに戻す</button>}</div>

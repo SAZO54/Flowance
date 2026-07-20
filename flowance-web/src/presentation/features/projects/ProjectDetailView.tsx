@@ -2,20 +2,28 @@ import Link from 'next/link'
 import {
   ArrowLeft,
   BriefcaseBusiness,
+  CalendarDays,
   CalendarRange,
+  Clock3,
   Pencil,
   RefreshCw,
   StickyNote,
-  UserRound,
   Users,
 } from 'lucide-react'
+import type {ProjectContract} from '@/domain/contract'
 import type {ProjectListItem, ProjectStatus} from '@/domain/project'
+import {ProjectContractsPanel} from '@/presentation/features/contracts/ProjectContractsPanel'
 
 type ProjectDetailViewProps = {
   project: ProjectListItem | null
+  contracts: ProjectContract[]
+  canEditContracts: boolean
   isLoading: boolean
+  contractsLoading: boolean
   error: string | null
+  contractsError: string | null
   onRetry: () => void
+  onRetryContracts: () => void
 }
 
 const statusLabels: Record<ProjectStatus, string> = {
@@ -53,7 +61,7 @@ function ProjectIcon({project}: {project: ProjectListItem}) {
     && project.icon.status === 'READY'
     && project.icon.url
 
-  return <div className="project-detail-logo" style={{
+  return <div className="project-detail-logo entity-default-icon" aria-hidden="true" style={{
     color: project.icon.textColor,
     background: project.icon.backgroundColor,
   }}>
@@ -61,13 +69,23 @@ function ProjectIcon({project}: {project: ProjectListItem}) {
   </div>
 }
 
-export function ProjectDetailView({project, isLoading, error, onRetry}: ProjectDetailViewProps) {
+export function ProjectDetailView({
+  project,
+  contracts,
+  canEditContracts,
+  isLoading,
+  contractsLoading,
+  error,
+  contractsError,
+  onRetry,
+  onRetryContracts,
+}: ProjectDetailViewProps) {
   if (isLoading) return <div className="project-detail-state" role="status"><RefreshCw/><p>案件を読み込んでいます</p></div>
   if (error) return <div className="project-detail-state" role="alert"><BriefcaseBusiness/><h1>案件を表示できません</h1><p>{error}</p><button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/case"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>
   if (!project) return null
 
   return <div className="project-detail-page">
-    <Link className="project-detail-back" href="/case"><ArrowLeft size="1rem"/>案件一覧</Link>
+    <div className="project-detail-actions-row"><Link className="project-detail-back" href="/case"><ArrowLeft size="1rem"/>案件一覧</Link><Link className="project-detail-edit" href={`/case/${project.id}/edit`}><Pencil size="0.9375rem"/>編集</Link></div>
     <section className="project-detail-hero">
       <ProjectIcon project={project}/>
       <div>
@@ -76,23 +94,28 @@ export function ProjectDetailView({project, isLoading, error, onRetry}: ProjectD
           <span className={`project-status ${project.status.toLowerCase()}`}>{statusLabels[project.status]}</span>
         </div>
         <Link href={`/client/${project.client.id}`}>{project.client.name}</Link>
-        <p>更新日時：{formatDateTime(project.updatedAt)}</p>
       </div>
-      <Link className="project-detail-edit" href={`/case/${project.id}/edit`}>
-        <Pencil size="0.9375rem"/>編集
-      </Link>
     </section>
 
     <div className="project-detail-layout">
-      <section className="project-detail-panel">
-        <div className="project-detail-panel-head"><div><h2>案件情報</h2><p>案件の概要と管理条件</p></div></div>
-        <dl className="project-detail-fields">
-          <div><dt><BriefcaseBusiness size="0.9375rem"/>説明</dt><dd>{project.description || '未設定'}</dd></div>
-          <div><dt><CalendarRange size="0.9375rem"/>管理期間</dt><dd>{formatDate(project.startDate)} — {formatDate(project.endDate)}</dd></div>
-          <div><dt><UserRound size="0.9375rem"/>稼働率目安</dt><dd>{project.workloadRate == null ? '未設定' : `${project.workloadRate}%`}</dd></div>
-          <div><dt>ラベルカラー</dt><dd><span className="project-detail-color" style={{background: project.labelColor}}/>{project.labelColor}</dd></div>
-        </dl>
-      </section>
+      <div className="project-detail-main">
+        <section className="project-detail-panel">
+          <div className="project-detail-panel-head"><div><h2>案件情報</h2><p>案件の概要と管理条件</p></div></div>
+          <dl className="project-detail-fields">
+            <div><dt><BriefcaseBusiness size="0.9375rem"/>説明</dt><dd>{project.description || '未設定'}</dd></div>
+            <div><dt><CalendarRange size="0.9375rem"/>管理期間</dt><dd>{formatDate(project.startDate)} — {formatDate(project.endDate)}</dd></div>
+            <div><dt>ラベルカラー</dt><dd><span className="project-detail-color" style={{background: project.labelColor}}/>{project.labelColor}</dd></div>
+          </dl>
+        </section>
+        <ProjectContractsPanel
+          projectId={project.id}
+          contracts={contracts}
+          canEdit={canEditContracts}
+          isLoading={contractsLoading}
+          error={contractsError}
+          onRetry={onRetryContracts}
+        />
+      </div>
 
       <aside className="project-detail-side">
         <section className="project-detail-panel">
@@ -104,6 +127,13 @@ export function ProjectDetailView({project, isLoading, error, onRetry}: ProjectD
         <section className="project-detail-note">
           <h2><StickyNote size="0.9375rem"/>備考</h2>
           <p>{project.notes || '備考は登録されていません。'}</p>
+        </section>
+        <section className="project-detail-panel">
+          <div className="project-detail-panel-head"><div><h2>登録情報</h2><p>システム管理情報</p></div></div>
+          <dl className="project-detail-system-info">
+            <div><dt><CalendarDays size="0.9375rem"/>登録日時</dt><dd>{formatDateTime(project.createdAt)}</dd></div>
+            <div><dt><Clock3 size="0.9375rem"/>更新日時</dt><dd>{formatDateTime(project.updatedAt)}</dd></div>
+          </dl>
         </section>
       </aside>
     </div>

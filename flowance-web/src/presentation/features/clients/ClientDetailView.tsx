@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import {
   ArrowLeft,
-  Building2,
+  Clock3,
   CalendarDays,
   Mail,
   MapPin,
@@ -36,7 +36,7 @@ function DetailIcon({client}: {client: ClientListItem}) {
   const showImage = client.icon.type === 'UPLOADED'
     && client.icon.status === 'READY'
     && client.icon.url
-  return <div className="client-detail-logo" style={{
+  return <div className="client-detail-logo entity-default-icon" aria-hidden="true" style={{
     color: client.icon.textColor,
     background: client.icon.backgroundColor,
   }}>
@@ -50,18 +50,14 @@ export function ClientDetailView({client, isLoading, error, onRetry}: ClientDeta
   if (!client) return null
 
   return <div className="client-detail-page">
-    <Link className="client-detail-back" href="/client"><ArrowLeft size="1rem"/>クライアント一覧</Link>
+    <div className="client-detail-actions-row"><Link className="client-detail-back" href="/client"><ArrowLeft size="1rem"/>クライアント一覧</Link><Link className="client-detail-edit" href={`/client/${client.id}/edit`}><Pencil size="0.9375rem"/>編集</Link></div>
     <section className="client-detail-hero">
       <div className="client-detail-identity">
         <DetailIcon client={client}/>
         <div>
           <div className="client-detail-heading"><h1>{client.name}</h1><span className={`client-status ${client.status.toLowerCase()}`}>{client.status === 'ACTIVE' ? '取引中' : '取引終了'}</span></div>
-          <p>更新日時：{formatDateTime(client.updatedAt)}</p>
         </div>
       </div>
-      <Link className="client-detail-edit" href={`/client/${client.id}/edit`}>
-        <Pencil size="0.9375rem"/>編集
-      </Link>
     </section>
 
     <div className="client-detail-api-layout">
@@ -84,7 +80,7 @@ export function ClientDetailView({client, isLoading, error, onRetry}: ClientDeta
           <div className="client-detail-panel-head"><div><h2>登録情報</h2><p>システム管理情報</p></div></div>
           <dl className="client-detail-contact">
             <div><dt><CalendarDays size="0.9375rem"/>登録日時</dt><dd>{formatDateTime(client.createdAt)}</dd></div>
-            <div><dt><Building2 size="0.9375rem"/>バージョン</dt><dd>{client.version}</dd></div>
+            <div><dt><Clock3 size="0.9375rem"/>更新日時</dt><dd>{formatDateTime(client.updatedAt)}</dd></div>
           </dl>
         </section>
       </aside>

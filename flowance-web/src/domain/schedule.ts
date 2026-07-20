@@ -44,6 +44,11 @@ export type CreateWorkScheduleCommand = {
   notes?: string | null
 }
 
+export type UpdateWorkScheduleCommand = CreateWorkScheduleCommand & {
+  workScheduleId: string
+  version: number
+}
+
 export type CreateWorkScheduleResult = {
   item: WorkSchedule
   warnings: ScheduleWarning[]

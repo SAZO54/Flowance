@@ -1,5 +1,6 @@
 import {useRef, useState} from 'react'
 import {ArrowLeft, ChevronDown, ImagePlus, Trash2} from 'lucide-react'
+import {DatePickerInput} from '@/presentation/components/DateTimePickerInput'
 import type {ClientListItem} from '@/domain/client'
 import type {ProjectListItem, ProjectStatus} from '@/domain/project'
 import type {UpdateProjectCommand} from '@/domain/projectUpdate'
@@ -63,7 +64,6 @@ export function ProjectEditForm({project, clients, isSubmitting, error, onCancel
     if (!hexColorPattern.test(normalizedColor)) return
     const form = new FormData(event.currentTarget)
     const nullable = (name: string) => String(form.get(name) ?? '').trim() || null
-    const workloadValue = nullable('workloadRate')
     onSave({
       projectId: project.id,
       version: project.version,
@@ -73,7 +73,7 @@ export function ProjectEditForm({project, clients, isSubmitting, error, onCancel
       labelColor: normalizedColor,
       startDate: nullable('startDate'),
       endDate: nullable('endDate'),
-      workloadRate: workloadValue === null ? null : Number(workloadValue),
+      workloadRate: project.workloadRate,
       status: String(form.get('status') ?? 'ACTIVE') as ProjectStatus,
       notes: nullable('notes'),
       iconAction: deleteExistingIcon ? 'DELETE' : 'KEEP',
@@ -81,7 +81,7 @@ export function ProjectEditForm({project, clients, isSubmitting, error, onCancel
     })
   }
 
-  return <div className="client-form-page project-create-page">
+  return <div className="client-form-page project-create-page edit-form-page">
     <button className="client-form-back" type="button" onClick={onCancel}><ArrowLeft size="1rem"/>{project.name}の詳細</button>
     <div className="client-form-title"><p className="eyebrow">EDIT PROJECT</p><h1>案件を編集</h1><p>案件情報、管理期間、状態、アイコンを更新します。</p></div>
     <form className="client-form-card" onSubmit={handleSubmit}>
@@ -89,7 +89,7 @@ export function ProjectEditForm({project, clients, isSubmitting, error, onCancel
       <section className="client-form-section">
         <div className="client-form-section-head"><h2>アイコン</h2><p>新しい画像への変更や初期アイコンへの復元ができます。</p></div>
         <div className="client-icon-field">
-          <div className="client-icon-preview" style={{color: project.icon.textColor, background: project.icon.backgroundColor}}>{iconPreview ? <img src={iconPreview} alt="アイコンのプレビュー"/> : project.icon.defaultText || <ImagePlus size="1.5rem"/>}</div>
+          <div className="client-icon-preview entity-default-icon" aria-hidden="true" style={{color: project.icon.textColor, background: project.icon.backgroundColor}}>{iconPreview ? <img src={iconPreview} alt=""/> : project.icon.defaultText || <ImagePlus size="1.5rem"/>}</div>
           <div>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={selectIcon}/>
             <div className="client-icon-actions"><button type="button" onClick={() => fileInputRef.current?.click()}>{iconPreview ? '画像を変更' : '画像を選択'}</button>{(project.icon.type === 'UPLOADED' || iconPreview || iconFile) && <button type="button" onClick={clearIcon}><Trash2 size=".875rem"/>初期アイコンに戻す</button>}</div>
@@ -110,9 +110,8 @@ export function ProjectEditForm({project, clients, isSubmitting, error, onCancel
       <section className="client-form-section">
         <div className="client-form-section-head"><h2>管理情報</h2><p>契約期間ではなく、案件管理上の予定期間です。</p></div>
         <div className="client-form-fields">
-          <label><span className="field-label">開始日</span><input type="date" name="startDate" value={startDate} onChange={event => setStartDate(event.target.value)}/></label>
-          <label><span className="field-label">終了日</span><input type="date" name="endDate" defaultValue={project.endDate ?? ''} min={startDate || undefined}/></label>
-          <label><span className="field-label">稼働率目安（%）</span><input type="number" name="workloadRate" defaultValue={project.workloadRate ?? ''} min="0" max="100" step="0.01"/></label>
+          <label><span className="field-label">開始日</span><DatePickerInput name="startDate" value={startDate} onValueChange={setStartDate} ariaLabel="開始日"/></label>
+          <label><span className="field-label">終了日</span><DatePickerInput name="endDate" defaultValue={project.endDate ?? ''} min={startDate || undefined} ariaLabel="終了日"/></label>
           <label className="full"><span className="field-label">備考</span><textarea name="notes" defaultValue={project.notes ?? ''} rows={3}/></label>
         </div>
       </section>

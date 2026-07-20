@@ -2,6 +2,7 @@ import io
 import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
+from uuid import UUID
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -12,6 +13,7 @@ from rest_framework.test import APIClient, APITestCase
 from apps.files.models import BackgroundTask, FileStatus, StoredFile
 from apps.files.tasks import process_client_icon
 
+from .domain.icon import generate_default_icon
 from .models import Client, IconStatus, IconType
 
 
@@ -33,11 +35,13 @@ class ClientAPITests(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.csrf = self.client.cookies["csrftoken"].value
         self.headers = {"HTTP_X_CSRFTOKEN": self.csrf}
+
     def test_urls_follow_openapi_paths(self):
         client_id = "390fd998-2609-4a3c-8c3a-2e299d407f7c"
         self.assertEqual(reverse("clients:collection"), "/api/v1/clients")
-        self.assertEqual(reverse("clients:detail", args=[client_id]), f"/api/v1/clients/{client_id}")
-
+        self.assertEqual(
+            reverse("clients:detail", args=[client_id]), f"/api/v1/clients/{client_id}"
+        )
 
     def create_client(self, **overrides):
         payload = {
@@ -58,8 +62,12 @@ class ClientAPITests(APITestCase):
 
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.data["icon"]["type"], "DEFAULT")
-        self.assertEqual(created.data["icon"]["defaultText"], "NW")
         client_id = created.data["id"]
+        expected_icon = generate_default_icon(UUID(client_id))
+        self.assertEqual(created.data["icon"]["defaultText"], expected_icon.text)
+        self.assertEqual(
+            created.data["icon"]["backgroundColor"], expected_icon.background_color
+        )
 
         listed = self.client.get(reverse("clients:collection"))
         detailed = self.client.get(reverse("clients:detail", args=[client_id]))
@@ -78,7 +86,10 @@ class ClientAPITests(APITestCase):
         )
         self.assertEqual(updated.status_code, 200)
         self.assertEqual(updated.data["version"], 2)
-        self.assertEqual(updated.data["icon"]["defaultText"], "NS")
+        self.assertEqual(updated.data["icon"]["defaultText"], expected_icon.text)
+        self.assertEqual(
+            updated.data["icon"]["backgroundColor"], expected_icon.background_color
+        )
 
         conflict = self.client.patch(
             reverse("clients:detail", args=[client_id]),
@@ -147,6 +158,8 @@ class ClientAPITests(APITestCase):
             )
         self.assertEqual(deleted.status_code, 200)
         self.assertEqual(deleted.data["icon"]["type"], IconType.DEFAULT)
+        expected_icon = generate_default_icon(client.id)
+        self.assertEqual(deleted.data["icon"]["defaultText"], expected_icon.text)
         self.assertIsNone(Client.objects.get(pk=client.id).icon_file_id)
 
     def test_cross_tenant_client_is_hidden(self):

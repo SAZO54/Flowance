@@ -1,6 +1,7 @@
 'use client'
 
 import {useCallback, useEffect, useState} from 'react'
+import {workRecordMonthRange} from '@/application/workRecords/monthRange'
 import type {ProjectListItem, ProjectListResult} from '@/domain/project'
 import type {
   SaveWorkRecordCommand,
@@ -43,6 +44,7 @@ export function WorkRecordsContainer({useCases, shouldOpenCreate = false}: WorkR
   const [pagination, setPagination] = useState<WorkRecordPagination>(emptyPagination)
   const [projectFilter, setProjectFilter] = useState('ALL')
   const [statusFilter, setStatusFilter] = useState<WorkRecordStatusFilter>('ALL')
+  const [monthFilter, setMonthFilter] = useState('')
   const [page, setPage] = useState(1)
   const [hasLoaded, setHasLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -64,6 +66,7 @@ export function WorkRecordsContainer({useCases, shouldOpenCreate = false}: WorkR
       const [projectResult, recordResult] = await Promise.all([
         useCases.loadProjects(),
         useCases.list({
+          ...workRecordMonthRange(monthFilter),
           projectId: projectFilter === 'ALL' ? undefined : projectFilter,
           status: statusFilter === 'ALL' ? undefined : statusFilter,
           page,
@@ -79,7 +82,7 @@ export function WorkRecordsContainer({useCases, shouldOpenCreate = false}: WorkR
     } finally {
       setIsLoading(false)
     }
-  }, [page, projectFilter, statusFilter, useCases])
+  }, [monthFilter, page, projectFilter, statusFilter, useCases])
 
   useEffect(() => {
     void load()
@@ -121,6 +124,7 @@ export function WorkRecordsContainer({useCases, shouldOpenCreate = false}: WorkR
     pagination={pagination}
     projectFilter={projectFilter}
     statusFilter={statusFilter}
+    monthFilter={monthFilter}
     hasLoaded={hasLoaded}
     isLoading={isLoading}
     isSubmitting={isSubmitting}
@@ -129,6 +133,7 @@ export function WorkRecordsContainer({useCases, shouldOpenCreate = false}: WorkR
     editingRecord={editingRecord}
     onProjectFilterChange={value => {setProjectFilter(value); setPage(1)}}
     onStatusFilterChange={value => {setStatusFilter(value); setPage(1)}}
+    onMonthFilterChange={value => {setMonthFilter(value); setPage(1)}}
     onPageChange={setPage}
     onRetry={() => void load()}
     onOpenCreate={() => {setFormError(null); setEditingRecord(null)}}

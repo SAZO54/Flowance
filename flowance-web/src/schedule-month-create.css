@@ -1,0 +1,26 @@
+.month-view > .month-day {
+  position: relative;
+}
+
+.month-day-select {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.month-day-select > span {
+  position: absolute;
+  top: 0.4375rem;
+  left: 0.4375rem;
+}
+
+.month-view .month-events {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.5rem;
+  pointer-events: none;
+}
+
+.month-view .month-event {
+  pointer-events: auto;
+}

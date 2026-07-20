@@ -1,0 +1,66 @@
+.projects-panel,
+.clients-panel {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.projects-toolbar,
+.clients-toolbar {
+  padding: 0.75rem;
+  border: 0.0625rem solid #e5f2fa;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fcfe 100%);
+  box-shadow: 0 0.375rem 1rem #75a8c712;
+}
+
+.project-card-grid,
+.client-card-grid {
+  gap: 1rem;
+}
+
+.project-card,
+.client-card {
+  position: relative;
+  overflow: hidden;
+  border-color: #dceef7;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfeff 100%);
+  box-shadow:
+    0 0.5rem 1.25rem #75a8c724,
+    0 0.125rem 0.375rem #75a8c714;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.project-card-link:hover .project-card,
+.client-card-link:hover .client-card {
+  transform: translateY(-0.1875rem);
+  border-color: #a5d1e7;
+  box-shadow:
+    0 1rem 2rem #75a8c733,
+    0 0.25rem 0.625rem #75a8c71f;
+}
+
+.project-card-link:focus-visible .project-card,
+.client-card-link:focus-visible .client-card {
+  border-color: #8dbfd3;
+  box-shadow:
+    0 0 0 0.1875rem #c3e7f680,
+    0 1rem 2rem #75a8c72e;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card,
+  .client-card {
+    transition: none;
+  }
+
+  .project-card-link:hover .project-card,
+  .client-card-link:hover .client-card {
+    transform: none;
+  }
+}

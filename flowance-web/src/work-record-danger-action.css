@@ -1,0 +1,13 @@
+.work-record-modal-actions button.danger,
+.work-record-modal-actions button.danger:last-child {
+  border-color: #efcaca;
+  background: #fffafa;
+  color: #a54c4c;
+}
+
+.work-record-modal-actions button.danger:hover:not(:disabled),
+.work-record-modal-actions button.danger:last-child:hover:not(:disabled) {
+  border-color: #efcaca;
+  background: #fff0f0;
+  color: #a54c4c;
+}

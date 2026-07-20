@@ -1,4 +1,7 @@
 export * from './calendarRange'
 export * from './createSchedule'
+export * from './deleteSchedule'
+export * from './getSchedule'
 export * from './loadSchedule'
 export * from './ports'
+export * from './updateSchedule'

@@ -16,6 +16,7 @@ import type {
   WorkRecordStatus,
 } from '@/domain/workRecord'
 import {WorkRecordForm} from '@/presentation/features/workRecords/WorkRecordForm'
+import {MonthPickerInput} from '@/presentation/components/MonthPickerInput'
 
 export type WorkRecordStatusFilter = 'ALL' | WorkRecordStatus
 
@@ -25,6 +26,7 @@ type WorkRecordsApiPageProps = {
   pagination: WorkRecordPagination
   projectFilter: string
   statusFilter: WorkRecordStatusFilter
+  monthFilter: string
   hasLoaded: boolean
   isLoading: boolean
   isSubmitting: boolean
@@ -33,6 +35,7 @@ type WorkRecordsApiPageProps = {
   editingRecord: WorkRecord | null | undefined
   onProjectFilterChange: (projectId: string) => void
   onStatusFilterChange: (status: WorkRecordStatusFilter) => void
+  onMonthFilterChange: (month: string) => void
   onPageChange: (page: number) => void
   onRetry: () => void
   onOpenCreate: () => void
@@ -81,6 +84,7 @@ export function WorkRecordsApiPage({
   pagination,
   projectFilter,
   statusFilter,
+  monthFilter,
   hasLoaded,
   isLoading,
   isSubmitting,
@@ -89,6 +93,7 @@ export function WorkRecordsApiPage({
   editingRecord,
   onProjectFilterChange,
   onStatusFilterChange,
+  onMonthFilterChange,
   onPageChange,
   onRetry,
   onOpenCreate,
@@ -121,6 +126,7 @@ export function WorkRecordsApiPage({
         <div className="work-record-api-filters">
           <label><span>案件</span><select value={projectFilter} onChange={event => onProjectFilterChange(event.target.value)}><option value="ALL">すべて</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
           <label><span>状態</span><select value={statusFilter} onChange={event => onStatusFilterChange(event.target.value as WorkRecordStatusFilter)}><option value="ALL">すべて</option><option value="DRAFT">下書き</option><option value="CONFIRMED">確定</option><option value="CANCELLED">取消</option></select></label>
+          <label><span>稼働月</span><span className="work-record-month-control"><MonthPickerInput value={monthFilter} onValueChange={onMonthFilterChange} ariaLabel="稼働月"/><button type="button" disabled={!monthFilter} onClick={() => onMonthFilterChange('')}>すべて</button></span></label>
         </div>
       </div>
 

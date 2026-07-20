@@ -11,6 +11,7 @@ import { InMemoryFlowanceRepository } from '../infrastructure/InMemoryFlowanceRe
 import { ClientDetail } from '../presentation/features/clients/ClientDetail'
 import { ClientEdit, type ClientEditValues } from '../presentation/features/clients/ClientEdit'
 import { AppShell } from '../presentation/layout/AppShell'
+import {TimePickerInput} from '@/presentation/components/TimePickerInput'
 import { AnalyticsPage } from '../presentation/pages/AnalyticsPage'
 import { FinancePage } from '../presentation/pages/FinancePage'
 import { InvoicesPage } from '../presentation/pages/InvoicesPage'
@@ -119,7 +120,7 @@ export function App() {
         </div>
         </>}
 
-    {modal && <div className="modal-backdrop" onMouseDown={()=>setModal(false)}><div className="modal" onMouseDown={e=>e.stopPropagation()}><div className="modal-head"><div><p>NEW WORK SESSION</p><h2>稼働予定を追加</h2></div><button onClick={()=>setModal(false)}><X/></button></div><form onSubmit={addWork}><label>案件<select name="project">{projects.map(p=><option value={p.id} key={p.id}>{p.name}</option>)}</select><ChevronDown size="1.0625rem"/></label><label>作業内容<input name="label" defaultValue="仕様確認・実装" required/></label><div className="form-row"><label>曜日<select name="day"><option value="0">月曜日</option><option value="1">火曜日</option><option value="2">水曜日</option><option value="3">木曜日</option><option value="4">金曜日</option><option value="5">土曜日</option><option value="6">日曜日</option></select><ChevronDown size="1.0625rem"/></label><label>開始<input type="time" name="start" defaultValue="10:00" required/></label><label>終了<input type="time" name="end" defaultValue="12:00" required/></label></div><div className="modal-actions"><button type="button" onClick={()=>setModal(false)}>キャンセル</button><button type="submit">予定に追加</button></div></form></div></div>}
+    {modal && <div className="modal-backdrop" onMouseDown={()=>setModal(false)}><div className="modal" onMouseDown={e=>e.stopPropagation()}><div className="modal-head"><div><p>NEW WORK SESSION</p><h2>稼働予定を追加</h2></div><button onClick={()=>setModal(false)}><X/></button></div><form onSubmit={addWork}><label>案件<select name="project">{projects.map(p=><option value={p.id} key={p.id}>{p.name}</option>)}</select><ChevronDown size="1.0625rem"/></label><label>作業内容<input name="label" defaultValue="仕様確認・実装" required/></label><div className="form-row"><label>曜日<select name="day"><option value="0">月曜日</option><option value="1">火曜日</option><option value="2">水曜日</option><option value="3">木曜日</option><option value="4">金曜日</option><option value="5">土曜日</option><option value="6">日曜日</option></select><ChevronDown size="1.0625rem"/></label><label>開始<TimePickerInput name="start" defaultValue="10:00" required ariaLabel="開始時刻"/></label><label>終了<TimePickerInput name="end" defaultValue="12:00" required ariaLabel="終了時刻"/></label></div><div className="modal-actions"><button type="button" onClick={()=>setModal(false)}>キャンセル</button><button type="submit">予定に追加</button></div></form></div></div>}
   </AppShell>
 }
 

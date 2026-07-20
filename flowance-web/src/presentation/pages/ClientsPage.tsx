@@ -56,7 +56,8 @@ function ClientIcon({client}: {client: ClientListItem}) {
     && client.icon.url
 
   return <span
-    className="client-logo"
+    className="client-logo entity-default-icon"
+    aria-hidden="true"
     style={{
       background: client.icon.backgroundColor,
       color: client.icon.textColor,

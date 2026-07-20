@@ -1,0 +1,22 @@
+.projects-titlebar .eyebrow,
+.work-titlebar .eyebrow,
+.clients-titlebar .eyebrow {
+  line-height: 1;
+}
+
+.projects-titlebar > .add-btn,
+.work-titlebar > .add-btn,
+.clients-titlebar > .add-btn {
+  align-self: flex-start;
+  margin-top: 1.3125rem;
+}
+
+.project-detail-page .project-detail-fields dt {
+  color: #294b5b;
+  font-weight: 700;
+}
+
+.project-detail-page .project-detail-fields dd {
+  color: #66808c;
+  font-weight: 400;
+}

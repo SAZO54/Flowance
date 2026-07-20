@@ -1,5 +1,6 @@
 import {useRef, useState} from 'react'
 import {ArrowLeft, ChevronDown, ImagePlus, Trash2} from 'lucide-react'
+import {DatePickerInput} from '@/presentation/components/DateTimePickerInput'
 import type {ClientListItem} from '@/domain/client'
 import type {ProjectStatus} from '@/domain/project'
 import type {CreateProjectCommand} from '@/domain/projectCreate'
@@ -67,7 +68,6 @@ export function ProjectCreate({
     if (!hexColorPattern.test(normalizedColor) || !activeClients.length) return
     const form = new FormData(event.currentTarget)
     const nullable = (name: string) => String(form.get(name) ?? '').trim() || null
-    const workloadValue = nullable('workloadRate')
     onCreate({
       clientId: String(form.get('clientId') ?? ''),
       name: String(form.get('name') ?? '').trim(),
@@ -75,7 +75,7 @@ export function ProjectCreate({
       labelColor: normalizedColor,
       startDate: nullable('startDate'),
       endDate: nullable('endDate'),
-      workloadRate: workloadValue === null ? null : Number(workloadValue),
+      workloadRate: null,
       status: String(form.get('status') ?? 'ACTIVE') as ProjectStatus,
       notes: nullable('notes'),
       iconFile,
@@ -120,9 +120,8 @@ export function ProjectCreate({
       <section className="client-form-section">
         <div className="client-form-section-head"><h2>管理情報</h2><p>契約期間ではなく、案件管理上の予定期間です。</p></div>
         <div className="client-form-fields">
-          <label><span className="field-label">開始日</span><input type="date" name="startDate" value={startDate} onChange={event => setStartDate(event.target.value)}/></label>
-          <label><span className="field-label">終了日</span><input type="date" name="endDate" min={startDate || undefined}/></label>
-          <label><span className="field-label">稼働率目安（%）</span><input type="number" name="workloadRate" min="0" max="100" step="0.01"/></label>
+          <label><span className="field-label">開始日</span><DatePickerInput name="startDate" value={startDate} onValueChange={setStartDate} ariaLabel="開始日"/></label>
+          <label><span className="field-label">終了日</span><DatePickerInput name="endDate" min={startDate || undefined} ariaLabel="終了日"/></label>
           <label className="full"><span className="field-label">備考</span><textarea name="notes" rows={3}/></label>
         </div>
       </section>

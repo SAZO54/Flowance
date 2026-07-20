@@ -1,4 +1,7 @@
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import DateRangeField, RangeOperators
 from django.db import models
+from django.db.models import ExpressionWrapper, F, Func, Q, Value
 
 from apps.common.models import OrganizationScopedModel
 
@@ -29,6 +32,8 @@ class ProjectContract(OrganizationScopedModel):
     currency = models.CharField(max_length=3, default="JPY")
     hourly_rate = models.PositiveBigIntegerField(null=True, blank=True)
     monthly_rate = models.PositiveBigIntegerField(null=True, blank=True)
+    minimum_minutes = models.PositiveIntegerField(null=True, blank=True)
+    maximum_minutes = models.PositiveIntegerField(null=True, blank=True)
     base_minutes = models.PositiveIntegerField(null=True, blank=True)
     deduction_rate = models.PositiveBigIntegerField(null=True, blank=True)
     overtime_rate = models.PositiveBigIntegerField(null=True, blank=True)
@@ -37,10 +42,18 @@ class ProjectContract(OrganizationScopedModel):
     withholding_tax_rate = models.DecimalField(
         max_digits=5, decimal_places=2, default=0
     )
-    rounding_unit_minutes = models.PositiveSmallIntegerField(default=1)
-    rounding_method = models.CharField(
-        max_length=20, choices=RoundingMethod.choices, default=RoundingMethod.ROUND_DOWN
+    rounding_unit_minutes = models.PositiveSmallIntegerField(
+        null=True, blank=True, default=1
     )
+    rounding_method = models.CharField(
+        max_length=20,
+        choices=RoundingMethod.choices,
+        null=True,
+        blank=True,
+        default=RoundingMethod.ROUND_DOWN,
+    )
+    closing_day = models.PositiveSmallIntegerField(null=True, blank=True)
+    payment_terms_days = models.PositiveIntegerField(null=True, blank=True)
     valid_from = models.DateField()
     valid_until = models.DateField(null=True, blank=True)
     status = models.CharField(
@@ -66,6 +79,33 @@ class ProjectContract(OrganizationScopedModel):
                     withholding_tax_rate__gte=0, withholding_tax_rate__lte=100
                 ),
                 name="contracts_withhold_range",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(closing_day__isnull=True)
+                    | models.Q(closing_day__gte=1, closing_day__lte=31)
+                ),
+                name="contracts_closing_day_range",
+            ),
+            ExclusionConstraint(
+                name="contracts_project_period_excl",
+                expressions=[
+                    ("project", RangeOperators.EQUAL),
+                    (
+                        Func(
+                            F("valid_from"),
+                            ExpressionWrapper(
+                                F("valid_until") + Value(1),
+                                output_field=models.DateField(),
+                            ),
+                            Value("[)"),
+                            function="DATERANGE",
+                            output_field=DateRangeField(),
+                        ),
+                        RangeOperators.OVERLAPS,
+                    ),
+                ],
+                condition=Q(deleted_at__isnull=True),
             ),
         ]
         indexes = [
