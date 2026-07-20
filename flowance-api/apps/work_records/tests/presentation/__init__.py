@@ -1,1 +1,0 @@
-"""Work records presentation tests."""

@@ -1,5 +1,3 @@
-"""Synchronous validation and original-image storage adapter."""
-
 from __future__ import annotations
 
 import hashlib

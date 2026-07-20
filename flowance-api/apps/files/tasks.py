@@ -1,5 +1,3 @@
-"""Celery tasks for client icon processing and file deletion."""
-
 from __future__ import annotations
 
 import io

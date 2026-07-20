@@ -1,5 +1,3 @@
-"""Application services for organization-scoped project contracts."""
-
 from __future__ import annotations
 
 from django.db import IntegrityError, transaction

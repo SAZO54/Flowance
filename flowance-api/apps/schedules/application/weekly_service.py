@@ -1,5 +1,3 @@
-"""Weekly schedule template use cases."""
-
 from django.db import transaction
 
 from apps.audit_logs.services import AuditLogService

@@ -1,1 +1,0 @@
-"""Schedules presentation tests."""

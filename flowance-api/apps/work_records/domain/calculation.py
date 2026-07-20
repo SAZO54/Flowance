@@ -1,12 +1,10 @@
-"""Pure work-time validation and minute calculation."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP, ROUND_UP
 
-from apps.common.exceptions import DomainValidationError
+from apps.common.domain.errors import DomainValidationError
 
 
 class InvalidWorkRecordTimeRangeError(DomainValidationError):

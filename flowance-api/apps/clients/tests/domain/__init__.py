@@ -1,1 +1,0 @@
-"""Clients domain tests."""

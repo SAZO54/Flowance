@@ -1,9 +1,7 @@
-"""Framework-independent monthly settlement calculation."""
-
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_FLOOR
 
-from apps.common.exceptions import DomainValidationError
+from apps.common.domain.errors import DomainValidationError
 
 
 class InvalidContractConfigurationError(DomainValidationError):
@@ -14,6 +12,19 @@ class InvalidContractConfigurationError(DomainValidationError):
 class NegativeSettlementTotalError(DomainValidationError):
     code = "NEGATIVE_SETTLEMENT_TOTAL"
     default_message = "精算金額が負になるため計算できません。"
+
+
+@dataclass(frozen=True)
+class SettlementContractTerms:
+    contract_type: str
+    hourly_rate: int | None
+    monthly_rate: int | None
+    base_minutes: int | None
+    deduction_rate: int | None
+    overtime_rate: int | None
+    performance_amount: int | None
+    tax_rate: Decimal
+    withholding_tax_rate: Decimal
 
 
 @dataclass(frozen=True)
@@ -30,51 +41,53 @@ def _yen(value: Decimal) -> int:
     return int(value.quantize(Decimal("1"), rounding=ROUND_FLOOR))
 
 
-def calculate_amounts(*, contract, target_minutes: int) -> SettlementAmounts:
-    contract_type = contract.contract_type
+def calculate_amounts(
+    *, contract_terms: SettlementContractTerms, target_minutes: int
+) -> SettlementAmounts:
+    contract_type = contract_terms.contract_type
     deduction_amount = 0
     overtime_amount = 0
 
     if contract_type == "HOURLY":
-        if contract.hourly_rate is None:
+        if contract_terms.hourly_rate is None:
             raise InvalidContractConfigurationError()
         base_amount = _yen(
-            Decimal(target_minutes) * Decimal(contract.hourly_rate) / Decimal(60)
+            Decimal(target_minutes) * Decimal(contract_terms.hourly_rate) / Decimal(60)
         )
     elif contract_type == "MONTHLY_RANGE":
         required = (
-            contract.monthly_rate,
-            contract.base_minutes,
-            contract.deduction_rate,
-            contract.overtime_rate,
+            contract_terms.monthly_rate,
+            contract_terms.base_minutes,
+            contract_terms.deduction_rate,
+            contract_terms.overtime_rate,
         )
         if any(value is None for value in required):
             raise InvalidContractConfigurationError()
-        shortage = max(contract.base_minutes - target_minutes, 0)
-        excess = max(target_minutes - contract.base_minutes, 0)
+        shortage = max(contract_terms.base_minutes - target_minutes, 0)
+        excess = max(target_minutes - contract_terms.base_minutes, 0)
         deduction_amount = _yen(
-            Decimal(shortage) * Decimal(contract.deduction_rate) / Decimal(60)
+            Decimal(shortage) * Decimal(contract_terms.deduction_rate) / Decimal(60)
         )
         overtime_amount = _yen(
-            Decimal(excess) * Decimal(contract.overtime_rate) / Decimal(60)
+            Decimal(excess) * Decimal(contract_terms.overtime_rate) / Decimal(60)
         )
-        base_amount = contract.monthly_rate - deduction_amount + overtime_amount
+        base_amount = contract_terms.monthly_rate - deduction_amount + overtime_amount
     elif contract_type == "MONTHLY_FIXED":
-        if contract.monthly_rate is None:
+        if contract_terms.monthly_rate is None:
             raise InvalidContractConfigurationError()
-        base_amount = contract.monthly_rate
+        base_amount = contract_terms.monthly_rate
     elif contract_type == "PERFORMANCE":
-        if contract.performance_amount is None:
+        if contract_terms.performance_amount is None:
             raise InvalidContractConfigurationError()
-        base_amount = contract.performance_amount
+        base_amount = contract_terms.performance_amount
     else:
         raise InvalidContractConfigurationError()
 
     if base_amount < 0:
         raise NegativeSettlementTotalError()
-    tax_amount = _yen(Decimal(base_amount) * contract.tax_rate / Decimal(100))
+    tax_amount = _yen(Decimal(base_amount) * contract_terms.tax_rate / Decimal(100))
     withholding_amount = _yen(
-        Decimal(base_amount) * contract.withholding_tax_rate / Decimal(100)
+        Decimal(base_amount) * contract_terms.withholding_tax_rate / Decimal(100)
     )
     total_amount = base_amount + tax_amount - withholding_amount
     if total_amount < 0:

@@ -1,5 +1,3 @@
-"""Organization aggregate persistence models."""
-
 from django.db import models
 
 from apps.common.models import (

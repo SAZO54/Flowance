@@ -1,1 +1,0 @@
-"""Common presentation tests."""

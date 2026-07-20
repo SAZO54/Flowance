@@ -1,5 +1,3 @@
-"""Authentication application use cases and transaction boundaries."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,1 +1,0 @@
-"""Accounts infrastructure tests."""

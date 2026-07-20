@@ -1,5 +1,3 @@
-"""DRF exception handler producing the Flowance ErrorResponse contract."""
-
 from __future__ import annotations
 
 import logging
@@ -12,6 +10,7 @@ from rest_framework import exceptions, status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
 
+from apps.common.domain.errors import DomainError
 from .error_response import ErrorResponse
 from .exceptions import FlowanceError
 
@@ -60,6 +59,15 @@ def _response(
 
 def flowance_exception_handler(exc: Exception, context: dict[str, Any]) -> Response:
     trace_id = _trace_id(context)
+
+    if isinstance(exc, DomainError):
+        return _response(
+            code=exc.code,
+            message=exc.message,
+            details=exc.details,
+            trace_id=trace_id,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
 
     if isinstance(exc, FlowanceError):
         return _response(

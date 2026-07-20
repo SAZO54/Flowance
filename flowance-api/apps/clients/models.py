@@ -1,5 +1,3 @@
-"""Client aggregate persistence model."""
-
 from django.db import models
 
 from apps.common.models import OrganizationScopedModel

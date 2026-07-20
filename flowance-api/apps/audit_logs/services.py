@@ -1,5 +1,3 @@
-"""Application-facing service for append-only, privacy-aware audit records."""
-
 from __future__ import annotations
 
 import uuid
@@ -35,8 +33,6 @@ def _redact(value: Any) -> Any:
 
 
 class AuditLogService:
-    """Records the minimum useful change set inside the caller's transaction."""
-
     @staticmethod
     @transaction.atomic
     def record(
