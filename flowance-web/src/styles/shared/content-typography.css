@@ -1,0 +1,120 @@
+:root {
+  --flowance-field-placeholder: #66808c;
+  --flowance-field-value: #45606c;
+  --flowance-field-background: #fbfdfb;
+  --flowance-min-font-size: 0.85rem;
+  --flowance-supporting-text-size: 0.75rem;
+  --flowance-field-label-size: 0.9rem;
+  --flowance-field-value-size: var(--flowance-min-font-size);
+  --flowance-data-label: #294b5b;
+}
+
+/* Supplemental copy may sit below the default UI minimum by design. */
+body small {
+  font-size: var(--flowance-supporting-text-size) !important;
+}
+
+.app-shell :is([class$='-titlebar'], [class$='-head'], [class$='-section-head'], [class$='-panel-head']) :is(h1, h2) + p,
+.app-shell .supporting-text {
+  font-size: var(--flowance-supporting-text-size) !important;
+}
+
+/*
+ * Form text is a cross-screen design-system rule. `!important` is intentional:
+ * feature styles created before the shared CSS split use selectors with different
+ * specificity, and form values must keep the same hierarchy on every route.
+ */
+body input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']):not([type='image']):not([type='hidden']),
+body textarea,
+body select {
+  color: var(--flowance-field-value) !important;
+  background: var(--flowance-field-background) !important;
+  font-size: var(--flowance-field-value-size) !important;
+  font-weight: 400 !important;
+}
+
+body form label,
+body .modal label {
+  color: var(--flowance-data-label) !important;
+  font-size: var(--flowance-field-label-size) !important;
+}
+
+body form label > .field-label,
+body .modal label > .field-label {
+  color: inherit;
+  font-size: inherit;
+}
+
+body :is(form, .modal) .required-symbol,
+body :is(form, .modal) label > span:first-child > i {
+  margin-left: 0.125rem;
+  color: #c84f61;
+  font-size: var(--flowance-field-value-size);
+  font-style: normal;
+  font-weight: 800;
+}
+
+body input::placeholder,
+body textarea::placeholder {
+  color: var(--flowance-field-placeholder) !important;
+  opacity: 1;
+}
+
+body select option {
+  color: var(--flowance-field-value) !important;
+  font-size: var(--flowance-field-value-size);
+  font-weight: 400;
+}
+
+/* Disabled controls remain distinguishable without changing the value hierarchy. */
+body input:disabled,
+body input[readonly],
+body textarea:disabled,
+body textarea[readonly],
+body select:disabled {
+  color: #5f7884 !important;
+}
+
+/* Semantic label/value pairs used by list and detail cards. */
+.app-shell :is(article, [class*='-card'], [class*='-detail'], [class*='-summary'], [class*='-panel']) dt {
+  color: var(--flowance-data-label) !important;
+  font-size: var(--flowance-field-label-size) !important;
+  font-weight: 700 !important;
+}
+
+.app-shell :is(article, [class*='-card'], [class*='-detail'], [class*='-summary'], [class*='-panel']) dd {
+  color: var(--flowance-field-value) !important;
+  font-size: var(--flowance-field-value-size) !important;
+  font-weight: 400 !important;
+}
+
+.app-shell article > span:first-child:not(:has(svg)),
+.app-shell article > div > p:first-child {
+  color: var(--flowance-data-label) !important;
+  font-size: var(--flowance-field-label-size);
+  font-weight: 700;
+}
+
+.app-shell article > strong,
+.app-shell article > div > strong {
+  color: var(--flowance-field-value) !important;
+}
+
+/* Explicit label/value classes cover cards that do not use a description list. */
+.app-shell :is(article, [class*='-card'], [class*='-detail'], [class*='-summary'], [class*='-panel']) :is(.field-label, [class$='-label']) {
+  color: var(--flowance-data-label);
+  font-size: var(--flowance-field-label-size);
+  font-weight: 700;
+}
+
+.app-shell :is(article, [class*='-card'], [class*='-detail'], [class*='-summary'], [class*='-panel']) :is(
+  [class$='-value'],
+  [class$='-content'],
+  [class$='-description'],
+  [class$='-meta'],
+  [class$='-contact'],
+  [class$='-updated']
+) {
+  color: var(--flowance-field-value);
+  font-weight: 400;
+}

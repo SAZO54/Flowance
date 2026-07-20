@@ -121,7 +121,7 @@ export function SettingsView({
             <div className="settings-avatar" aria-hidden="true">{initials(draft.profile.displayName)}</div>
           </div>
           <div className="settings-form-grid">
-            <label className="full">表示名<input required maxLength={100} value={draft.profile.displayName} onChange={event => updateProfile({displayName: event.target.value})}/></label>
+            <label className="full"><span className="field-label">表示名 <i className="required-symbol">※</i></span><input required maxLength={100} value={draft.profile.displayName} onChange={event => updateProfile({displayName: event.target.value})}/></label>
             <label>姓<input maxLength={100} value={draft.profile.familyName} onChange={event => updateProfile({familyName: event.target.value})}/></label>
             <label>名<input maxLength={100} value={draft.profile.givenName} onChange={event => updateProfile({givenName: event.target.value})}/></label>
             <label className="full">メールアドレス<input type="email" value={draft.profile.email} readOnly aria-readonly="true"/><small>メールアドレスの変更はPhase2で対応します。</small></label>
@@ -132,7 +132,7 @@ export function SettingsView({
         {section === 'organization' && <>
           <div className="settings-section-head"><div><h2>組織</h2><p>所属組織の基本情報を管理します。</p></div>{!draft.organization.canEdit && <span className="settings-readonly">閲覧のみ</span>}</div>
           <div className="settings-form-grid">
-            <label className="full">組織名<input required maxLength={150} value={draft.organization.name} readOnly={!draft.organization.canEdit} onChange={event => updateOrganization({name: event.target.value})}/></label>
+            <label className="full"><span className="field-label">組織名 <i className="required-symbol">※</i></span><input required maxLength={150} value={draft.organization.name} readOnly={!draft.organization.canEdit} onChange={event => updateOrganization({name: event.target.value})}/></label>
             <label>組織タイムゾーン<select value={draft.organization.timezone} disabled={!draft.organization.canEdit} onChange={event => updateOrganization({timezone: event.target.value})}>{timezoneOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
             <label>通貨<input value={draft.organization.currency} readOnly aria-readonly="true"/><small>Phase1はJPY固定です。</small></label>
           </div>

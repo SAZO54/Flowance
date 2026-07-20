@@ -3,7 +3,7 @@
 import type {ReactNode} from 'react'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {Bell, BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Settings, Users} from 'lucide-react'
+import {Bell, BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Users} from 'lucide-react'
 import {SidebarProfile} from '@/presentation/components/SidebarProfile'
 import {AuthSessionProvider, useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 
@@ -37,7 +37,6 @@ function AppShellContent({children, onAddWork}: AppShellProps) {
         {navigation.slice(4).map(([id,label,Icon,path]) => <Link href={path} key={id} className={isNavigationActive(pathname,id)?'active':''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
       </nav>
       <div className="sidebar-bottom">
-        <Link href="/setting" className={pathname==='/setting'?'active':''}><Settings size="1.125rem"/>設定</Link>
         <SidebarProfile/>
       </div>
     </aside>

@@ -48,6 +48,7 @@ flowance-web/src/
 
 - 全画面の基礎スタイルは `src/styles/globals.css` に置き、root layout から読み込む。
 - フォーム、一覧、日時入力、カードなど複数機能で使うスタイルは `src/styles/shared/` に置く。
+- フォーム値、placeholder、一覧・詳細カードのラベル／内容の文字階層は `src/styles/shared/content-typography.css` で全画面共通化する。
 - 特定機能だけが所有するスタイルは `src/presentation/features/<feature>/styles/` に置き、対象Routeから読み込む。
 - 単一コンポーネントに閉じる新規スタイルは、コンポーネントと同じ場所の `*.module.css` を優先する。
 - `domain/` にはCSSを置かず、React、Next.js、CSSへの依存を持ち込まない。

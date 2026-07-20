@@ -31,7 +31,7 @@
   min-height: 1rem;
   margin: 0.4375rem 0 0;
   color: #7895a3;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .dashboard-api-status {
@@ -44,7 +44,7 @@
   border-radius: 0.625rem;
   background: #fbfeff;
   color: #7895a3;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .dashboard-api-status[role='status'] svg {
@@ -72,7 +72,7 @@
   background: #fff;
   color: #4f91ae;
   padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -111,13 +111,18 @@
 
 .dashboard-api-metrics article > div {
   min-width: 0;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .dashboard-api-metrics p,
 .dashboard-api-metrics small {
   margin: 0;
   color: #7895a3;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .dashboard-api-metrics strong {
@@ -125,7 +130,7 @@
   display: block;
   margin: 0.3125rem 0 0.1875rem;
   color: #294b5b;
-  font-size: 1rem;
+  font-size: 1.0625rem;
 }
 
 .dashboard-api-grid {
@@ -166,7 +171,7 @@
   min-height: 0.875rem;
   margin: 0.25rem 0 0;
   color: #91a7b1;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .dashboard-api-panel-head a {
@@ -175,7 +180,7 @@
   gap: 0.25rem;
   flex: none;
   color: #4f91ae;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
 }
@@ -187,7 +192,7 @@
   margin: 0;
   padding: 1.5rem;
   color: #91a7b1;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .dashboard-schedule-list,
@@ -219,7 +224,7 @@
 
 .dashboard-schedule-list time {
   color: #527483;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -237,7 +242,7 @@
 .dashboard-record-list strong {
   overflow: hidden;
   color: #294b5b;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -247,7 +252,7 @@
 .dashboard-record-list small {
   overflow: hidden;
   color: #91a7b1;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -257,7 +262,7 @@
   background: #edf8fd;
   color: #4f91ae;
   padding: 0.25rem 0.4375rem;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -283,7 +288,7 @@
   place-items: center;
   overflow: hidden;
   border-radius: 0.5625rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 800;
 }
 
@@ -296,7 +301,7 @@
 .dashboard-project-list b,
 .dashboard-record-list b {
   color: #527483;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .dashboard-project-list svg {
@@ -317,7 +322,7 @@
   background: #edf8fd;
   color: #4f91ae;
   padding: 0.25rem 0.4375rem;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-style: normal;
   font-weight: 700;
   text-align: center;

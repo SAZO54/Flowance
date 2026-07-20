@@ -26,7 +26,7 @@
   align-items: center;
   gap: 0.375rem;
   color: #7895a3;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .work-record-api-filters select {
@@ -36,7 +36,7 @@
   background: #fbfeff;
   color: #294b5b;
   padding: 0.5rem 1.75rem 0.5rem 0.625rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .work-record-api-state {
@@ -54,7 +54,7 @@
 .work-record-api-state p,
 .work-record-api-state strong {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .work-record-api-state strong {
@@ -74,7 +74,7 @@
   background: #fff;
   color: #4f91ae;
   padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -91,7 +91,7 @@
   padding: 0.8125rem 1.125rem;
   border-top: 0.0625rem solid #edf6fa;
   color: #527483;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .work-record-api-row.header {
@@ -116,7 +116,7 @@
 .work-record-api-row small {
   overflow: hidden;
   color: #91a7b1;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -166,7 +166,7 @@
   padding: 1rem;
   border-top: 0.0625rem solid #edf6fa;
   color: #7895a3;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .work-record-api-pagination button {
@@ -178,7 +178,7 @@
   background: #fff;
   color: #4f91ae;
   padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -219,7 +219,7 @@
 .work-record-modal-head p {
   margin: 0 0 0.25rem;
   color: #75a8c7;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.12em;
 }
@@ -249,7 +249,7 @@
   flex-direction: column;
   gap: 0.375rem;
   color: #66808c;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -268,7 +268,7 @@
   color: #294b5b;
   padding: 0.625rem 0.6875rem;
   font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   outline: 0;
 }
 
@@ -312,13 +312,13 @@
 
 .work-record-breaks h3 {
   color: #294b5b;
-  font-size: 0.8125rem;
+  font-size: 0.85rem;
 }
 
 .work-record-breaks p {
   margin-top: 0.25rem;
   color: #91a7b1;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .work-record-breaks > div:first-child > button {
@@ -330,7 +330,7 @@
   background: #fff;
   color: #4f91ae;
   padding: 0.5rem 0.6875rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -379,7 +379,7 @@
   background: #fff;
   color: #66808c;
   padding: 0.625rem 0.875rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 

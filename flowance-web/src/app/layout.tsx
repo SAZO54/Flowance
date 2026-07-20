@@ -10,6 +10,7 @@ import '../styles/shared/date-picker-extensions.css'
 import '../styles/shared/entity-default-icons.css'
 import '../styles/shared/picker-control-overrides.css'
 import '../styles/shared/list-card-emphasis.css'
+import '../styles/shared/content-typography.css'
 
 export const metadata: Metadata = {
   title: 'Flowance',

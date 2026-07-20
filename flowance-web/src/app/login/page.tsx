@@ -67,10 +67,10 @@ export default function LoginPage() {
           <span>アカウントにログインして、今日の仕事を始めましょう。</span>
         </div>
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
-          <label><span>メールアドレス</span><div className={styles.inputWrap}>
+          <label><span>メールアドレス <i className="required-symbol">※</i></span><div className={styles.inputWrap}>
             <Mail size={18}/><input type="email" name="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} required disabled={submitting}/>
           </div></label>
-          <label><span>パスワード</span><div className={styles.inputWrap}>
+          <label><span>パスワード <i className="required-symbol">※</i></span><div className={styles.inputWrap}>
             <LockKeyhole size={18}/><input type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" placeholder="パスワードを入力" value={password} onChange={event => setPassword(event.target.value)} required disabled={submitting}/>
             <button type="button" className={styles.visibility} onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}>{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
           </div></label>

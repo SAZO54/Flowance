@@ -62,7 +62,7 @@
 
 .date-time-picker-head strong {
   text-align: center;
-  font-size: 0.8125rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -106,7 +106,7 @@
   padding: 0.25rem 0;
   color: #7895a3;
   text-align: center;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-weight: 400;
 }
 
@@ -121,7 +121,7 @@
   border-radius: 0.125rem;
   background: #fbfeff;
   color: #294b5b;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 400;
 }
 
@@ -171,7 +171,7 @@
   gap: 0.5rem;
   margin: 0;
   color: #7895a3;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-weight: 400;
 }
 
@@ -183,12 +183,12 @@
   background: #fbfeff;
   color: #294b5b;
   padding: 0.4375rem 0.5rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .date-time-picker-time > button {
   padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
