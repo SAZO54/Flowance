@@ -1,5 +1,17 @@
-import { App } from '../App'
+import '@/work-records-api.css'
+import '@/work-record-danger-action.css'
+import '@/work-record-month-filter.css'
+import '@/dashboard-metrics.css'
+import '@/list-title-and-detail-overrides.css'
+import {AppShell} from '@/presentation/layout/AppShell'
+import {WorkRecordsComposition} from './WorkRecordsComposition'
 
-export default function TimelogPage() {
-  return <App />
+type TimelogPageProps = {
+  searchParams: Promise<{action?: string | string[]}>
+}
+
+export default async function TimelogPage({searchParams}: TimelogPageProps) {
+  const {action} = await searchParams
+  const shouldOpenCreate = action === 'create'
+  return <AppShell><WorkRecordsComposition shouldOpenCreate={shouldOpenCreate}/></AppShell>
 }

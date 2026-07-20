@@ -2,6 +2,7 @@ import io
 import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
+from uuid import UUID
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -11,6 +12,7 @@ from rest_framework.test import APIClient, APITestCase
 
 from apps.files.models import BackgroundTask, FileStatus, StoredFile
 from apps.files.tasks import process_project_icon
+from .domain.icon import generate_default_icon
 
 from .models import (
     Project,
@@ -67,13 +69,23 @@ class ProjectAPITests(APITestCase):
         )
 
     def test_create_list_detail_update_and_optimistic_lock(self):
+        self.assertEqual(reverse("projects:collection"), "/api/v1/projects")
+
         created = self.create_project()
+        self.assertEqual(
+            reverse("projects:detail", args=[created.data["id"]]),
+            f"/api/v1/projects/{created.data['id']}",
+        )
 
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.data["icon"]["type"], "DEFAULT")
-        self.assertEqual(created.data["icon"]["defaultText"], "FA")
-        self.assertEqual(created.data["members"][0]["role"], "MANAGER")
         project_id = created.data["id"]
+        expected_icon = generate_default_icon(UUID(project_id))
+        self.assertEqual(created.data["icon"]["defaultText"], expected_icon.text)
+        self.assertEqual(
+            created.data["icon"]["backgroundColor"], expected_icon.background_color
+        )
+        self.assertEqual(created.data["members"][0]["role"], "MANAGER")
 
         membership = ProjectMember.objects.get(project_id=project_id)
         self.assertEqual(membership.role, ProjectMemberRole.MANAGER)
@@ -99,7 +111,10 @@ class ProjectAPITests(APITestCase):
         )
         self.assertEqual(updated.status_code, 200)
         self.assertEqual(updated.data["version"], 2)
-        self.assertEqual(updated.data["icon"]["defaultText"], "FB")
+        self.assertEqual(updated.data["icon"]["defaultText"], expected_icon.text)
+        self.assertEqual(
+            updated.data["icon"]["backgroundColor"], expected_icon.background_color
+        )
 
         conflict = self.client.patch(
             reverse("projects:detail", args=[project_id]),
@@ -215,5 +230,7 @@ class ProjectAPITests(APITestCase):
                 **self.headers,
             )
         self.assertEqual(deleted.status_code, 200)
+        expected_icon = generate_default_icon(project.id)
+        self.assertEqual(deleted.data["icon"]["defaultText"], expected_icon.text)
         self.assertEqual(deleted.data["icon"]["type"], ProjectIconType.DEFAULT)
         self.assertIsNone(Project.objects.get(pk=project.id).icon_file_id)

@@ -1,0 +1,48 @@
+/* Keep header controls and page content on the same horizontal grid. */
+main {
+  --app-content-max-width: 95rem;
+  --app-content-inline-padding: 2.125rem;
+}
+
+header {
+  padding-inline: 0;
+}
+
+.header-inner {
+  width: 100%;
+  max-width: var(--app-content-max-width);
+  height: 100%;
+  margin-inline: auto;
+  padding-inline: var(--app-content-inline-padding);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content {
+  width: 100%;
+  max-width: var(--app-content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--app-content-inline-padding);
+}
+
+.search {
+  width: 40rem;
+  max-width: calc(100% - 12rem);
+}
+
+.sidebar nav a,
+.sidebar-bottom > a {
+  margin-block: 0.1875rem;
+  padding-block: 0.8125rem;
+}
+
+.nav-label.lower {
+  margin-top: 1.75rem;
+}
+
+@media (max-width: 47.5rem) {
+  main {
+    --app-content-inline-padding: 1rem;
+  }
+}

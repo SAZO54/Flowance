@@ -1,0 +1,46 @@
+.work-record-month-control {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.work-record-month-control input {
+  min-width: 8.75rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fbfeff;
+  color: #294b5b;
+  padding: 0.4375rem 0.625rem;
+  font-size: 0.75rem;
+}
+
+.work-record-month-control input:focus-visible {
+  border-color: #8dbfd3;
+  outline: 0;
+  box-shadow: 0 0 0 0.1875rem #c3e7f655;
+}
+
+.work-record-month-control button {
+  border: 0.0625rem solid #dceef7;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #4f91ae;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.6875rem;
+}
+
+.work-record-month-control button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+@media (max-width: 47.5rem) {
+  .work-record-month-control {
+    flex: 1;
+  }
+
+  .work-record-month-control input {
+    min-width: 0;
+    flex: 1;
+  }
+}

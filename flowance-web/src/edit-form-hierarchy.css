@@ -1,0 +1,11 @@
+.edit-form-page .client-form-fields label,
+.edit-form-page .project-custom-color {
+  color: #294b5b;
+}
+
+.edit-form-page .client-form-fields input,
+.edit-form-page .client-form-fields select,
+.edit-form-page .client-form-fields textarea,
+.edit-form-page .project-custom-color-control input[type='text'] {
+  color: #66808c;
+}

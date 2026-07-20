@@ -1,59 +1,174 @@
-import React, { useState } from 'react'
 import Link from 'next/link'
-import { BriefcaseBusiness, ChevronRight, CircleDollarSign, Clock3, MoreHorizontal, Plus, Search, Users } from 'lucide-react'
-import type { Client, ClientStatus } from '../../domain/models'
+import {
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  RefreshCw,
+  Search,
+  Users,
+} from 'lucide-react'
+import type {
+  ClientListItem,
+  ClientPagination,
+  ClientStatus,
+} from '@/domain/client'
+
+export type ClientStatusFilter = 'ALL' | ClientStatus
 
 type ClientsPageProps = {
-  clients: Client[]
-  onAddClient: () => void
+  clients: ClientListItem[]
+  pagination: ClientPagination
+  query: string
+  status: ClientStatusFilter
+  hasLoaded: boolean
+  isLoading: boolean
+  error: string | null
+  onQueryChange: (query: string) => void
+  onStatusChange: (status: ClientStatusFilter) => void
+  onPageChange: (page: number) => void
+  onRetry: () => void
+  onAdd: () => void
 }
 
-export function ClientsPage({clients, onAddClient}: ClientsPageProps) {
-  const [query, setQuery] = useState('')
-  const [status, setStatus] = useState<'all' | ClientStatus>('all')
-  const visibleClients = clients.filter(client => {
-    const matchesQuery = (client.name + client.contact + client.email).toLowerCase().includes(query.toLowerCase())
-    return matchesQuery && (status === 'all' || client.status === status)
-  })
-  const activeCount = clients.filter(client => client.status === 'active').length
-  const inactiveCount = clients.length - activeCount
-  const projectCount = clients.reduce((sum, client) => sum + client.projects, 0)
-  const totalRevenue = clients.reduce((sum, client) => sum + client.revenue, 0)
-  const receivableClients = clients.filter(client => client.receivable > 0)
-  const totalReceivable = receivableClients.reduce((sum, client) => sum + client.receivable, 0)
+const statusTabs: {value: ClientStatusFilter; label: string}[] = [
+  {value: 'ALL', label: 'すべて'},
+  {value: 'ACTIVE', label: '取引中'},
+  {value: 'INACTIVE', label: '取引終了'},
+]
 
+function formatUpdatedAt(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
+}
+
+function ClientIcon({client}: {client: ClientListItem}) {
+  const canShowImage = client.icon.type === 'UPLOADED'
+    && client.icon.status === 'READY'
+    && client.icon.url
+
+  return <span
+    className="client-logo entity-default-icon"
+    aria-hidden="true"
+    style={{
+      background: client.icon.backgroundColor,
+      color: client.icon.textColor,
+    }}
+  >
+    {canShowImage
+      ? <img src={client.icon.url ?? ''} alt=""/>
+      : client.icon.defaultText}
+  </span>
+}
+
+export function ClientsPage({
+  clients,
+  pagination,
+  query,
+  status,
+  hasLoaded,
+  isLoading,
+  error,
+  onQueryChange,
+  onStatusChange,
+  onPageChange,
+  onRetry,
+  onAdd,
+}: ClientsPageProps) {
   return <div className="clients-page">
     <div className="clients-titlebar">
-      <div><p className="eyebrow">CLIENTS</p><h1>クライアント</h1><p>取引先ごとの案件、売上、請求状況をまとめて管理します。</p></div>
-      <button className="add-btn" onClick={onAddClient}><Plus size="1.0625rem"/>クライアントを追加</button>
+      <div>
+        <p className="eyebrow">CLIENTS</p>
+        <h1>クライアント</h1>
+        <p>取引先の基本情報と取引状態を確認できます。</p>
+      </div>
+      <button type="button" className="add-btn" onClick={onAdd}>
+        <Plus size="1.0625rem"/>クライアントを追加
+      </button>
     </div>
 
-    <div className="client-summary">
-      <article><span><Users size="1.125rem"/></span><div><p>クライアント数</p><strong>{clients.length}<small> 社</small></strong><em>うち取引中 {activeCount}社</em></div></article>
-      <article><span><BriefcaseBusiness size="1.125rem"/></span><div><p>進行中の案件</p><strong>{projectCount}<small> 件</small></strong><em>今月完了予定 1件</em></div></article>
-      <article><span><CircleDollarSign size="1.125rem"/></span><div><p>累計売上</p><strong>¥{totalRevenue.toLocaleString()}</strong><em>今年度</em></div></article>
-      <article><span><Clock3 size="1.125rem"/></span><div><p>未入金</p><strong>¥{totalReceivable.toLocaleString()}</strong><em>{receivableClients.length}社 · {receivableClients.length}件</em></div></article>
-    </div>
-
-    <section className="clients-panel">
+    <section className="clients-panel" aria-busy={isLoading}>
       <div className="clients-toolbar">
-        <div className="client-tabs"><button className={status==='all'?'active':''} onClick={()=>setStatus('all')}>すべて <b>{clients.length}</b></button><button className={status==='active'?'active':''} onClick={()=>setStatus('active')}>取引中 <b>{activeCount}</b></button><button className={status==='inactive'?'active':''} onClick={()=>setStatus('inactive')}>取引終了 <b>{inactiveCount}</b></button></div>
-        <label className="client-search"><Search size="0.9375rem"/><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="会社名・担当者を検索"/></label>
+        <div className="client-tabs" aria-label="クライアントステータス">
+          {statusTabs.map(tab => <button
+            type="button"
+            key={tab.value}
+            className={status === tab.value ? 'active' : ''}
+            onClick={() => onStatusChange(tab.value)}
+          >{tab.label}</button>)}
+        </div>
+        <label className="client-search">
+          <Search size="0.9375rem"/>
+          <input
+            value={query}
+            onChange={event => onQueryChange(event.target.value)}
+            placeholder="会社名・担当者を検索"
+            aria-label="会社名・担当者を検索"
+          />
+        </label>
       </div>
 
-      <div className="client-card-grid">{visibleClients.map(client=><article className="client-card" key={client.id}>
-        <div className="client-card-head"><div className="client-logo" style={{color:client.color,background:client.soft}}>{client.icon?<img src={client.icon} alt=""/>:client.initials}</div><span className={'client-status '+client.status}>{client.status==='active'?'取引中':'取引終了'}</span><button aria-label="その他"><MoreHorizontal size="1.125rem"/></button></div>
-        <div className="client-name"><h2>{client.name}</h2><p>{client.contact} · {client.email}</p></div>
-        <dl><div><dt>進行中の案件</dt><dd>{client.projects}件</dd></div><div><dt>累計売上</dt><dd>¥{client.revenue.toLocaleString()}</dd></div><div><dt>未入金</dt><dd className={client.receivable?'has-receivable':''}>¥{client.receivable.toLocaleString()}</dd></div></dl>
-        <div className="client-activity"><span>最終取引</span><strong>{client.lastActivity}</strong></div>
-        <Link className="client-detail-button" href={`/client/${client.id}`}>クライアント詳細 <ChevronRight size="0.9375rem"/></Link>
-      </article>)}</div>
-      {!visibleClients.length&&<div className="client-empty"><Users size="1.5625rem"/><strong>クライアントが見つかりません</strong><p>検索条件を変更してお試しください。</p></div>}
-    </section>
+      {isLoading && <div className="clients-loading" role="status">
+        <RefreshCw size="1.25rem" aria-hidden="true"/>
+        <span>クライアントを読み込んでいます</span>
+      </div>}
 
-    <section className="client-revenue-ranking">
-      <div className="client-ranking-head"><div><h2>クライアント別売上</h2><p>今年度の累計</p></div><button>詳細を見る <ChevronRight size="0.9375rem"/></button></div>
-      <div className="client-ranking-list">{clients.slice(0,3).map((client,index)=><div key={client.id}><b>{index+1}</b><span className="ranking-logo" style={{color:client.color,background:client.soft}}>{client.initials}</span><span><strong>{client.name}</strong><small>{client.projects}件の案件</small></span><div className="ranking-bar"><i style={{width:(client.revenue/1720000*100)+'%',background:client.color}}/></div><strong>¥{client.revenue.toLocaleString()}</strong></div>)}</div>
+      {!isLoading && error && <div className="client-empty clients-error" role="alert">
+        <strong>クライアントを読み込めませんでした</strong>
+        <p>{error}</p>
+        <button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button>
+      </div>}
+
+      {!isLoading && !error && hasLoaded && clients.length === 0 && <div className="client-empty">
+        <Users size="1.5625rem"/>
+        <strong>{query || status !== 'ALL' ? '条件に一致するクライアントがありません' : 'クライアントがまだ登録されていません'}</strong>
+        <p>{query || status !== 'ALL' ? '検索条件を変更してお試しください。' : '「クライアントを追加」から最初の取引先を登録できます。'}</p>
+      </div>}
+
+      {!isLoading && !error && clients.length > 0 && <>
+        <div className="client-result-meta">{pagination.totalItems}社のクライアント</div>
+        <div className="client-card-grid">{clients.map(client => <Link className="client-card-link" href={`/client/${client.id}`} key={client.id}><article className="client-card">
+          <div className="client-card-head">
+            <ClientIcon client={client}/>
+            <span className={`client-status ${client.status.toLowerCase()}`}>
+              {client.status === 'ACTIVE' ? '取引中' : '取引終了'}
+            </span>
+          </div>
+          <div className="client-name">
+            <h2>{client.name}</h2>
+            {client.contactName && <p>{client.contactName}</p>}
+          </div>
+          <div className="client-card-contact">
+            {client.email && <span><Mail size="0.875rem"/>{client.email}</span>}
+            {client.phone && <span><Phone size="0.875rem"/>{client.phone}</span>}
+            {client.address && <span><MapPin size="0.875rem"/>{client.address}</span>}
+            {!client.email && !client.phone && !client.address && <span><Building2 size="0.875rem"/>連絡先未設定</span>}
+          </div>
+          <div className="client-card-footer"><span>更新 {formatUpdatedAt(client.updatedAt)}</span><span>詳細を見る<ChevronRight size="0.875rem"/></span></div>
+        </article></Link>)}</div>
+
+        {pagination.totalPages > 1 && <nav className="client-pagination" aria-label="クライアント一覧ページ">
+          <button
+            type="button"
+            disabled={!pagination.hasPrevious}
+            onClick={() => onPageChange(pagination.page - 1)}
+          ><ChevronLeft size="0.875rem"/>前へ</button>
+          <span>{pagination.page} / {pagination.totalPages}</span>
+          <button
+            type="button"
+            disabled={!pagination.hasNext}
+            onClick={() => onPageChange(pagination.page + 1)}
+          >次へ<ChevronRight size="0.875rem"/></button>
+        </nav>}
+      </>}
     </section>
   </div>
 }

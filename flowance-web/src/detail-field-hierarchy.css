@@ -1,0 +1,15 @@
+.project-detail-fields dt,
+.client-detail-contact dt {
+  color: #294b5b;
+  font-weight: 700;
+}
+
+.project-detail-fields dd,
+.client-detail-contact dd {
+  color: #66808c;
+  font-weight: 400;
+}
+
+.client-detail-contact dd a {
+  font-weight: 400;
+}

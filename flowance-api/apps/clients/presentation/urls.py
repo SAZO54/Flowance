@@ -5,6 +5,6 @@ from .views import ClientCollectionView, ClientDetailView
 app_name = "clients"
 
 urlpatterns = [
-    path("", ClientCollectionView.as_view(), name="collection"),
-    path("<uuid:client_id>", ClientDetailView.as_view(), name="detail"),
+    path("clients", ClientCollectionView.as_view(), name="collection"),
+    path("clients/<uuid:client_id>", ClientDetailView.as_view(), name="detail"),
 ]

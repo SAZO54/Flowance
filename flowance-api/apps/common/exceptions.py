@@ -32,14 +32,13 @@ class AuthenticationError(FlowanceError):
 
 class AuthorizationError(FlowanceError):
     code = "FORBIDDEN"
+    default_message = "この操作を実行する権限がありません。"
+    status_code = 403
 
 
 class CsrfFailedError(FlowanceError):
     code = "CSRF_FAILED"
     default_message = "CSRF検証に失敗しました。"
-    status_code = 403
-
-    default_message = "この操作を実行する権限がありません。"
     status_code = 403
 
 

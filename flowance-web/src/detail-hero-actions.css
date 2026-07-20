@@ -1,0 +1,45 @@
+.client-detail-actions-row,
+.project-detail-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.project-detail-actions-row .project-detail-edit {
+  margin-left: 0;
+}
+
+.client-detail-hero {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.875rem;
+  padding: 1.125rem;
+  border: 0.0625rem solid #e5f2fa;
+  border-radius: 0.875rem;
+  background: #fff;
+  box-shadow: 0 0.875rem 2rem #73a9c314;
+}
+
+.client-detail-identity {
+  gap: 0.875rem;
+}
+
+.client-detail-logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: none;
+  overflow: hidden;
+}
+
+.client-detail-heading h1 {
+  color: #294b5b;
+}
+
+@media (max-width: 47.5rem) {
+  .client-detail-actions-row,
+  .project-detail-actions-row {
+    align-items: center;
+  }
+}

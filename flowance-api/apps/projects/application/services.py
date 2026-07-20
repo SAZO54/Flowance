@@ -27,7 +27,7 @@ from apps.files.models import (
 from apps.files.tasks import delete_stored_file, process_project_icon
 from apps.organizations.models import OrganizationRole
 
-from ..domain.icon import generate_default_icon, icon_text
+from ..domain.icon import generate_default_icon
 from ..models import (
     Project,
     ProjectIconStatus,
@@ -164,7 +164,7 @@ class ProjectService:
             updated_by=membership.user,
             **data,
         )
-        default_icon = generate_default_icon(project.name, project.id)
+        default_icon = generate_default_icon(project.id)
         project.default_icon_text = default_icon.text
         project.default_icon_background_color = default_icon.background_color
         project.default_icon_text_color = default_icon.text_color
@@ -247,12 +247,9 @@ class ProjectService:
             "version": project.version,
         }
         old_file = project.icon_file
-        old_name = project.name
         project.client = client
         for field, value in data.items():
             setattr(project, field, value)
-        if project.name != old_name and project.icon_type == ProjectIconType.DEFAULT:
-            project.default_icon_text = icon_text(project.name)
 
         if icon_file:
             stored_file = _store_icon(

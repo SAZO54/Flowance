@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Flowance Contracts API
-  version: 1.1.0
+  version: 1.2.0
   description: Phase1 契約API。HOURLY、MONTHLY_RANGE、MONTHLY_FIXED、PERFORMANCE を扱う。同一案件内の契約期間重複は禁止する。
 servers:
   - url: http://localhost:8000
@@ -39,6 +39,7 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { description: Contract conflict }
         '422': { $ref: '#/components/responses/UnprocessableEntity' }
   /api/v1/projects/{projectId}/contracts/{contractId}:
     get:
@@ -119,7 +120,7 @@ components:
         currency: { type: string, enum: [JPY] }
         hourlyRate: { type: integer, nullable: true, example: 5000 }
         monthlyRate: { type: integer, nullable: true, example: 800000 }
-        performanceFee: { type: integer, nullable: true }
+        performanceAmount: { type: integer, nullable: true }
         minimumMinutes: { type: integer, nullable: true, example: 8400 }
         maximumMinutes: { type: integer, nullable: true, example: 10800 }
         baseMinutes: { type: integer, nullable: true, example: 9600 }
@@ -133,6 +134,7 @@ components:
         paymentTermsDays: { type: integer, minimum: 0, nullable: true, example: 30 }
         validFrom: { type: string, format: date, example: '2026-07-01' }
         validUntil: { type: string, format: date, nullable: true, example: '2026-12-31' }
+        status: { type: string, enum: [ACTIVE, INACTIVE], default: ACTIVE }
     ContractUpdateRequest:
       allOf:
         - { $ref: '#/components/schemas/ContractCreateRequest' }
@@ -143,10 +145,11 @@ components:
       allOf:
         - { $ref: '#/components/schemas/ContractCreateRequest' }
         - type: object
-          required: [id, projectId, version]
+          required: [id, projectId, status, isCurrent, version, createdAt, updatedAt]
           properties:
             id: { type: string, format: uuid }
             projectId: { type: string, format: uuid }
+            isCurrent: { type: boolean, description: 組織タイムゾーン基準で現在有効な契約か }
             version: { type: integer, example: 1 }
             createdAt: { type: string, format: date-time }
             updatedAt: { type: string, format: date-time }

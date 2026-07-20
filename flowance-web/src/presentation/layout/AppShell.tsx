@@ -1,0 +1,56 @@
+'use client'
+
+import type {ReactNode} from 'react'
+import Link from 'next/link'
+import {usePathname} from 'next/navigation'
+import {Bell, BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Settings, Users} from 'lucide-react'
+import {SidebarProfile} from '@/presentation/components/SidebarProfile'
+
+const navigation = [
+  ['overview', 'ダッシュボード', LayoutDashboard, '/dashboard'],
+  ['schedule', 'スケジュール', CalendarDays, '/schedule'],
+  ['projects', '案件', BriefcaseBusiness, '/case'],
+  ['work', '稼働記録', Clock3, '/timelog'],
+  ['clients', 'クライアント', Users, '/client'],
+  // TODO: Phase2 で収支、請求書、分析の導線を追加する。
+] as const
+
+type AppShellProps = {children: ReactNode; onAddWork?: () => void}
+
+function isNavigationActive(pathname: string, id: string): boolean {
+  if (id === 'projects') return pathname === '/case' || pathname.startsWith('/case/')
+  if (id === 'clients') return pathname === '/client' || pathname.startsWith('/client/')
+  return pathname === navigation.find(([candidate]) => candidate === id)?.[3]
+}
+
+export function AppShell({children, onAddWork}: AppShellProps) {
+  const pathname = usePathname()
+  return <div className="app-shell">
+    <aside className="sidebar">
+      <div className="brand"><span className="brand-mark" aria-hidden="true"><i/><i/><i/></span><span>flowance</span></div>
+      <nav>
+        <p className="nav-label">WORKSPACE</p>
+        {navigation.slice(0, 4).map(([id,label,Icon,path]) => <Link href={path} key={id} className={isNavigationActive(pathname,id)?'active':''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
+        <p className="nav-label lower">INSIGHTS</p>
+        {navigation.slice(4).map(([id,label,Icon,path]) => <Link href={path} key={id} className={isNavigationActive(pathname,id)?'active':''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
+      </nav>
+      <div className="sidebar-bottom">
+        <Link href="/setting" className={pathname==='/setting'?'active':''}><Settings size="1.125rem"/>設定</Link>
+        <SidebarProfile/>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div className="header-inner">
+          <div className="mobile-brand">flowance</div>
+          <div className="search"><Search size="1.0625rem"/><input aria-label="案件・クライアントを検索" placeholder="案件・クライアントを検索"/><kbd>⌘ K</kbd></div>
+          <div className="header-actions">
+            <button type="button" className="icon-btn" aria-label="通知"><Bell size="1.1875rem"/><i/></button>
+            {onAddWork && <button type="button" className="add-btn" onClick={onAddWork}><Plus size="1.0625rem"/>稼働を追加</button>}
+          </div>
+        </div>
+      </header>
+      <section className="content">{children}</section>
+    </main>
+  </div>
+}

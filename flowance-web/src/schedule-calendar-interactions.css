@@ -1,0 +1,116 @@
+.week-calendar,
+.calendar-slot {
+  cursor: pointer;
+}
+
+.calendar-body .event .event-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 400;
+  overflow: visible;
+}
+
+.calendar-body .event .event-meta em {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.125rem 0.3125rem;
+  font-size: 0.625rem;
+  line-height: 1.2;
+}
+
+.calendar-body .event .event-meta b {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-body .event .event-title {
+  display: block;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.month-view > .month-day {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.4375rem;
+  border: 0.0625rem solid #e5f2fa;
+  border-radius: 0.5rem;
+  background: #fbfeff;
+  color: #66716c;
+  font-size: 0.75rem;
+  position: relative;
+}
+
+.month-view > .month-day.muted {
+  opacity: 0.35;
+}
+
+.month-view > .month-day.selected {
+  outline: 0.125rem solid #75a8c7;
+  outline-offset: -0.125rem;
+  background: #e5f2fa;
+}
+
+.month-day-select {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.month-view .month-events {
+  display: flex;
+  align-items: center;
+  gap: 0.1875rem;
+  min-height: 0.75rem;
+  margin-top: 0.4375rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.month-event {
+  flex: 1;
+  min-width: 0.75rem;
+  height: 0.75rem;
+  padding: 0.1875rem 0;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+}
+
+.month-event i {
+  display: block;
+  width: 100%;
+  height: 0.375rem;
+  margin: 0;
+  border-radius: 999rem;
+}
+
+.month-event.editable:hover,
+.month-event.editable:focus-visible {
+  background: rgb(117 168 199 / 18%);
+  outline: 0.0625rem solid rgb(117 168 199 / 45%);
+}
+
+.month-event.actual-event {
+  cursor: default;
+}
+
+.month-event.opening {
+  opacity: 0.55;
+  pointer-events: none;
+}

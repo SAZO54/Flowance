@@ -1,0 +1,77 @@
+diff --git a/flowance-web/src/dashboard-metrics.css b/flowance-web/src/dashboard-metrics.css
+--- a/flowance-web/src/dashboard-metrics.css
++++ b/flowance-web/src/dashboard-metrics.css
+@@ -5,31 +5,30 @@
+   gap: 0.875rem;
+   overflow: hidden;
+   border: 0.0625rem solid #e5f2fa;
+-  border-top-width: 0.25rem;
+   border-radius: 1rem;
+   padding: 1.125rem;
+   box-shadow: 0 0.75rem 1.75rem #75a8c71a;
+   transition: transform 160ms ease, box-shadow 160ms ease;
+ }
+ 
+ .dashboard-api-metrics article:nth-child(1) {
+-  border-top-color: #8dbfd3;
+-  background: linear-gradient(155deg, #fff 12%, #e5f2fa 100%);
++  border-color: #c3e7f6;
++  background: linear-gradient(145deg, #ffffff 0%, #e5f2fa 72%);
+ }
+ 
+ .dashboard-api-metrics article:nth-child(2) {
+-  border-top-color: #a5d1e7;
+-  background: linear-gradient(155deg, #fff 12%, #f2f9fc 100%);
++  border-color: #a5d1e7;
++  background: linear-gradient(145deg, #f8fcfe 0%, #c3e7f6 115%);
+ }
+ 
+ .dashboard-api-metrics article:nth-child(3) {
+-  border-top-color: #75a8c7;
+-  background: linear-gradient(155deg, #fff 12%, #eaf6fb 100%);
++  border-color: #8dbfd3;
++  background: linear-gradient(145deg, #ffffff 0%, #a5d1e799 115%);
+ }
+ 
+ .dashboard-api-metrics article:nth-child(4) {
+-  border-top-color: #c3e7f6;
+-  background: linear-gradient(155deg, #fff 12%, #edf8fd 100%);
++  border-color: #75a8c7;
++  background: linear-gradient(145deg, #e5f2fa 0%, #8dbfd3b8 125%);
+ }
+@@ -64,24 +63,29 @@
+   height: 2.75rem;
+   border: 0.0625rem solid #fff;
+   border-radius: 0.875rem;
+-  background: linear-gradient(145deg, #fff, #e5f2fa);
+-  color: #5799b8;
++  background: #8dbfd3;
++  color: #fff;
+   box-shadow: 0 0.375rem 0.875rem #75a8c71f;
+ }
+ 
+ .dashboard-api-metrics article:nth-child(2) > span {
+-  background: linear-gradient(145deg, #fff, #edf8fd);
+-  color: #75a8c7;
++  background: #c3e7f6;
++  color: #527483;
+ }
+ 
+ .dashboard-api-metrics article:nth-child(3) > span {
+-  background: linear-gradient(145deg, #fff, #dceef7);
+-  color: #4f91ae;
++  background: #75a8c7;
++  color: #fff;
+ }
+ 
+ .dashboard-api-metrics article:nth-child(4) > span {
+-  background: linear-gradient(145deg, #fff, #e5f2fa);
+-  color: #668fa5;
++  background: #a5d1e7;
++  color: #376f89;
+ }
+
++.dashboard-api-metrics article:nth-child(4) p,
++.dashboard-api-metrics article:nth-child(4) small {
++  color: #416779;
+ }

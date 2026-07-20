@@ -108,19 +108,19 @@ DEFAULT アイコンは、クライアントまたは案件の作成時に自動
 
 | 項目 | 説明 |
 | --- | --- |
-| default_icon_text | 表示文字。クライアント名または案件名から生成 |
-| default_icon_background_color | 背景色 |
-| default_icon_text_color | 文字色 |
+| default_icon_text | UUIDのSHA-256から決定する固定16種の動物絵文字 |
+| default_icon_background_color | UUIDのSHA-256から決定する水色系を除く固定淡色8色の背景 |
+| default_icon_text_color | 互換用文字色 `#294B5B` |
 
-初期アイコン色は、名称ではなく client_id または project_id などの安定した ID をハッシュ化し、固定カラーパレットから決定する。
+動物絵文字と背景色は、client_id または project_id の SHA-256 ハッシュの異なるバイトから独立に決定する。同じ UUID では常に同じ組み合わせを再現する。
 
 名称変更時は以下とする。
 
 | 対象 | 方針 |
 | --- | --- |
-| クライアント名変更 | DEFAULT の場合は default_icon_text のみ再生成し、背景色は維持する |
-| 案件名変更 | DEFAULT の場合は default_icon_text のみ再生成し、背景色は維持する |
-| UPLOADED の場合 | アップロード画像を維持する |
+| クライアント名変更 | UUIDベースの動物、背景色、互換用文字色を維持する |
+| 案件名変更 | UUIDベースの動物、背景色、互換用文字色を維持する |
+| UPLOADED の場合 | アップロード画像とフォールバック用初期アイコンを維持する |
 
 ### 4.3 UPLOADED アイコン
 

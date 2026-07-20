@@ -1,52 +1,194 @@
-import React, { useState } from 'react'
-import { BriefcaseBusiness, ChevronRight, CircleDollarSign, Clock3, MoreHorizontal, Plus, Search } from 'lucide-react'
-import type { EventItem, Project, ProjectDetail, ProjectStatus } from '../../domain/models'
-import { scheduledHoursForProject } from '../../application/metrics'
+import Link from 'next/link'
+import {
+  CalendarRange,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  RefreshCw,
+  Search,
+  Users,
+} from 'lucide-react'
+import type {
+  ProjectListItem,
+  ProjectPagination,
+  ProjectStatus,
+} from '@/domain/project'
 
-export function ProjectsPage({events, projects, projectDetails, onAdd}:{events: EventItem[]; projects: Project[]; projectDetails: Record<string, ProjectDetail>; onAdd: () => void}) {
-  const [query, setQuery] = useState('')
-  const [status, setStatus] = useState<'all' | ProjectStatus>('all')
-  const filteredProjects = projects.filter(project => {
-    const detail = projectDetails[project.id]
-    const matchesQuery = (project.name + project.client).toLowerCase().includes(query.toLowerCase())
-    return matchesQuery && (status === 'all' || detail.status === status)
-  })
-  const scheduledHours = (projectId: string) => scheduledHoursForProject(events, projectId)
-  const formatDate = (value?: string) => value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.replace(/-/g, '/') : value || '未設定'
-  const activeCount = projects.filter(project => projectDetails[project.id]?.status === 'active').length
-  const attentionCount = projects.filter(project => projectDetails[project.id]?.status === 'attention').length
-  const totalBudget = projects.reduce((sum, project) => sum + Number(projectDetails[project.id]?.budget.replace(/[^0-9]/g, '') ?? 0), 0)
+export type ProjectStatusFilter = 'ALL' | ProjectStatus
 
+type ProjectsPageProps = {
+  projects: ProjectListItem[]
+  pagination: ProjectPagination
+  query: string
+  status: ProjectStatusFilter
+  hasLoaded: boolean
+  isLoading: boolean
+  error: string | null
+  onQueryChange: (query: string) => void
+  onStatusChange: (status: ProjectStatusFilter) => void
+  onPageChange: (page: number) => void
+  onRetry: () => void
+  onAdd: () => void
+}
+
+const statusLabels: Record<ProjectStatus, string> = {
+  ACTIVE: '進行中',
+  PAUSED: '一時停止',
+  COMPLETED: '完了',
+  ARCHIVED: 'アーカイブ',
+}
+
+const statusTabs: {value: ProjectStatusFilter; label: string}[] = [
+  {value: 'ALL', label: 'すべて'},
+  {value: 'ACTIVE', label: '進行中'},
+  {value: 'PAUSED', label: '一時停止'},
+  {value: 'COMPLETED', label: '完了'},
+  {value: 'ARCHIVED', label: 'アーカイブ'},
+]
+
+function formatDate(value: string | null): string {
+  return value?.replaceAll('-', '/') ?? '未設定'
+}
+
+function formatDateRange(project: ProjectListItem): string {
+  if (!project.startDate && !project.endDate) return '未設定'
+  return `${formatDate(project.startDate)} — ${formatDate(project.endDate)}`
+}
+
+function formatUpdatedAt(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
+}
+
+function ProjectIcon({project}: {project: ProjectListItem}) {
+  const canShowImage = project.icon.type === 'UPLOADED'
+    && project.icon.status === 'READY'
+    && project.icon.url
+
+  return <span
+    className="project-card-icon entity-default-icon"
+    aria-hidden="true"
+    style={{
+      background: project.icon.backgroundColor,
+      color: project.icon.textColor,
+    }}
+  >
+    {canShowImage
+      ? <img src={project.icon.url ?? ''} alt=""/>
+      : project.icon.defaultText}
+  </span>
+}
+
+export function ProjectsPage({
+  projects,
+  pagination,
+  query,
+  status,
+  hasLoaded,
+  isLoading,
+  error,
+  onQueryChange,
+  onStatusChange,
+  onPageChange,
+  onRetry,
+  onAdd,
+}: ProjectsPageProps) {
   return <div className="projects-page">
     <div className="projects-titlebar">
-      <div><p className="eyebrow">PROJECTS</p><h1>案件</h1><p>進行中の案件、稼働時間、予算をまとめて管理します。</p></div>
-      <button className="add-btn" onClick={onAdd}><Plus size="1.0625rem"/>新しい案件</button>
+      <div>
+        <p className="eyebrow">PROJECTS</p>
+        <h1>案件</h1>
+        <p>案件の基本情報、状態、管理期間を確認できます。</p>
+      </div>
+      <button type="button" className="add-btn" onClick={onAdd}>
+        <Plus size="1.0625rem"/>新しい案件
+      </button>
     </div>
 
-    <div className="project-summary">
-      <article><span className="summary-icon"><BriefcaseBusiness size="1.125rem"/></span><div><p>進行中の案件</p><strong>{activeCount}<small> 件</small></strong></div></article>
-      <article><span className="summary-icon"><CircleDollarSign size="1.125rem"/></span><div><p>契約金額合計</p><strong>¥{totalBudget.toLocaleString()}</strong></div></article>
-      <article><span className="summary-icon"><Clock3 size="1.125rem"/></span><div><p>今週の予定稼働</p><strong>{events.reduce((sum,event)=>sum+event.end-event.start,0)}<small> h</small></strong></div></article>
-    </div>
-
-    <section className="projects-panel">
+    <section className="projects-panel" aria-busy={isLoading}>
       <div className="projects-toolbar">
-        <div className="project-tabs"><button className={status==='all'?'active':''} onClick={()=>setStatus('all')}>すべて <b>{projects.length}</b></button><button className={status==='active'?'active':''} onClick={()=>setStatus('active')}>進行中 <b>{activeCount}</b></button><button className={status==='attention'?'active':''} onClick={()=>setStatus('attention')}>確認待ち <b>{attentionCount}</b></button></div>
-        <label className="project-search"><Search size="0.9375rem"/><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="案件・クライアントを検索"/></label>
+        <div className="project-tabs" aria-label="案件ステータス">
+          {statusTabs.map(tab => <button
+            type="button"
+            key={tab.value}
+            className={status === tab.value ? 'active' : ''}
+            onClick={() => onStatusChange(tab.value)}
+          >{tab.label}</button>)}
+        </div>
+        <label className="project-search">
+          <Search size="0.9375rem"/>
+          <input
+            value={query}
+            onChange={event => onQueryChange(event.target.value)}
+            placeholder="案件・クライアントを検索"
+            aria-label="案件・クライアントを検索"
+          />
+        </label>
       </div>
 
-      <div className="project-card-grid">{filteredProjects.map(project => {
-        const detail = projectDetails[project.id]
-        return <article className="project-card" key={project.id}>
-          <div className="project-card-head"><div className="project-card-icon" style={{background:project.soft,color:project.color}}>{project.name.slice(0,1)}</div><span className={'project-status '+detail.status}>{detail.statusLabel}</span><button aria-label="その他"><MoreHorizontal size="1.125rem"/></button></div>
-          <div className="project-card-title"><h2>{project.name}</h2><p>{project.client}</p></div>
-          <div className="project-card-progress"><div><span>進捗</span><strong>{detail.progress}%</strong></div><div className="progress"><i style={{width:detail.progress+'%',background:project.color}}/></div></div>
-          <dl><div><dt>契約金額</dt><dd>{detail.budget}</dd></div><div><dt>期間</dt><dd>{formatDate(detail.startDate)} — {formatDate(detail.endDate || (detail as ProjectDetail & {deadline?: string}).deadline)}</dd></div></dl>
-          <div className="project-hours"><div><span>今月の稼働</span><strong>{detail.usedHours} / {detail.targetHours}h</strong></div><div><span>今週の予定</span><strong>{scheduledHours(project.id)}h</strong></div></div>
-          <button className="project-detail-button">案件詳細を見る <ChevronRight size="0.9375rem"/></button>
-        </article>
-      })}</div>
-      {!filteredProjects.length && <div className="projects-empty"><Search size="1.5rem"/><strong>該当する案件がありません</strong><p>検索条件を変更してお試しください。</p></div>}
+      {isLoading && <div className="projects-loading" role="status">
+        <RefreshCw size="1.25rem" aria-hidden="true"/>
+        <span>案件を読み込んでいます</span>
+      </div>}
+
+      {!isLoading && error && <div className="projects-empty projects-error" role="alert">
+        <strong>案件を読み込めませんでした</strong>
+        <p>{error}</p>
+        <button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button>
+      </div>}
+
+      {!isLoading && !error && hasLoaded && projects.length === 0 && <div className="projects-empty">
+        <Search size="1.5rem"/>
+        <strong>{query || status !== 'ALL' ? '条件に一致する案件がありません' : '案件がまだ登録されていません'}</strong>
+        <p>{query || status !== 'ALL' ? '検索条件を変更してお試しください。' : '「新しい案件」から最初の案件を登録できます。'}</p>
+      </div>}
+
+      {!isLoading && !error && projects.length > 0 && <>
+        <div className="project-result-meta">{pagination.totalItems}件の案件</div>
+        <div className="project-card-grid">{projects.map(project => <Link className="project-card-link" href={`/case/${project.id}`} key={project.id}>
+          <article className="project-card">
+          <div className="project-card-head">
+            <ProjectIcon project={project}/>
+            <span className={`project-status ${project.status.toLowerCase()}`}>
+              {statusLabels[project.status]}
+            </span>
+          </div>
+          <div className="project-card-title">
+            <h2>{project.name}</h2>
+            <p>{project.client.name}</p>
+          </div>
+          {project.description && <p className="project-card-description">{project.description}</p>}
+          <dl>
+            <div>
+              <dt>管理期間</dt>
+              <dd>{formatDateRange(project)}</dd>
+            </div>
+          </dl>
+          <div className="project-card-meta">
+            <span><Users size="0.875rem"/>{project.members.length}名</span>
+            <span><CalendarRange size="0.875rem"/>更新 {formatUpdatedAt(project.updatedAt)}</span>
+          </div>
+        </article></Link>)}</div>
+
+        {pagination.totalPages > 1 && <nav className="project-pagination" aria-label="案件一覧ページ">
+          <button
+            type="button"
+            disabled={!pagination.hasPrevious}
+            onClick={() => onPageChange(pagination.page - 1)}
+          ><ChevronLeft size="0.875rem"/>前へ</button>
+          <span>{pagination.page} / {pagination.totalPages}</span>
+          <button
+            type="button"
+            disabled={!pagination.hasNext}
+            onClick={() => onPageChange(pagination.page + 1)}
+          >次へ<ChevronRight size="0.875rem"/></button>
+        </nav>}
+      </>}
     </section>
   </div>
 }
