@@ -1,5 +1,3 @@
-"""Framework-independent exceptions shared by domain and application layers."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -70,10 +68,6 @@ class ConcurrentModificationError(ConflictError):
                 }
             ]
         )
-
-
-class DomainValidationError(FlowanceError):
-    pass
 
 
 class InfrastructureError(FlowanceError):

@@ -1,5 +1,3 @@
-"""Tenant and schedule permission checks."""
-
 from apps.common.exceptions import AuthorizationError, ResourceNotFoundError
 from apps.organizations.models import (
     OrganizationMember,

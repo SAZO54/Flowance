@@ -1,5 +1,3 @@
-"""Pure schedule validation and weekly-template expansion rules."""
-
 from __future__ import annotations
 
 import uuid
@@ -7,7 +5,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
-from apps.common.exceptions import DomainValidationError
+from apps.common.domain.errors import DomainValidationError
 
 
 class InvalidScheduleTimeRangeError(DomainValidationError):
@@ -93,8 +91,6 @@ def validate_work_schedule(
 
 
 def document_day_of_week(value: date) -> int:
-    """Convert Python Monday=0 into Flowance Sunday=0."""
-
     return (value.weekday() + 1) % 7
 
 

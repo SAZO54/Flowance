@@ -1,5 +1,3 @@
-"""Account persistence models."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -17,8 +15,6 @@ from apps.common.models import (
 
 
 def normalize_email_for_comparison(email: str) -> str:
-    """Normalize only for comparison; provider-specific rewriting is forbidden."""
-
     return email.strip().lower()
 
 
@@ -29,8 +25,6 @@ class UserManager(BaseUserManager):
         return super().get_queryset().filter(deleted_at__isnull=True)
 
     def get_by_natural_key(self, username: str):
-        """Authenticate with the same normalization used by the unique column."""
-
         return self.get(
             **{self.model.USERNAME_FIELD: normalize_email_for_comparison(username)}
         )

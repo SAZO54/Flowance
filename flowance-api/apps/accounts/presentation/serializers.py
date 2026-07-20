@@ -1,5 +1,3 @@
-"""HTTP boundary serializers for authentication."""
-
 from types import SimpleNamespace
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 

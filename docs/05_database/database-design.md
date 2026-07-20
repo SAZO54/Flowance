@@ -32,6 +32,8 @@ Phase1の対象は、認証、組織、基本権限、クライアント、案�
 
 - DBはPostgreSQLを採用する。
 - スキーマ管理はDjango ORMとDjango Migrationで行う。
+- Migrationファイルは `apps/<app>/migrations/` にapp単位で配置し、中央の単一ディレクトリへ集約しない。
+- 適用済みMigrationは履歴の一部として保持し、配置変更や内容の書き換えを行わない。
 - Phase1では単一DB、共有スキーマ、organization_idによるテナント分離とする。
 - 業務データは原則organization_idを持つ。
 - 金額は整数の最小通貨単位で保持する。JPYでは円単位のintegerまたはbigintとする。
@@ -753,3 +755,4 @@ Phase1のDBは計算結果を保持し、計算過程はcalculation_snapshotに�
 | 2026-07-11 | 1.1 | Phase1対象へ全面整理。請求書、入金、ACCOUNTANTをPhase2へ移動。Django/DRF/PostgreSQL前提へ統一。normalized_email、Cloudflare R2、Celery/Redis、契約期間重複制約、月額固定契約、成果報酬契約、アイコン元画像保持、DRAFT中心の稼働実績方針を反映。 |
 | 2026-07-09 | 1.0 | 初版作成。 |
 | 2026-07-20 | 1.3 | project_contracts追加項目、期間重複制約、精算参照時の論理削除条件、workload_rate非推奨を反映 |
+| 2026-07-20 | 1.4 | Django app単位のMigration配置と適用済みMigration不変方針を明記 |

@@ -1,5 +1,3 @@
-"""SimpleJWT token and cookie adapter."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

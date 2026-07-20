@@ -1,7 +1,7 @@
-import '@/contract-management.css'
-import '@/edit-form-hierarchy.css'
-import '@/date-time-picker.css'
-import '@/date-picker-extensions.css'
+import '@/presentation/features/contracts/styles/contract-management.css'
+import '@/styles/shared/edit-form-hierarchy.css'
+import '@/styles/shared/date-time-picker.css'
+import '@/styles/shared/date-picker-extensions.css'
 import {AppShell} from '@/presentation/layout/AppShell'
 import {ContractEditComposition} from './ContractEditComposition'
 

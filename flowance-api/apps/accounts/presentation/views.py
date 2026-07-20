@@ -1,5 +1,3 @@
-"""DRF views for the Phase1 authentication API."""
-
 from django.conf import settings
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator

@@ -1,5 +1,3 @@
-"""Individual work schedule and generation use cases."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,12 +1,10 @@
-"""Framework-independent validation for project contract conditions."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping
 from decimal import Decimal
 from typing import Any
 
-from apps.common.exceptions import DomainValidationError
+from apps.common.domain.errors import DomainValidationError
 
 
 class InvalidContractConditionError(DomainValidationError):

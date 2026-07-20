@@ -150,30 +150,41 @@ flowance-api/
     asgi.py
     wsgi.py
     celery.py
-  flowance/
+  apps/
     accounts/
     organizations/
     clients/
     projects/
     contracts/
-    work_schedules/
+    schedules/
     work_records/
     settlements/
-    audits/
-    shared/
+    audit_logs/
+    common/
   tests/
-    unit/
-    integration/
-    api/
+    integration/          # 複数appを横断する統合テスト
+    system/               # 設定、health check等の全体テスト
 
 機能モジュール内部:
 
-projects/
+```text
+apps/projects/
   domain/
   application/
   infrastructure/
-  presentation/api/
+  presentation/
+  migrations/             # Django app単位のMigration
+  tests/
+    domain/
+    application/
+    infrastructure/
+    presentation/
   apps.py
+```
+
+単一appのDomain、Application、Infrastructure、Presentationを検証するテストはapp内へ配置する。複数appの業務フローやシステム全体を検証するテストだけをルートの `tests/` へ配置する。
+
+Django Migrationはapp labelとmigration nameの組で管理されるため、各app直下の `migrations/` に配置する。中央の単一Migrationディレクトリへ集約せず、既に適用済みのMigrationファイルは移動しない。
 
 ## 8. モジュール境界
 
@@ -351,3 +362,4 @@ Phase1 主要API:
 | 日付 | バージョン | 内容 |
 | --- | --- | --- |
 | 2026-07-10 | 1.0 | Phase1用に Django / DRF 前提のバックエンドクリーンアーキテクチャ設計書へ更新 |
+| 2026-07-20 | 1.1 | app内レイヤー別テストとルート横断テストのハイブリッド配置、app単位Migration配置を明記 |

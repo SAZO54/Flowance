@@ -22,7 +22,7 @@ from apps.projects.models import Project
 from apps.schedules.models import WorkSchedule, WorkScheduleStatus
 from apps.work_records.models import WorkRecord, WorkRecordStatus
 
-from ..domain.calculation import calculate_amounts
+from ..domain.calculation import SettlementContractTerms, calculate_amounts
 from ..models import (
     IdempotencyKey,
     MonthlyProjectSettlement,
@@ -189,12 +189,28 @@ def _contract_snapshot(contract):
     return result
 
 
+def _contract_terms(contract):
+    return SettlementContractTerms(
+        contract_type=contract.contract_type,
+        hourly_rate=contract.hourly_rate,
+        monthly_rate=contract.monthly_rate,
+        base_minutes=contract.base_minutes,
+        deduction_rate=contract.deduction_rate,
+        overtime_rate=contract.overtime_rate,
+        performance_amount=contract.performance_amount,
+        tax_rate=contract.tax_rate,
+        withholding_tax_rate=contract.withholding_tax_rate,
+    )
+
+
 def _calculation(membership, project, contract, month, basis):
     scheduled, actual, billable, schedule_count, record_count = _minutes(
         membership, project, month
     )
     target = billable if basis == "ACTUAL" else scheduled
-    amounts = calculate_amounts(contract=contract, target_minutes=target)
+    amounts = calculate_amounts(
+        contract_terms=_contract_terms(contract), target_minutes=target
+    )
     snapshot = {
         "schemaVersion": 1,
         "calculatedAt": timezone.now().isoformat(),

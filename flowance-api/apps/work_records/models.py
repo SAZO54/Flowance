@@ -1,5 +1,3 @@
-"""Work record aggregate and break periods."""
-
 from django.conf import settings
 from django.db import models
 

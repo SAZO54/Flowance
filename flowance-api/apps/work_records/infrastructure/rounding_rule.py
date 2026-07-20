@@ -1,5 +1,3 @@
-"""Resolve the active contract rounding rule without coupling Domain to ORM."""
-
 from dataclasses import dataclass
 from zoneinfo import ZoneInfo
 

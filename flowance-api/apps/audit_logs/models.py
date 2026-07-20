@@ -1,5 +1,3 @@
-"""Append-only audit log persistence model."""
-
 from typing import Any
 
 from django.core.serializers.json import DjangoJSONEncoder

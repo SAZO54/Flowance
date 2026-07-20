@@ -1,5 +1,3 @@
-"""Cookie-based SimpleJWT authentication with CSRF enforcement."""
-
 from django.conf import settings
 from rest_framework.authentication import CSRFCheck
 from rest_framework.permissions import SAFE_METHODS

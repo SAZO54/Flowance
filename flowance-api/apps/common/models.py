@@ -1,5 +1,3 @@
-"""Django ORM building blocks shared by Flowance infrastructure models."""
-
 from __future__ import annotations
 
 import uuid
@@ -11,8 +9,6 @@ from django.utils import timezone
 
 
 class UUIDModel(models.Model):
-    """Abstract model with an application-generated UUID primary key."""
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
@@ -20,8 +16,6 @@ class UUIDModel(models.Model):
 
 
 class TimeStampedModel(models.Model):
-    """Abstract model that records creation and last modification times."""
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,8 +24,6 @@ class TimeStampedModel(models.Model):
 
 
 class VersionedModel(models.Model):
-    """Abstract model carrying the application-managed optimistic-lock version."""
-
     version = models.PositiveIntegerField(default=1, editable=False)
 
     def advance_version(self) -> None:
@@ -99,8 +91,6 @@ class SoftDeleteModel(models.Model):
 
 
 class OrganizationScopedQuerySet(SoftDeleteQuerySet):
-    """QuerySet that makes the tenant predicate visible at every call site."""
-
     def for_organization(self, organization: Any):
         organization_id = getattr(organization, "pk", organization)
         if organization_id is None:
@@ -124,12 +114,6 @@ class AllOrganizationObjectsManager(
 class OrganizationScopedModel(
     UUIDModel, TimeStampedModel, VersionedModel, SoftDeleteModel
 ):
-    """Standard base for mutable, organization-owned aggregate models.
-
-    Repositories must start queries with ``for_organization`` and must not fetch
-    an organization-owned resource by id alone.
-    """
-
     organization = models.ForeignKey(
         "organizations.Organization",
         on_delete=models.PROTECT,

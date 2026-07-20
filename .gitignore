@@ -1,0 +1,57 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.pyre/
+.pytype/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python packaging/build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+
+# Django/runtime-generated files
+media/
+test-media/
+staticfiles/
+*.sqlite3
+*.db
+cookies.txt
+celerybeat-schedule
+celerybeat.pid
+
+# Logs
+*.log
+logs/
+
+# Frontend dependencies and build output
+node_modules/
+.next/
+out/
+.vite/
+.turbo/
+coverage/
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
