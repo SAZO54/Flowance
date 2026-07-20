@@ -11,6 +11,7 @@ export type GetCalendarRangeInput = {
   period: SchedulePeriod
   /** User timezone offset. Phase1 primarily targets Asia/Tokyo. */
   utcOffset?: string
+  weekStartsOn?: 'MONDAY' | 'SUNDAY'
 }
 
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
@@ -57,6 +58,7 @@ export function getCalendarRange({
   anchorDate,
   period,
   utcOffset = '+09:00',
+  weekStartsOn = 'MONDAY',
 }: GetCalendarRangeInput): CalendarRange {
   if (!OFFSET_PATTERN.test(utcOffset)) {
     throw new Error('utcOffset must use +HH:MM or -HH:MM format.')
@@ -68,8 +70,10 @@ export function getCalendarRange({
 
   if (period === 'week') {
     from = new Date(anchor)
-    const daysSinceMonday = (anchor.getUTCDay() + 6) % 7
-    from.setUTCDate(anchor.getUTCDate() - daysSinceMonday)
+    const daysSinceWeekStart = weekStartsOn === 'SUNDAY'
+      ? anchor.getUTCDay()
+      : (anchor.getUTCDay() + 6) % 7
+    from.setUTCDate(anchor.getUTCDate() - daysSinceWeekStart)
     to = new Date(from)
     to.setUTCDate(from.getUTCDate() + 7)
   } else {

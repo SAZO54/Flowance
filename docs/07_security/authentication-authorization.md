@@ -438,3 +438,13 @@ Phase1 では次を未対応とする。
 | 日付 | 版 | 内容 |
 | --- | --- | --- |
 | 2026-07-15 | 1.0 | Phase1 用の認証・認可設計書を新規作成。JWT HttpOnly Cookie、CSRF、normalized_email、OWNER / ADMIN / MEMBER、テナント分離、認証 API、監査ログ、未対応事項を定義。 |
+
+## 17. Settings権限（2026-07-21追加）
+
+| 操作 | OWNER | ADMIN | MEMBER |
+|---|---|---|---|
+| 設定取得 | 可 | 可 | 可 |
+| 自身のプロフィール・表示設定更新 | 可 | 可 | 可 |
+| 組織・事業情報更新 | 可 | 不可 | 不可 |
+
+permissionsは全ロールへsettings:readとsettings:self:update、OWNERへsettings:organization:updateとsettings:business:updateを付与する。PATCHはCookie JWTとCSRFを必須とし、organization/businessを含む非OWNERリクエストは全体を403にする。監査ログには連絡先・自己紹介・住所の生値を保存しない。

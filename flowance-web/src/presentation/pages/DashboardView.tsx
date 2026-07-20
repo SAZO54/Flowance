@@ -7,6 +7,7 @@ import {
   ReceiptText,
   RefreshCw,
 } from 'lucide-react'
+import type {DateTimePreferences} from '@/domain/dateTime'
 import type {DashboardData} from '@/domain/dashboard'
 import type {ProjectListItem} from '@/domain/project'
 
@@ -33,16 +34,22 @@ function durationMinutes(startAt: string, endAt: string): number {
     : 0
 }
 
-function formatTime(value: string): string {
+function formatTime(value: string, preferences: DateTimePreferences): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('ja-JP', {hour: '2-digit', minute: '2-digit'}).format(date)
+  return new Intl.DateTimeFormat('ja-JP', {
+    timeZone: preferences.timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: preferences.timeFormat === 'H12',
+  }).format(date)
 }
 
-function formatDate(value: string | Date): string {
+function formatDate(value: string | Date, timezone: string): string {
   const date = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(date.getTime())) return ''
   return new Intl.DateTimeFormat('ja-JP', {
+    timeZone: timezone,
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -50,8 +57,12 @@ function formatDate(value: string | Date): string {
   }).format(date)
 }
 
-function greeting(): string {
-  const hour = new Date().getHours()
+function greeting(timezone: string): string {
+  const hour = Number(new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    hour: '2-digit',
+    hourCycle: 'h23',
+  }).format(new Date()))
   if (hour < 11) return 'おはようございます'
   if (hour < 18) return 'こんにちは'
   return 'こんばんは'
@@ -68,6 +79,11 @@ function ProjectIcon({project}: {project: ProjectListItem}) {
 }
 
 export function DashboardView({data, hasLoaded, isLoading, error, onRetry}: DashboardViewProps) {
+  const preferences = data?.auth.appearance ?? {
+    timezone: 'Asia/Tokyo',
+    weekStartsOn: 'MONDAY' as const,
+    timeFormat: 'H24' as const,
+  }
   const activeRecords = data?.monthWorkRecords.filter(record => record.status !== 'CANCELLED') ?? []
   const monthActualMinutes = activeRecords.reduce((total, record) => total + record.actualMinutes, 0)
   const monthBillableMinutes = activeRecords.reduce((total, record) => total + record.billableMinutes, 0)
@@ -88,8 +104,8 @@ export function DashboardView({data, hasLoaded, isLoading, error, onRetry}: Dash
   return <div className="dashboard-api-page">
     <section className="dashboard-api-welcome">
       <div>
-        <p className="eyebrow">{hasLoaded ? formatDate(new Date()) : ''}</p>
-        <h1>{hasLoaded ? `${greeting()}、${data?.auth.user.displayName ?? ''}さん` : ''}</h1>
+        <p className="eyebrow">{hasLoaded ? formatDate(new Date(), preferences.timezone) : ''}</p>
+        <h1>{hasLoaded ? `${greeting(preferences.timezone)}、${data?.auth.user.displayName ?? ''}さん` : ''}</h1>
         <p>{hasLoaded ? `今日の予定は${activeSchedules.length}件です。` : ''}</p>
       </div>
     </section>
@@ -106,14 +122,14 @@ export function DashboardView({data, hasLoaded, isLoading, error, onRetry}: Dash
 
     <div className="dashboard-api-grid">
       <section className="dashboard-api-panel dashboard-today-panel">
-        <div className="dashboard-api-panel-head"><div><h2>今日の予定</h2><p>{hasLoaded ? formatDate(new Date()) : ''}</p></div><Link href="/schedule">スケジュールを見る<ArrowRight size="0.875rem"/></Link></div>
+        <div className="dashboard-api-panel-head"><div><h2>今日の予定</h2><p>{hasLoaded ? formatDate(new Date(), preferences.timezone) : ''}</p></div><Link href="/schedule">スケジュールを見る<ArrowRight size="0.875rem"/></Link></div>
         {!hasLoaded || isLoading ? <div className="dashboard-api-panel-empty"/> : activeSchedules.length === 0
           ? <p className="dashboard-api-panel-empty">今日の予定はありません。</p>
           : <div className="dashboard-schedule-list">{activeSchedules.map(event => {
             const project = projectById.get(event.projectId)
             return <article key={event.id}>
               <i style={{background: project?.labelColor ?? '#C3E7F6'}}/>
-              <time>{formatTime(event.startAt)} — {formatTime(event.endAt)}</time>
+              <time>{formatTime(event.startAt, preferences)} — {formatTime(event.endAt, preferences)}</time>
               <div><strong>{event.title}</strong><small>{project ? `${project.name} · ${project.client.name}` : ''}</small></div>
               <span>{event.isGenerated ? '定期予定' : '個別予定'}</span>
             </article>
@@ -140,7 +156,7 @@ export function DashboardView({data, hasLoaded, isLoading, error, onRetry}: Dash
             const project = projectById.get(record.projectId)
             return <article key={record.id}>
               <i style={{background: project?.labelColor ?? '#C3E7F6'}}/>
-              <span><strong>{project?.name ?? ''}</strong><small>{formatDate(record.actualStartAt)} · {formatTime(record.actualStartAt)} — {formatTime(record.actualEndAt)}</small></span>
+              <span><strong>{project?.name ?? ''}</strong><small>{formatDate(record.actualStartAt, preferences.timezone)} · {formatTime(record.actualStartAt, preferences)} — {formatTime(record.actualEndAt, preferences)}</small></span>
               <b>{formatMinutes(record.actualMinutes)}</b>
               <em>{record.status === 'CONFIRMED' ? '確定' : '下書き'}</em>
             </article>

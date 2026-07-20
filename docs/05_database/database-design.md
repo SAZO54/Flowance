@@ -756,3 +756,22 @@ Phase1のDBは計算結果を保持し、計算過程はcalculation_snapshotに�
 | 2026-07-09 | 1.0 | 初版作成。 |
 | 2026-07-20 | 1.3 | project_contracts追加項目、期間重複制約、精算参照時の論理削除条件、workload_rate非推奨を反映 |
 | 2026-07-20 | 1.4 | Django app単位のMigration配置と適用済みMigration不変方針を明記 |
+
+## 21. Settings関連テーブル拡張（2026-07-21追加）
+
+### users追加カラム
+
+| カラム | 型 | NULL | 説明 |
+|---|---|---|---|
+| family_name | varchar(100) | NO | 姓。未設定は空文字。 |
+| given_name | varchar(100) | NO | 名。未設定は空文字。 |
+| phone_number | varchar(32) | NO | 電話番号。未設定は空文字。 |
+| bio | text | NO | 自己紹介。未設定は空文字。 |
+| week_starts_on | varchar(10) | NO | MONDAYまたはSUNDAY。 |
+| time_format | varchar(3) | NO | H24またはH12。 |
+| compact_mode | boolean | NO | コンパクト表示。 |
+| version | positive integer | NO | profile/appearance共通の楽観ロック。 |
+
+### organization_business_profiles
+
+Organizationと1対1で、屋号、postal_code、prefecture、address、invoice_registration_number、default_tax_rate、version、created_at、updated_atを保持する。銀行口座はPhase2まで保持しない。default_tax_rateは将来請求用であり、契約・精算の計算元にはしない。

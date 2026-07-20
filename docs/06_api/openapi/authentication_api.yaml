@@ -166,6 +166,14 @@ components:
         email: { type: string, format: email }
         displayName: { type: string }
         timezone: { type: string, example: Asia/Tokyo }
+    AuthAppearance:
+      type: object
+      required: [timezone, weekStartsOn, timeFormat, compactMode]
+      properties:
+        timezone: { type: string, example: Asia/Tokyo }
+        weekStartsOn: { type: string, enum: [MONDAY, SUNDAY] }
+        timeFormat: { type: string, enum: [H24, H12] }
+        compactMode: { type: boolean }
     CurrentOrganization:
       type: object
       required: [id, name, role]
@@ -175,9 +183,10 @@ components:
         role: { type: string, enum: [OWNER, ADMIN, MEMBER] }
     AuthContext:
       type: object
-      required: [user, organization]
+      required: [user, appearance, organization]
       properties:
         user: { $ref: '#/components/schemas/AuthUser' }
+        appearance: { $ref: '#/components/schemas/AuthAppearance' }
         organization: { $ref: '#/components/schemas/CurrentOrganization' }
     MeResponse:
       allOf:

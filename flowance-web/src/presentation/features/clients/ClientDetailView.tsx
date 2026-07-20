@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -11,6 +13,7 @@ import {
   StickyNote,
   UserRound,
 } from 'lucide-react'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import type {ClientListItem} from '@/domain/client'
 
 type ClientDetailViewProps = {
@@ -20,15 +23,17 @@ type ClientDetailViewProps = {
   onRetry: () => void
 }
 
-function formatDateTime(value: string): string {
+function formatDateTime(value: string, timezone: string, hour12: boolean): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
   return new Intl.DateTimeFormat('ja-JP', {
+    timeZone: timezone,
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12,
   }).format(date)
 }
 
@@ -45,6 +50,9 @@ function DetailIcon({client}: {client: ClientListItem}) {
 }
 
 export function ClientDetailView({client, isLoading, error, onRetry}: ClientDetailViewProps) {
+  const {context} = useAuthSession()
+  const timezone = context?.appearance.timezone ?? 'Asia/Tokyo'
+  const hour12 = context?.appearance.timeFormat === 'H12'
   if (isLoading) return <div className="client-detail-state" role="status"><RefreshCw/><p>クライアントを読み込んでいます</p></div>
   if (error) return <div className="client-detail-state" role="alert"><UserRound/><h1>クライアントを表示できません</h1><p>{error}</p><button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/client"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>
   if (!client) return null
@@ -79,8 +87,8 @@ export function ClientDetailView({client, isLoading, error, onRetry}: ClientDeta
         <section className="client-detail-panel">
           <div className="client-detail-panel-head"><div><h2>登録情報</h2><p>システム管理情報</p></div></div>
           <dl className="client-detail-contact">
-            <div><dt><CalendarDays size="0.9375rem"/>登録日時</dt><dd>{formatDateTime(client.createdAt)}</dd></div>
-            <div><dt><Clock3 size="0.9375rem"/>更新日時</dt><dd>{formatDateTime(client.updatedAt)}</dd></div>
+            <div><dt><CalendarDays size="0.9375rem"/>登録日時</dt><dd>{formatDateTime(client.createdAt, timezone, hour12)}</dd></div>
+            <div><dt><Clock3 size="0.9375rem"/>更新日時</dt><dd>{formatDateTime(client.updatedAt, timezone, hour12)}</dd></div>
           </dl>
         </section>
       </aside>

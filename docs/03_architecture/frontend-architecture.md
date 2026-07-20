@@ -222,3 +222,9 @@ Django API には localhost:8000 で接続する。
 | 2026-07-10 | 1.0 | Phase1用のフロントエンドアーキテクチャ設計書へ更新。Next.js App Router、Phase1画面、API Adapter、認証Cookie、ローカル開発構成を整理 |
 | 2026-07-20 | 1.1 | Contracts機能のレイヤー分離と案件配下の契約登録・編集ルートを追加 |
 | 2026-07-20 | 1.2 | CSSを全体・共有・機能固有へ分離する配置方針とCSS Modulesの優先規則を追加 |
+
+## 18. Settings 機能構成（2026-07-21追加）
+
+Settingsはdomain/settings、application/settings、infrastructure/api/settingsApi、presentation/features/settingsへ分離する。App Routerの/settingはComposition RootでSettings APIとContainerを組み立て、任意のUIコンポーネントから直接APIを呼ばない。
+
+AppShellは認証セッションProviderから/auth/meの表示設定を受け取り、サイドバーと表示密度へ反映する。日時表示は利用者タイムゾーンと12/24時間設定、カレンダー範囲は利用者タイムゾーンと週開始曜日を利用する。

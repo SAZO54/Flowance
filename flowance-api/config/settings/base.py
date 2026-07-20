@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "apps.settlements",
     "apps.files",
     "apps.audit_logs",
+    "apps.settings",
     "apps.common",
 ]
 

@@ -1,6 +1,8 @@
 'use client'
 
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {dateKeyInTimeZone, timeZoneOffset} from '@/domain/dateTime'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import type {
   CalendarEvent,
   CreateWorkScheduleCommand,
@@ -19,6 +21,8 @@ export type LoadScheduleQuery = {
   anchorDate: string
   period: SchedulePeriod
   filterProjectId: string
+  utcOffset: string
+  weekStartsOn: 'MONDAY' | 'SUNDAY'
 }
 
 export type LoadScheduleResult = {
@@ -38,13 +42,6 @@ export type ScheduleContainerProps = {
   useCases: ScheduleUseCases
 }
 
-function formatLocalDate(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 function scheduleErrorMessage(cause: unknown): string {
   return cause instanceof Error
     ? cause.message
@@ -52,7 +49,17 @@ function scheduleErrorMessage(cause: unknown): string {
 }
 
 export function ScheduleContainer({useCases}: ScheduleContainerProps) {
-  const today = useMemo(() => formatLocalDate(new Date()), [])
+  const {context} = useAuthSession()
+  const appearance = context?.appearance ?? {
+    timezone: 'Asia/Tokyo',
+    weekStartsOn: 'MONDAY' as const,
+    timeFormat: 'H24' as const,
+    compactMode: false,
+  }
+  const today = useMemo(
+    () => dateKeyInTimeZone(new Date(), appearance.timezone),
+    [appearance.timezone],
+  )
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [projects, setProjects] = useState<ScheduleProject[]>([])
   const [filterProjectId, setFilterProjectId] = useState('all')
@@ -73,7 +80,13 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
     setError(null)
 
     try {
-      const result = await load({anchorDate, period, filterProjectId})
+      const result = await load({
+        anchorDate,
+        period,
+        filterProjectId,
+        utcOffset: timeZoneOffset(appearance.timezone, anchorDate),
+        weekStartsOn: appearance.weekStartsOn,
+      })
       if (currentRequestId !== requestId.current) return
 
       setProjects(result.projects)
@@ -87,7 +100,14 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
     } finally {
       if (currentRequestId === requestId.current) setIsLoading(false)
     }
-  }, [anchorDate, filterProjectId, load, period])
+  }, [
+    anchorDate,
+    appearance.timezone,
+    appearance.weekStartsOn,
+    filterProjectId,
+    load,
+    period,
+  ])
 
   useEffect(() => {
     void refresh()
@@ -134,6 +154,7 @@ export function ScheduleContainer({useCases}: ScheduleContainerProps) {
 
   return (
     <SchedulePage
+      preferences={appearance}
       events={events}
       projects={projects}
       filterProjectId={filterProjectId}

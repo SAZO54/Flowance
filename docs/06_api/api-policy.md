@@ -65,6 +65,7 @@ Flowance Phase1 の REST API 共通仕様を定義する。対象は認証、ク
 - `docs/06_api/openapi/contract_api.yaml`
 - `docs/06_api/openapi/schedule_api.yaml`
 - `docs/06_api/openapi/work_records_api.yaml`
+- `docs/06_api/openapi/settings_api.yaml`
 
 ## 7. 未対応事項
 
@@ -84,3 +85,12 @@ Flowance Phase1 の REST API 共通仕様を定義する。対象は認証、ク
 | 2026-07-15 | 1.1 | Phase1 用 API 設計書として再整理。請求書・入金・分析を Phase2 へ移動。DELETE requestBody 不使用、契約種別、予定重複警告、稼働実績バックエンド計算、Celery / Redis / Cloudflare R2 方針を反映。 |
 | 2026-07-16 | 1.2 | 予定生成 API /work-schedules/generate、dryRun、dayOfWeek定義、生成期間上限100日を反映。 |
 | 2026-07-20 | 1.3 | 契約isCurrent、削除権限・CONTRACT_IN_USE、期間重複式、workloadRate非推奨を反映 |
+
+## 9. Settings API（2026-07-21追加）
+
+- GET /api/v1/settingsで現在利用者・組織の複合設定を取得する。
+- PATCH /api/v1/settingsでprofile、organization、business、appearanceのうち指定した領域だけを一括更新する。
+- requestのversionsは更新する集約のversionだけ必須とし、profile/appearanceはuser、organizationはorganization、businessはbusinessを使う。
+- 複数領域は原子的に更新し、権限違反、入力不正、競合時は部分成功させない。
+- OWNER以外がorganization/businessを含めた場合は403、version不一致は409 CONCURRENT_MODIFICATIONとする。
+- emailはレスポンスのみ、銀行口座・通知設定はPhase2とする。
