@@ -1,3 +1,5 @@
+'use client'
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,6 +18,7 @@ import type {
   WorkRecordStatus,
 } from '@/domain/workRecord'
 import {WorkRecordForm} from '@/presentation/features/workRecords/WorkRecordForm'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {MonthPickerInput} from '@/presentation/components/MonthPickerInput'
 
 export type WorkRecordStatusFilter = 'ALL' | WorkRecordStatus
@@ -58,10 +61,11 @@ function formatMinutes(minutes: number): string {
   return remainder ? `${hours}時間${remainder}分` : `${hours}時間`
 }
 
-function formatDate(value: string): string {
+function formatDate(value: string, timezone: string): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
   return new Intl.DateTimeFormat('ja-JP', {
+    timeZone: timezone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -69,12 +73,14 @@ function formatDate(value: string): string {
   }).format(date)
 }
 
-function formatTime(value: string): string {
+function formatTime(value: string, timezone: string, hour12: boolean): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
   return new Intl.DateTimeFormat('ja-JP', {
+    timeZone: timezone,
     hour: '2-digit',
     minute: '2-digit',
+    hour12,
   }).format(date)
 }
 
@@ -102,6 +108,9 @@ export function WorkRecordsApiPage({
   onSave,
   onDelete,
 }: WorkRecordsApiPageProps) {
+  const {context} = useAuthSession()
+  const timezone = context?.appearance.timezone ?? 'Asia/Tokyo'
+  const hour12 = context?.appearance.timeFormat === 'H12'
   const projectById = new Map(projects.map(project => [project.id, project]))
   const totalActualMinutes = records.reduce((total, record) => total + record.actualMinutes, 0)
   const totalBreakMinutes = records.reduce((total, record) => total + record.breakMinutes, 0)
@@ -140,9 +149,9 @@ export function WorkRecordsApiPage({
           {records.map(record => {
             const project = projectById.get(record.projectId)
             return <div className="work-record-api-row" role="row" key={record.id}>
-              <span>{formatDate(record.actualStartAt)}</span>
+              <span>{formatDate(record.actualStartAt, timezone)}</span>
               <span className="work-record-api-project"><i style={{background: project?.labelColor ?? '#C3E7F6'}}/><span><strong>{project?.name ?? ''}</strong><small>{record.notes ?? project?.client.name ?? ''}</small></span></span>
-              <span>{formatTime(record.actualStartAt)} — {formatTime(record.actualEndAt)}<small>休憩 {formatMinutes(record.breakMinutes)}</small></span>
+              <span>{formatTime(record.actualStartAt, timezone, hour12)} — {formatTime(record.actualEndAt, timezone, hour12)}<small>休憩 {formatMinutes(record.breakMinutes)}</small></span>
               <strong>{formatMinutes(record.actualMinutes)}<small>請求 {formatMinutes(record.billableMinutes)}</small></strong>
               <span className={`record-status ${record.status.toLowerCase()}`}>{statusLabels[record.status]}</span>
               <button type="button" aria-label={`${project?.name ?? '案件'}の稼働記録を編集`} onClick={() => onOpenEdit(record)}><Pencil size="0.9375rem"/></button>

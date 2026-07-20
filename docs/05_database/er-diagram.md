@@ -119,3 +119,8 @@ erDiagram
 | 2026-07-14 | 1.2 | DB設計書内へのER図追加に合わせ、ER図ファイルの変更履歴を更新。 |
 | 2026-07-11 | 1.1 | Phase1 DB設計に合わせてER図を更新。請求書、入金、ACCOUNTANTをPhase2対象外へ移動し、stored_files、background_tasks、project_members、月額固定契約、成果報酬契約、契約期間重複制約方針を反映。 |
 | 2026-07-09 | 1.0 | 初版作成。 |
+
+## Settings関連ER追加（2026-07-21）
+
+- organizations 1 --- 1 organization_business_profiles
+- usersはプロフィール項目、利用者タイムゾーン、週開始、時間表記、表示密度を自身の集約内に保持する。

@@ -12,6 +12,7 @@ export type LoadScheduleInput = {
   period: SchedulePeriod
   filterProjectId?: string | null
   utcOffset?: string
+  weekStartsOn?: 'MONDAY' | 'SUNDAY'
 }
 
 export type LoadScheduleResult = {
@@ -22,9 +23,9 @@ export type LoadScheduleResult = {
 /** Loads the project filter options and calendar events as one screen use case. */
 export async function loadSchedule(
   {scheduleGateway, projectGateway}: LoadScheduleDependencies,
-  {anchorDate, period, filterProjectId, utcOffset}: LoadScheduleInput,
+  {anchorDate, period, filterProjectId, utcOffset, weekStartsOn}: LoadScheduleInput,
 ): Promise<LoadScheduleResult> {
-  const range = getCalendarRange({anchorDate, period, utcOffset})
+  const range = getCalendarRange({anchorDate, period, utcOffset, weekStartsOn})
   const projectIds = filterProjectId && filterProjectId !== 'all'
     ? [filterProjectId]
     : undefined

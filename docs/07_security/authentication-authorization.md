@@ -211,6 +211,8 @@ Refresh Token Cookie を使用する。
 
 Phase1 では現在端末ログアウトを対象とする。全端末ログアウトは Phase2 以降で検討する。
 
+フロントエンドは共通サイドバーの利用者表示をクリックして開くプロフィールメニュー内に、設定画面とログアウトの導線を置く。メニューは外側クリックまたはEscapeキーで閉じられるものとする。ログアウト操作中は再送を防止し、成功時はクライアントの認証コンテキストを破棄して`/login`へ遷移する。失敗時は認証状態を維持し、プロフィールメニュー内へ再試行可能なエラーを表示する。
+
 ### 8.5 ログイン利用者取得
 
 `GET /api/v1/auth/me`
@@ -438,3 +440,13 @@ Phase1 では次を未対応とする。
 | 日付 | 版 | 内容 |
 | --- | --- | --- |
 | 2026-07-15 | 1.0 | Phase1 用の認証・認可設計書を新規作成。JWT HttpOnly Cookie、CSRF、normalized_email、OWNER / ADMIN / MEMBER、テナント分離、認証 API、監査ログ、未対応事項を定義。 |
+
+## 17. Settings権限（2026-07-21追加）
+
+| 操作 | OWNER | ADMIN | MEMBER |
+|---|---|---|---|
+| 設定取得 | 可 | 可 | 可 |
+| 自身のプロフィール・表示設定更新 | 可 | 可 | 可 |
+| 組織・事業情報更新 | 可 | 不可 | 不可 |
+
+permissionsは全ロールへsettings:readとsettings:self:update、OWNERへsettings:organization:updateとsettings:business:updateを付与する。PATCHはCookie JWTとCSRFを必須とし、organization/businessを含む非OWNERリクエストは全体を403にする。監査ログには連絡先・自己紹介・住所の生値を保存しない。

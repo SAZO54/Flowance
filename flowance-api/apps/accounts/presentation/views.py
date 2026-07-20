@@ -31,6 +31,12 @@ def _auth_context_payload(context: AuthContext, *, include_permissions: bool = F
             "displayName": context.user.display_name,
             "timezone": context.user.timezone,
         },
+        "appearance": {
+            "timezone": context.user.timezone,
+            "weekStartsOn": context.user.week_starts_on,
+            "timeFormat": context.user.time_format,
+            "compactMode": context.user.compact_mode,
+        },
         "organization": {
             "id": str(membership.organization.id),
             "name": membership.organization.name,

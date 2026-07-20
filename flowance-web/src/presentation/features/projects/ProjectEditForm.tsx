@@ -119,7 +119,7 @@ export function ProjectEditForm({project, clients, isSubmitting, error, onCancel
         <div className="client-form-section-head"><h2>ラベルカラー</h2><p>カレンダーや案件一覧で使用します。</p></div>
         <div className="project-color-section">
           <fieldset className="project-color-picker"><legend>カラーを選択</legend>{presetColors.map(item => <label key={item} className={normalizedColor === item ? 'selected' : ''}><input type="radio" name="presetColor" value={item} checked={normalizedColor === item} onChange={() => setColor(item)}/><span style={{background: item}}/><b>{item}</b></label>)}</fieldset>
-          <label className="project-custom-color"><span className="field-label">カスタムカラー</span><span className="project-custom-color-control"><input className="project-native-color" type="color" value={colorPickerValue} onChange={event => setColor(event.target.value.toUpperCase())}/><input type="text" value={color} onChange={event => setColor(event.target.value.toUpperCase())} maxLength={7} pattern="#[0-9A-Fa-f]{6}" required/></span></label>
+          <label className="project-custom-color"><span className="field-label">カスタムカラー <i className="required-symbol">※</i></span><span className="project-custom-color-control"><input className="project-native-color" type="color" value={colorPickerValue} onChange={event => setColor(event.target.value.toUpperCase())}/><input type="text" value={color} onChange={event => setColor(event.target.value.toUpperCase())} maxLength={7} pattern="#[0-9A-Fa-f]{6}" required/></span></label>
         </div>
       </section>
       <div className="client-form-actions"><button type="button" onClick={onCancel}>キャンセル</button><button type="submit" disabled={isSubmitting || clients.length === 0}>{isSubmitting ? '保存中…' : '変更を保存'}</button></div>

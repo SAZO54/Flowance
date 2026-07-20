@@ -1,5 +1,7 @@
-import { App } from '../App'
+import '@/presentation/features/settings/styles/settings.css'
+import {AppShell} from '@/presentation/layout/AppShell'
+import {SettingsComposition} from './SettingsComposition'
 
 export default function SettingPage() {
-  return <App />
+  return <AppShell><SettingsComposition/></AppShell>
 }

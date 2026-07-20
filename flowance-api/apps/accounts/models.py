@@ -11,6 +11,7 @@ from apps.common.models import (
     SoftDeleteModel,
     TimeStampedModel,
     UUIDModel,
+    VersionedModel,
 )
 
 
@@ -69,13 +70,43 @@ class UserStatus(models.TextChoices):
     DELETED = "DELETED", "Deleted"
 
 
+class WeekStartsOn(models.TextChoices):
+    MONDAY = "MONDAY", "Monday"
+    SUNDAY = "SUNDAY", "Sunday"
+
+
+class TimeFormat(models.TextChoices):
+    H24 = "H24", "24-hour"
+    H12 = "H12", "12-hour"
+
+
 class User(
-    UUIDModel, TimeStampedModel, SoftDeleteModel, AbstractBaseUser, PermissionsMixin
+    UUIDModel,
+    TimeStampedModel,
+    VersionedModel,
+    SoftDeleteModel,
+    AbstractBaseUser,
+    PermissionsMixin,
 ):
     email = models.EmailField(max_length=254)
     normalized_email = models.EmailField(max_length=254, unique=True, editable=False)
     display_name = models.CharField(max_length=100)
+    family_name = models.CharField(max_length=100, blank=True, default="")
+    given_name = models.CharField(max_length=100, blank=True, default="")
+    phone_number = models.CharField(max_length=32, blank=True, default="")
+    bio = models.TextField(blank=True, default="")
     timezone = models.CharField(max_length=64, default="Asia/Tokyo")
+    week_starts_on = models.CharField(
+        max_length=10,
+        choices=WeekStartsOn.choices,
+        default=WeekStartsOn.MONDAY,
+    )
+    time_format = models.CharField(
+        max_length=3,
+        choices=TimeFormat.choices,
+        default=TimeFormat.H24,
+    )
+    compact_mode = models.BooleanField(default=False)
     status = models.CharField(
         max_length=20, choices=UserStatus.choices, default=UserStatus.ACTIVE
     )

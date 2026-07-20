@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -12,6 +14,7 @@ import {
 } from 'lucide-react'
 import type {ProjectContract} from '@/domain/contract'
 import type {ProjectListItem, ProjectStatus} from '@/domain/project'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {ProjectContractsPanel} from '@/presentation/features/contracts/ProjectContractsPanel'
 
 type ProjectDetailViewProps = {
@@ -44,7 +47,7 @@ function formatDate(value: string | null): string {
   }).format(date)
 }
 
-function formatDateTime(value: string): string {
+function formatDateTime(value: string, timezone: string, hour12: boolean): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
   return new Intl.DateTimeFormat('ja-JP', {
@@ -53,6 +56,7 @@ function formatDateTime(value: string): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12,
   }).format(date)
 }
 
@@ -80,6 +84,9 @@ export function ProjectDetailView({
   onRetry,
   onRetryContracts,
 }: ProjectDetailViewProps) {
+  const {context} = useAuthSession()
+  const timezone = context?.appearance.timezone ?? 'Asia/Tokyo'
+  const hour12 = context?.appearance.timeFormat === 'H12'
   if (isLoading) return <div className="project-detail-state" role="status"><RefreshCw/><p>案件を読み込んでいます</p></div>
   if (error) return <div className="project-detail-state" role="alert"><BriefcaseBusiness/><h1>案件を表示できません</h1><p>{error}</p><button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/case"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>
   if (!project) return null
@@ -131,8 +138,8 @@ export function ProjectDetailView({
         <section className="project-detail-panel">
           <div className="project-detail-panel-head"><div><h2>登録情報</h2><p>システム管理情報</p></div></div>
           <dl className="project-detail-system-info">
-            <div><dt><CalendarDays size="0.9375rem"/>登録日時</dt><dd>{formatDateTime(project.createdAt)}</dd></div>
-            <div><dt><Clock3 size="0.9375rem"/>更新日時</dt><dd>{formatDateTime(project.updatedAt)}</dd></div>
+            <div><dt><CalendarDays size="0.9375rem"/>登録日時</dt><dd>{formatDateTime(project.createdAt, timezone, hour12)}</dd></div>
+            <div><dt><Clock3 size="0.9375rem"/>更新日時</dt><dd>{formatDateTime(project.updatedAt, timezone, hour12)}</dd></div>
           </dl>
         </section>
       </aside>

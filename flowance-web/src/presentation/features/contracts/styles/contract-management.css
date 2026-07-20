@@ -24,7 +24,7 @@
   background: #fff;
   color: #4f91ae;
   padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
 }
@@ -63,13 +63,13 @@
 .contract-empty p {
   max-width: 30rem;
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   line-height: 1.6;
 }
 
 .contract-empty strong {
   color: #294b5b;
-  font-size: 0.8125rem;
+  font-size: 0.85rem;
 }
 
 .contract-panel-state button {
@@ -97,7 +97,7 @@
 
 .current-contract-title span {
   color: #7895a3;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
 }
 
 .current-contract-title h3 {
@@ -123,14 +123,14 @@
 
 .contract-summary-fields dt {
   color: #66808c;
-  font-size: 0.6875rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
 .contract-summary-fields dd {
   margin: 0.25rem 0 0;
   color: #526f7c;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .contract-status {
@@ -153,7 +153,7 @@
 .contract-history h3 {
   margin: 0;
   color: #294b5b;
-  font-size: 0.8125rem;
+  font-size: 0.85rem;
 }
 
 .contract-history ul {
@@ -170,7 +170,7 @@
   border-top: 0.0625rem solid #edf6fa;
   padding: 0.75rem 0;
   color: #66808c;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .contract-history li > div {

@@ -1,0 +1,69 @@
+.sidebar-bottom>a.active{background:#eaf6fb;color:#376f89;font-weight:700;box-shadow:inset 0 0 0 .0625rem #cce7f3}
+.settings-page{display:flex;flex-direction:column;gap:1.125rem}
+.settings-titlebar{display:flex;align-items:flex-end;justify-content:space-between;gap:1.25rem}
+.settings-titlebar h1{font-size:1.8125rem;letter-spacing:-.0625rem;margin:0 0 .4375rem}
+.settings-titlebar>div>p:last-child{font-size: 0.85rem;color:#7895a3;margin:0}
+.settings-saved{background:#edf8fd;color:#376f89;border:.0625rem solid #cce7f3;border-radius:.5rem;padding:.5rem .6875rem;font-size: 0.85rem;font-weight:700}
+.settings-layout{display:grid;grid-template-columns:14.0625rem minmax(0,1fr);gap:.875rem;align-items:start}
+.settings-nav,.settings-panel{background:#fff;border:.0625rem solid #e5f2fa;border-radius:1rem;box-shadow:0 1.125rem 2.75rem #73a9c318}
+.settings-nav{padding:.5rem}
+.settings-nav button{width:100%;border:0;background:transparent;color:#7895a3;border-radius:.5625rem;padding:.6875rem .625rem;display:flex;align-items:center;gap:.5625rem;text-align:left}
+.settings-nav button.active{background:#edf8fd;color:#376f89}
+.settings-nav button>span{display:flex;flex-direction:column;gap:.1875rem;flex:1}
+.settings-nav strong{font-size: 0.85rem}
+.settings-nav small{font-size: 0.85rem;color:#91a7b1}
+.settings-nav button>svg:last-child{opacity:.55}
+.settings-panel{overflow:hidden}
+.settings-section-head{display:flex;align-items:center;justify-content:space-between;padding:1.3125rem 1.4375rem;border-bottom:.0625rem solid #edf6fa}
+.settings-section-head h2{font-size:.9375rem;margin:0 0 .3125rem}
+.settings-section-head p{font-size: 0.85rem;color:#91a7b1;margin:0}
+.settings-avatar{width:2.8125rem;height:2.8125rem;border-radius:.75rem;background:linear-gradient(135deg,#c3e7f6,#e5f2fa);color:#376f89;display:grid;place-items:center;font-size: 0.85rem;font-weight:800}
+.settings-readonly{font-size: 0.85rem;color:#66808c;background:#edf8fd;border-radius:.4375rem;padding:.3125rem .5rem}
+.settings-form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;padding:1.3125rem 1.4375rem}
+.settings-form-grid label{display:flex;flex-direction:column;gap:.4375rem;color:#456676;font-size: 0.85rem;font-weight:700}
+.settings-form-grid label.full{grid-column:1/-1}
+.settings-form-grid input,.settings-form-grid select,.settings-form-grid textarea{width:100%;border:.0625rem solid #dceef7;background:#fbfeff;border-radius:.5rem;padding:.625rem .6875rem;color:#66808c;font-size: 0.85rem;font-weight:400;outline:0}
+.settings-form-grid input:focus,.settings-form-grid select:focus,.settings-form-grid textarea:focus{border-color:#8dbfd3;box-shadow:0 0 0 .1875rem #c3e7f655}
+.settings-form-grid input[readonly],.settings-form-grid select:disabled{background:#f2f7f9;color:#7895a3;cursor:not-allowed}
+.settings-form-grid textarea{min-height:6.25rem;resize:vertical}
+.settings-form-grid label>small{font-size: 0.85rem;color:#91a7b1;font-weight:400}
+.settings-toggle-list{padding:.5rem 1.4375rem 1.25rem}
+.settings-toggle-list>label{display:flex;align-items:center;gap:.9375rem;padding:.9375rem 0;border-bottom:.0625rem solid #edf6fa;cursor:pointer}
+.settings-toggle-list label>span{display:flex;flex-direction:column;gap:.25rem;flex:1}
+.settings-toggle-list strong{font-size: 0.85rem}
+.settings-toggle-list small{font-size: 0.85rem;color:#91a7b1}
+.settings-toggle-list input{position:absolute;opacity:0}
+.settings-toggle-list label>i{width:2.125rem;height:1.1875rem;border-radius:.75rem;background:#dce7ec;position:relative;transition:.2s}
+.settings-toggle-list label>i:after{content:'';position:absolute;width:.9375rem;height:.9375rem;left:.125rem;top:.125rem;border-radius:50%;background:#fff;box-shadow:0 .125rem .3125rem #66808c33;transition:.2s}
+.settings-toggle-list input:checked+i{background:#75a8c7}
+.settings-toggle-list input:checked+i:after{transform:translateX(.9375rem)}
+.compact-setting{padding-top:0}
+.settings-actions{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;padding:.9375rem 1.4375rem;border-top:.0625rem solid #edf6fa;background:#fbfeff}
+.settings-actions>span{margin-right:auto;font-size: 0.85rem;color:#7895a3}
+.settings-actions button,.settings-state button,.settings-banner button{border:.0625rem solid #dceef7;border-radius:.5rem;background:#fff;color:#66808c;padding:.5625rem .875rem;font-size: 0.85rem;font-weight:700}
+.settings-actions button:last-child{background:#75a8c7;border-color:#75a8c7;color:#fff}
+.settings-actions button:disabled{opacity:.5;cursor:not-allowed}
+.settings-state{min-height:20rem;border:.0625rem solid #e5f2fa;border-radius:1rem;background:#fff;display:grid;place-content:center;justify-items:center;gap:.75rem;color:#7895a3}
+.settings-state p{font-size: 0.85rem;margin:0}
+.settings-error{color:#a55461}
+.settings-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;border:.0625rem solid #e7b9c1;background:#fff4f6;border-radius:.625rem;padding:.625rem .75rem;color:#8c4350}
+.settings-banner p{font-size: 0.85rem;margin:0}
+.settings-banner>div{display:flex;gap:.4375rem}
+.settings-banner button{border-color:#e7b9c1;color:#8c4350}
+.app-shell[data-density='compact'] .content{padding-top:1.25rem;padding-bottom:1.75rem}
+.app-shell[data-density='compact'] .projects-page,.app-shell[data-density='compact'] .clients-page,.app-shell[data-density='compact'] .schedule-page,.app-shell[data-density='compact'] .work-records-api-page{gap:.75rem}
+.app-shell[data-density='compact'] .project-card,.app-shell[data-density='compact'] .client-card{padding:.75rem}
+@media(max-width:47.5rem){
+  .settings-titlebar{align-items:flex-start}
+  .settings-titlebar h1{font-size:1.5rem}
+  .settings-layout{grid-template-columns:1fr}
+  .settings-nav{display:flex;overflow-x:auto}
+  .settings-nav button{min-width:8.4375rem}
+  .settings-nav small,.settings-nav button>svg:last-child{display:none}
+  .settings-form-grid{grid-template-columns:1fr;padding:1.125rem}
+  .settings-form-grid label.full{grid-column:auto}
+  .settings-section-head{padding:1.125rem}
+  .settings-toggle-list{padding-left:1.125rem;padding-right:1.125rem}
+  .settings-banner{align-items:flex-start;flex-direction:column}
+}
+

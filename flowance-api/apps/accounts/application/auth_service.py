@@ -10,6 +10,7 @@ from apps.audit_logs.services import AuditLogService
 from apps.common.exceptions import AuthenticationError, ConflictError
 from apps.organizations.models import (
     Organization,
+    OrganizationBusinessProfile,
     OrganizationMember,
     OrganizationMemberStatus,
     OrganizationRole,
@@ -50,6 +51,10 @@ ROLE_PERMISSIONS = {
         "workRecords:update",
         "settlements:calculate",
         "settlements:finalize",
+        "settings:read",
+        "settings:self:update",
+        "settings:organization:update",
+        "settings:business:update",
     ),
     OrganizationRole.ADMIN: (
         "clients:read",
@@ -70,6 +75,8 @@ ROLE_PERMISSIONS = {
         "workRecords:update",
         "settlements:calculate",
         "settlements:finalize",
+        "settings:read",
+        "settings:self:update",
     ),
     OrganizationRole.MEMBER: (
         "clients:read",
@@ -81,6 +88,8 @@ ROLE_PERMISSIONS = {
         "workRecords:readOwn",
         "workRecords:createOwn",
         "workRecords:updateOwn",
+        "settings:read",
+        "settings:self:update",
     ),
 }
 
@@ -144,6 +153,7 @@ class AuthService:
             owner_user=candidate,
             timezone=timezone_name,
         )
+        OrganizationBusinessProfile.objects.create(organization=organization)
         membership = OrganizationMember.objects.create(
             organization=organization,
             user=candidate,
@@ -196,4 +206,7 @@ class AuthService:
 
 
 def permissions_for(role: str) -> tuple[str, ...]:
-    return ROLE_PERMISSIONS.get(role, ())
+    try:
+        return ROLE_PERMISSIONS[OrganizationRole(role)]
+    except (KeyError, ValueError):
+        return ()

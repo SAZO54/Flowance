@@ -641,3 +641,13 @@ totalAmount = taxableAmount + taxAmount - withholdingAmount
 | 日付 | バージョン | 内容 |
 | --- | --- | --- |
 | 2026-07-20 | 1.1 | 契約4種の検証、期間重複制約、現在契約判定、権限、精算参照時の論理削除条件を確定 |
+
+## 17. Settings ユースケース（2026-07-21追加）
+
+Settings自体は独立した集約ではなく、現在利用者のUser、所属Organization、OrganizationBusinessProfileを統合するApplicationユースケースとする。
+
+- profileとappearanceはUser集約に属し、同じUser versionを共有する。
+- organizationはOrganization version、businessはOrganizationBusinessProfile versionで楽観ロックする。
+- 複数領域の更新はUser、Organization、OrganizationBusinessProfileの順にロックし、同一トランザクションで成功または全ロールバックする。
+- OWNERだけがOrganizationと事業情報を更新できる。
+- 更新対象集約ごとに監査ログを作成し、電話番号、自己紹介、住所の生値は監査ログへ複製しない。

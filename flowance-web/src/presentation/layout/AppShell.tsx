@@ -3,8 +3,9 @@
 import type {ReactNode} from 'react'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {Bell, BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Settings, Users} from 'lucide-react'
+import {Bell, BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Users} from 'lucide-react'
 import {SidebarProfile} from '@/presentation/components/SidebarProfile'
+import {AuthSessionProvider, useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 
 const navigation = [
   ['overview', 'ダッシュボード', LayoutDashboard, '/dashboard'],
@@ -23,9 +24,10 @@ function isNavigationActive(pathname: string, id: string): boolean {
   return pathname === navigation.find(([candidate]) => candidate === id)?.[3]
 }
 
-export function AppShell({children, onAddWork}: AppShellProps) {
+function AppShellContent({children, onAddWork}: AppShellProps) {
   const pathname = usePathname()
-  return <div className="app-shell">
+  const {context, failed} = useAuthSession()
+  return <div className="app-shell" data-density={context?.appearance.compactMode ? 'compact' : 'comfortable'}>
     <aside className="sidebar">
       <div className="brand"><span className="brand-mark" aria-hidden="true"><i/><i/><i/></span><span>flowance</span></div>
       <nav>
@@ -35,7 +37,6 @@ export function AppShell({children, onAddWork}: AppShellProps) {
         {navigation.slice(4).map(([id,label,Icon,path]) => <Link href={path} key={id} className={isNavigationActive(pathname,id)?'active':''}><Icon size="1.125rem"/><span>{label}</span></Link>)}
       </nav>
       <div className="sidebar-bottom">
-        <Link href="/setting" className={pathname==='/setting'?'active':''}><Settings size="1.125rem"/>設定</Link>
         <SidebarProfile/>
       </div>
     </aside>
@@ -50,7 +51,11 @@ export function AppShell({children, onAddWork}: AppShellProps) {
           </div>
         </div>
       </header>
-      <section className="content">{children}</section>
+      <section className="content" aria-busy={!context && !failed}>{context ? children : null}</section>
     </main>
   </div>
+}
+
+export function AppShell(props: AppShellProps) {
+  return <AuthSessionProvider><AppShellContent {...props}/></AuthSessionProvider>
 }

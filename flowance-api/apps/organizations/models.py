@@ -86,3 +86,32 @@ class OrganizationMember(UUIDModel, TimeStampedModel, SoftDeleteModel):
 
     def __str__(self) -> str:
         return f"{self.organization_id}:{self.user_id}:{self.role}"
+
+
+class OrganizationBusinessProfile(UUIDModel, TimeStampedModel, VersionedModel):
+    organization = models.OneToOneField(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="business_profile",
+    )
+    business_name = models.CharField(max_length=150, blank=True, default="")
+    postal_code = models.CharField(max_length=8, blank=True, default="")
+    prefecture = models.CharField(max_length=20, blank=True, default="")
+    address = models.CharField(max_length=255, blank=True, default="")
+    invoice_registration_number = models.CharField(
+        max_length=14,
+        blank=True,
+        default="",
+    )
+    default_tax_rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        db_table = "organization_business_profiles"
+
+    def __str__(self) -> str:
+        return f"business-profile:{self.organization_id}"
