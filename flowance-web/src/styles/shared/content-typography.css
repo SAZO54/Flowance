@@ -19,6 +19,14 @@ body small {
   font-size: var(--flowance-supporting-text-size) !important;
 }
 
+/* Compact business-status badges such as draft, confirmed, and active. */
+.app-shell :is(span, em)[class*='-status'],
+.app-shell .dashboard-record-list em,
+.app-shell .client-detail-projects article > span {
+  font-size: var(--flowance-supporting-text-size) !important;
+}
+
+
 /*
  * Form text is a cross-screen design-system rule. `!important` is intentional:
  * feature styles created before the shared CSS split use selectors with different

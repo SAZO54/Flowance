@@ -3,6 +3,11 @@
   cursor: pointer;
 }
 
+.calendar-body .event.editable,
+.calendar-body .event.editable * {
+  font-size: 0.75rem !important;
+}
+
 .calendar-body .event .event-meta {
   display: flex;
   align-items: center;
