@@ -4,6 +4,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import type {ClientListItem, ClientListResult} from '@/domain/client'
 import type {CreateProjectCommand, CreateProjectResult} from '@/domain/projectCreate'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {ProjectCreate} from './ProjectCreate'
 
 export type ProjectCreateUseCases = {
@@ -13,6 +14,8 @@ export type ProjectCreateUseCases = {
 
 export function ProjectCreateContainer({useCases}: {useCases: ProjectCreateUseCases}) {
   const router = useRouter()
+  const {context} = useAuthSession()
+  const canCreate = Boolean(context?.permissions.includes('projects:create'))
   const [clients, setClients] = useState<ClientListItem[]>([])
   const [isLoadingClients, setIsLoadingClients] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,8 +36,12 @@ export function ProjectCreateContainer({useCases}: {useCases: ProjectCreateUseCa
   }, [useCases])
 
   useEffect(() => {
+    if (!canCreate) {
+      router.replace('/case')
+      return
+    }
     void loadClients()
-  }, [loadClients])
+  }, [canCreate, loadClients, router])
 
   const submit = async (command: CreateProjectCommand) => {
     setIsSubmitting(true)
@@ -49,6 +56,8 @@ export function ProjectCreateContainer({useCases}: {useCases: ProjectCreateUseCa
       setIsSubmitting(false)
     }
   }
+  if (!canCreate) return null
+
 
   return <ProjectCreate
     clients={clients}

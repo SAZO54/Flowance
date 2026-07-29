@@ -18,3 +18,16 @@ export type CurrentAuthContext = {
   }
   permissions: string[]
 }
+
+export type LoginCredentials = {
+  email: string
+  password: string
+}
+
+export type RegistrationInput = {
+  email: string
+  password: string
+  displayName: string
+  organizationName: string
+  timezone: string
+}

@@ -2,11 +2,19 @@
   --flowance-field-placeholder: #66808c;
   --flowance-field-value: #45606c;
   --flowance-field-background: #fbfdfb;
-  --flowance-min-font-size: 0.85rem;
-  --flowance-supporting-text-size: 0.75rem;
-  --flowance-field-label-size: 0.9rem;
-  --flowance-field-value-size: var(--flowance-min-font-size);
-  --flowance-data-label: #294b5b;
+  --flowance-supporting-text-size: 0.8125rem;
+  --flowance-field-label-size: 0.75rem;
+  --flowance-field-value-size: 0.9375rem;
+  --flowance-panel-heading-size: 1.0625rem;
+  --flowance-data-label: #1c3a4a;
+}
+
+/* Panel/section headings sit clearly above body text; dialog titles keep their own scale. */
+.app-shell [class$='-head']:not(.modal-head) h2 {
+  color: var(--flowance-data-label);
+  font-size: var(--flowance-panel-heading-size) !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 /* Supplemental copy may sit below the default UI minimum by design. */

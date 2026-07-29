@@ -56,9 +56,10 @@ export function ClientDetailView({client, isLoading, error, onRetry}: ClientDeta
   if (isLoading) return <div className="client-detail-state" role="status"><RefreshCw/><p>クライアントを読み込んでいます</p></div>
   if (error) return <div className="client-detail-state" role="alert"><UserRound/><h1>クライアントを表示できません</h1><p>{error}</p><button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/client"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>
   if (!client) return null
+  const canEdit = Boolean(context?.permissions.includes('clients:update'))
 
   return <div className="client-detail-page">
-    <div className="client-detail-actions-row"><Link className="client-detail-back" href="/client"><ArrowLeft size="1rem"/>クライアント一覧</Link><Link className="client-detail-edit" href={`/client/${client.id}/edit`}><Pencil size="0.9375rem"/>編集</Link></div>
+    <div className="client-detail-actions-row"><Link className="client-detail-back" href="/client"><ArrowLeft size="1rem"/>クライアント一覧</Link>{canEdit && <Link className="client-detail-edit" href={`/client/${client.id}/edit`}><Pencil size="0.9375rem"/>編集</Link>}</div>
     <section className="client-detail-hero">
       <div className="client-detail-identity">
         <DetailIcon client={client}/>

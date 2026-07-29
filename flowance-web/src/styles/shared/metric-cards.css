@@ -1,5 +1,5 @@
 :is(.dashboard-api-metrics, .schedule-stats, .work-summary) article {
-  --metric-ink: #294b5b;
+  --metric-ink: #1c3a4a;
   --metric-muted: #527483;
   --metric-stars: none;
   position: relative;
@@ -126,7 +126,7 @@
 
 .dashboard-api-metrics article:nth-child(2) > span,
 .dashboard-api-metrics article:nth-child(4) > span {
-  color: #4f91ae;
+  color: #2f86b0;
 }
 
 .dashboard-api-metrics article > span svg {

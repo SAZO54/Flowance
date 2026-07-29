@@ -10,6 +10,7 @@ import type {
   ProjectStatus,
 } from '@/domain/project'
 import {ProjectsPage, type ProjectStatusFilter} from '@/presentation/pages/ProjectsPage'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 
 export type ProjectUseCases = {
   list: (query: ProjectListQuery) => Promise<ProjectListResult>
@@ -53,6 +54,8 @@ function projectErrorMessage(cause: unknown): string {
 }
 
 export function ProjectsContainer({useCases}: ProjectsContainerProps) {
+  const {context} = useAuthSession()
+  const canCreate = Boolean(context?.permissions.includes('projects:create'))
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -125,6 +128,7 @@ export function ProjectsContainer({useCases}: ProjectsContainerProps) {
     pagination={pagination}
     query={searchInput}
     status={status}
+    canCreate={canCreate}
     hasLoaded={hasLoaded}
     isLoading={isLoading}
     error={error}

@@ -13,7 +13,7 @@ import {
 } from 'react'
 import {useRouter} from 'next/navigation'
 import type {CurrentAuthContext} from '@/domain/auth'
-import {logoutCurrentSession} from '@/application/auth'
+import {loadCurrentSession, logoutCurrentSession} from '@/application/auth'
 import {ApiError} from '@/infrastructure/api/apiClient'
 import {authApi} from '@/infrastructure/api/authApi'
 
@@ -35,7 +35,7 @@ export function AuthSessionProvider({children}: {children: ReactNode}) {
   const refresh = useCallback(async () => {
     setFailed(false)
     try {
-      setContext(await authApi.getCurrentUser())
+      setContext(await loadCurrentSession(authApi))
     } catch (cause) {
       setContext(null)
       if (cause instanceof ApiError && cause.status === 401) {

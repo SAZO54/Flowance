@@ -3,7 +3,7 @@
 import type {ReactNode} from 'react'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {Bell, BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Users} from 'lucide-react'
+import {BriefcaseBusiness, CalendarDays, Clock3, LayoutDashboard, Plus, Search, Users} from 'lucide-react'
 import {SidebarProfile} from '@/presentation/components/SidebarProfile'
 import {AuthSessionProvider, useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 
@@ -46,8 +46,9 @@ function AppShellContent({children, onAddWork}: AppShellProps) {
           <div className="mobile-brand">flowance</div>
           <div className="search"><Search size="1.0625rem"/><input aria-label="案件・クライアントを検索" placeholder="案件・クライアントを検索"/><kbd>⌘ K</kbd></div>
           <div className="header-actions">
-            <button type="button" className="icon-btn" aria-label="通知"><Bell size="1.1875rem"/><i/></button>
-            {onAddWork && <button type="button" className="add-btn" onClick={onAddWork}><Plus size="1.0625rem"/>稼働を追加</button>}
+            {onAddWork
+              ? <button type="button" className="add-btn" onClick={onAddWork}><Plus size="1.0625rem"/>稼働を追加</button>
+              : <Link className="add-btn" href="/timelog?action=create"><Plus size="1.0625rem"/>稼働を追加</Link>}
           </div>
         </div>
       </header>

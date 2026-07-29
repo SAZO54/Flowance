@@ -1,5 +1,5 @@
-import { App } from '../App'
+import {notFound} from 'next/navigation'
 
 export default function AnalyticsPage() {
-  return <App />
+  notFound()
 }

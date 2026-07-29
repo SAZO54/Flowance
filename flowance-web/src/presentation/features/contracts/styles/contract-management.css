@@ -22,7 +22,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -68,7 +68,7 @@
 }
 
 .contract-empty strong {
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.85rem;
 }
 
@@ -76,7 +76,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.75rem;
 }
 
@@ -102,7 +102,7 @@
 
 .current-contract-title h3 {
   margin: 0.1875rem 0 0;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 1rem;
 }
 
@@ -152,7 +152,7 @@
 
 .contract-history h3 {
   margin: 0;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.85rem;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .contract-history strong {
-  color: #294b5b;
+  color: #1c3a4a;
 }
 
 .contract-history a {
@@ -189,7 +189,7 @@
   height: 1.75rem;
   place-items: center;
   border-radius: 0.375rem;
-  color: #4f91ae;
+  color: #2f86b0;
 }
 
 .contract-history a:hover,

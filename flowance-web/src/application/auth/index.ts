@@ -1,2 +1,5 @@
 export {logoutCurrentSession} from './logout'
+export {loadCurrentSession} from './loadCurrentSession'
+export {loginCurrentSession} from './login'
+export {registerAccount} from './register'
 export type {AuthGateway} from './ports'

@@ -10,6 +10,7 @@ import type {
   ProjectContract,
 } from '@/domain/contract'
 import type {ProjectListItem} from '@/domain/project'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {ContractForm} from './ContractForm'
 
 export type ContractFormUseCases = {
@@ -30,6 +31,9 @@ export function ContractFormContainer({
   useCases: ContractFormUseCases
 }) {
   const router = useRouter()
+  const {context} = useAuthSession()
+  const requiredPermission = contractId ? 'contracts:update' : 'contracts:create'
+  const canEdit = Boolean(context?.permissions.includes(requiredPermission))
   const [project, setProject] = useState<ProjectListItem | null>(null)
   const [contract, setContract] = useState<ProjectContract | undefined>()
   const [isLoading, setIsLoading] = useState(true)
@@ -55,7 +59,13 @@ export function ContractFormContainer({
     }
   }, [contractId, projectId, useCases])
 
-  useEffect(() => { void load() }, [load])
+  useEffect(() => {
+    if (!canEdit) {
+      router.replace(`/case/${projectId}`)
+      return
+    }
+    void load()
+  }, [canEdit, load, projectId, router])
   const back = () => router.push(`/case/${projectId}`)
 
   const save = async (command: ContractWriteCommand | ContractUpdateCommand) => {
@@ -92,6 +102,8 @@ export function ContractFormContainer({
       setIsSubmitting(false)
     }
   }
+
+  if (!canEdit) return null
 
   if (isLoading) return <div className="project-detail-state" role="status"><RefreshCw/><p>契約情報を読み込んでいます</p></div>
   if (!project || (contractId && !contract)) return <div className="project-detail-state" role="alert"><h1>契約を編集できません</h1><p>{error}</p><button type="button" onClick={() => void load()}><RefreshCw size=".875rem"/>再読み込み</button><Link href={`/case/${projectId}`}><ArrowLeft size=".875rem"/>案件詳細へ戻る</Link></div>

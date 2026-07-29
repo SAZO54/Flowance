@@ -1,5 +1,6 @@
 'use client'
 
+import {loadCurrentSession} from '@/application/auth'
 import {listContracts} from '@/application/contracts'
 import {getProject} from '@/application/projects/getProject'
 import {authApi} from '@/infrastructure/api/authApi'
@@ -12,7 +13,7 @@ import {
 
 const useCases: ProjectDetailUseCases = {
   get: projectId => getProject({projectGateway: projectApi}, projectId),
-  getAuth: () => authApi.getCurrentUser(),
+  getAuth: () => loadCurrentSession(authApi),
   listContracts: projectId => listContracts(contractApi, projectId),
 }
 

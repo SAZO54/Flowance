@@ -4,7 +4,7 @@
 
 .app-shell select option:checked {
   background: #e5f2fa;
-  color: #294b5b;
+  color: #1c3a4a;
   font-weight: 400;
 }
 
@@ -25,7 +25,7 @@
   .app-shell select option {
     border-radius: 0.125rem;
     background: #fbfeff;
-    color: #294b5b;
+    color: #1c3a4a;
     padding: 0.5rem 0.625rem;
     font-weight: 400;
   }
@@ -33,13 +33,13 @@
   .app-shell select option:hover,
   .app-shell select option:focus-visible {
     background: #edf8fd;
-    color: #294b5b;
+    color: #1c3a4a;
     font-weight: 400;
   }
 
   .app-shell select option:checked {
     background: #e5f2fa;
-    color: #294b5b;
+    color: #1c3a4a;
     font-weight: 400;
   }
 
