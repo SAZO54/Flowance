@@ -2,6 +2,11 @@
   z-index: 1;
 }
 
+.agenda-list,
+.agenda-list * {
+  font-size: 0.75rem !important;
+}
+
 .calendar-slot {
   display: block;
   width: 100%;
