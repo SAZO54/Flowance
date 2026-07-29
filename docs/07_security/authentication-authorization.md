@@ -348,21 +348,19 @@ Phase1 では主要な認証・認可イベントを監査ログとして記録�
 
 ## 13. レート制限
 
-Phase1 では最低限、次の API をレート制限対象とする。
-
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/token/refresh`
-- `POST /api/v1/auth/register`
-
-具体的な回数はセキュリティ実装時に環境変数で調整可能にする。ログイン失敗回数はユーザー列挙につながらないよう、email 単位だけでなく IP 単位の制限も併用する。
+- `POST /api/v1/auth/register`: IP単位で5回/時。
+- `POST /api/v1/auth/login`: IP単位で10回/5分、かつnormalized_email単位で5回/15分。
+- `POST /api/v1/auth/token/refresh`: IP単位またはToken Subject単位で30回/時。
+- カウンタはRedisに保持し、閾値は環境変数で変更可能にする。
+- 超過時は429 `RATE_LIMITED` と `Retry-After` を返す。
 
 ## 14. パスワード方針
 
-- Django の password hasher を使用する。
-- 平文パスワードを保存しない。
-- パスワードは最低8文字以上とする。
-- よくある弱いパスワードを拒否する。
-- email と同一または displayName と近いパスワードを拒否する。
+- Django の password hasher を使用し、平文パスワードを保存しない。
+- 12文字以上128文字以下とする。
+- 文字種の組み合わせは強制しない。
+- CommonPasswordValidator、UserAttributeSimilarityValidator、NumericPasswordValidatorを適用する。
+- 外部の漏えいパスワードDB照合はPhase2で再検討する。
 - パスワード変更、パスワードリセットは Phase2 以降で扱う。
 
 ## 15. フロントエンド連携
@@ -441,12 +439,12 @@ Phase1 では次を未対応とする。
 | --- | --- | --- |
 | 2026-07-15 | 1.0 | Phase1 用の認証・認可設計書を新規作成。JWT HttpOnly Cookie、CSRF、normalized_email、OWNER / ADMIN / MEMBER、テナント分離、認証 API、監査ログ、未対応事項を定義。 |
 
-## 17. Settings権限（2026-07-21追加）
+## 17. Settings権限（2026-07-30更新）
 
 | 操作 | OWNER | ADMIN | MEMBER |
 |---|---|---|---|
 | 設定取得 | 可 | 可 | 可 |
-| 自身のプロフィール・表示設定更新 | 可 | 可 | 可 |
-| 組織・事業情報更新 | 可 | 不可 | 不可 |
+| 自身のプロフィール更新 | 可 | 可 | 可 |
+| 組織設定更新 | 可 | 可 | 不可 |
 
-permissionsは全ロールへsettings:readとsettings:self:update、OWNERへsettings:organization:updateとsettings:business:updateを付与する。PATCHはCookie JWTとCSRFを必須とし、organization/businessを含む非OWNERリクエストは全体を403にする。監査ログには連絡先・自己紹介・住所の生値を保存しない。
+MEMBERはクライアント・案件・契約を閲覧し、自身の予定・稼働実績を操作できる。マスタ、契約、精算の変更はOWNER / ADMINのみに許可する。案件単位の細粒度権限はPhase3で扱う。

@@ -1,20 +1,36 @@
-.project-card-link {
+.project-card-link,
+.client-card-link {
   display: block;
-  color: inherit;
+  color: #45606c;
   text-decoration: none;
   border-radius: 0.75rem;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.project-card-link .project-card {
+.project-card-link:any-link,
+.client-card-link:any-link,
+.project-card-link:active,
+.client-card-link:active,
+.project-card-link:visited,
+.client-card-link:visited {
+  color: #45606c;
+  text-decoration: none;
+}
+
+.project-card-link .project-card,
+.client-card-link .client-card {
   height: 100%;
 }
 
-.project-card-link:focus-visible {
+.project-card-link:focus-visible,
+.client-card-link:focus-visible {
   outline: 0.1875rem solid #8dbfd3;
   outline-offset: 0.1875rem;
 }
 
-.project-card-link:focus-visible .project-card {
+.project-card-link:focus-visible .project-card,
+.client-card-link:focus-visible .client-card {
   box-shadow: 0 0.875rem 1.875rem #73a9c32e;
 }
 
@@ -48,7 +64,7 @@
 
 .project-status.completed {
   background: #edf8fd;
-  color: #4f91ae;
+  color: #2f86b0;
 }
 
 .project-status.archived {
@@ -112,7 +128,7 @@
 }
 
 .client-card-contact a {
-  color: #4f91ae;
+  color: #2f86b0;
   text-decoration: none;
   overflow-wrap: anywhere;
 }
@@ -122,10 +138,29 @@
   line-height: 1.45;
 }
 
+
 .client-card-updated {
   padding-top: 0.625rem;
   color: #91a7b1;
   font-size: 0.85rem;
+}
+
+.client-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+  color: #91a7b1;
+  font-size: 0.85rem;
+}
+
+.client-card-footer span:last-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  color: #2f86b0;
+  font-weight: 700;
 }
 
 .project-pagination,
@@ -151,7 +186,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;

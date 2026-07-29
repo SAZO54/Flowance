@@ -24,6 +24,7 @@ type ClientsPageProps = {
   pagination: ClientPagination
   query: string
   status: ClientStatusFilter
+  canCreate: boolean
   hasLoaded: boolean
   isLoading: boolean
   error: string | null
@@ -73,6 +74,7 @@ export function ClientsPage({
   clients,
   pagination,
   query,
+  canCreate,
   status,
   hasLoaded,
   isLoading,
@@ -90,9 +92,9 @@ export function ClientsPage({
         <h1>クライアント</h1>
         <p>取引先の基本情報と取引状態を確認できます。</p>
       </div>
-      <button type="button" className="add-btn" onClick={onAdd}>
+      {canCreate && <button type="button" className="add-btn" onClick={onAdd}>
         <Plus size="1.0625rem"/>クライアントを追加
-      </button>
+      </button>}
     </div>
 
     <section className="clients-panel" aria-busy={isLoading}>
@@ -130,7 +132,7 @@ export function ClientsPage({
       {!isLoading && !error && hasLoaded && clients.length === 0 && <div className="client-empty">
         <Users size="1.5625rem"/>
         <strong>{query || status !== 'ALL' ? '条件に一致するクライアントがありません' : 'クライアントがまだ登録されていません'}</strong>
-        <p>{query || status !== 'ALL' ? '検索条件を変更してお試しください。' : '「クライアントを追加」から最初の取引先を登録できます。'}</p>
+        <p>{query || status !== 'ALL' ? '検索条件を変更してお試しください。' : canCreate ? '「クライアントを追加」から最初の取引先を登録できます。' : '登録済みのクライアントはありません。'}</p>
       </div>}
 
       {!isLoading && !error && clients.length > 0 && <>

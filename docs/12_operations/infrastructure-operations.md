@@ -883,3 +883,12 @@ GitHub Actions からのデプロイ失敗時は以下の順で対応する。
 | 2026-07-16 | 1.0 | Phase1用インフラ・運用設計書を新規作成。Next.js直起動、Django/DRF、PostgreSQL、Redis/Celery、Cloudflare R2、監視、バックアップ、障害対応、未対応事項、未確定事項を整理 |
 | 2026-07-16 | 1.1 | GitHub Actions を CI/CD 実行基盤として採用。staging マージ時の STG 自動デプロイ、main マージ時の production 承認付き本番デプロイ、CI/CD フロー、Workflow 構成、Migration 注意点、ロールバック方針を追加 |
 | 2026-07-16 | 1.2 | R2 配信に Cloudflare CDN と custom domain を併用する方針を確定。r2.dev は開発・検証用途に限定し、表示用画像は versioned object key で長期キャッシュする方針、Clean Architecture / DDD 上の責務分離、未確定事項からの除外を反映 |
+
+## 22. APIレート制限（2026-07-30確定）
+
+- カウンタはRedisに保持し、環境変数で閾値を変更可能にする。
+- registerはIP単位で5回/時。
+- loginはIP単位で10回/5分、かつnormalized_email単位で5回/15分。
+- token refreshはIP単位またはToken Subject単位で30回/時。
+- 超過時はHTTP 429、RATE_LIMITED、Retry-Afterを返す。
+- 認証系のレート制限発生数とRedis障害を監視・アラート対象とする。

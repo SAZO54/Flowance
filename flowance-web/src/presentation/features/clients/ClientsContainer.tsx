@@ -10,6 +10,7 @@ import type {
   ClientStatus,
 } from '@/domain/client'
 import {ClientsPage, type ClientStatusFilter} from '@/presentation/pages/ClientsPage'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 
 export type ClientUseCases = {
   list: (query: ClientListQuery) => Promise<ClientListResult>
@@ -44,6 +45,8 @@ function clientErrorMessage(cause: unknown): string {
 }
 
 export function ClientsContainer({useCases}: ClientsContainerProps) {
+  const {context} = useAuthSession()
+  const canCreate = Boolean(context?.permissions.includes('clients:create'))
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -116,6 +119,7 @@ export function ClientsContainer({useCases}: ClientsContainerProps) {
     pagination={pagination}
     query={searchInput}
     status={status}
+    canCreate={canCreate}
     hasLoaded={hasLoaded}
     isLoading={isLoading}
     error={error}

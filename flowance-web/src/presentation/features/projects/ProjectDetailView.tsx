@@ -89,10 +89,11 @@ export function ProjectDetailView({
   const hour12 = context?.appearance.timeFormat === 'H12'
   if (isLoading) return <div className="project-detail-state" role="status"><RefreshCw/><p>案件を読み込んでいます</p></div>
   if (error) return <div className="project-detail-state" role="alert"><BriefcaseBusiness/><h1>案件を表示できません</h1><p>{error}</p><button type="button" onClick={onRetry}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/case"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>
+  const canEditProject = Boolean(context?.permissions.includes('projects:update'))
   if (!project) return null
 
   return <div className="project-detail-page">
-    <div className="project-detail-actions-row"><Link className="project-detail-back" href="/case"><ArrowLeft size="1rem"/>案件一覧</Link><Link className="project-detail-edit" href={`/case/${project.id}/edit`}><Pencil size="0.9375rem"/>編集</Link></div>
+    <div className="project-detail-actions-row"><Link className="project-detail-back" href="/case"><ArrowLeft size="1rem"/>案件一覧</Link>{canEditProject && <Link className="project-detail-edit" href={`/case/${project.id}/edit`}><Pencil size="0.9375rem"/>編集</Link>}</div>
     <section className="project-detail-hero">
       <ProjectIcon project={project}/>
       <div>

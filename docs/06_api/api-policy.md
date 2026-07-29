@@ -21,6 +21,7 @@ Flowance Phase1 の REST API 共通仕様を定義する。対象は認証、ク
 | 領域 | API |
 | --- | --- |
 | 認証 | `/auth/register`, `/auth/login`, `/auth/token/refresh`, `/auth/logout`, `/auth/me` |
+| 設定 | `/settings/profile`, `/settings/organization` |
 | クライアント | `/clients`, `/clients/{clientId}` |
 | 案件 | `/projects`, `/projects/{projectId}` |
 | 契約 | `/projects/{projectId}/contracts`, `/projects/{projectId}/contracts/{contractId}` |
@@ -66,6 +67,7 @@ Flowance Phase1 の REST API 共通仕様を定義する。対象は認証、ク
 - `docs/06_api/openapi/schedule_api.yaml`
 - `docs/06_api/openapi/work_records_api.yaml`
 - `docs/06_api/openapi/settings_api.yaml`
+- `docs/06_api/openapi/settlement_api.yaml`
 
 ## 7. 未対応事項
 
@@ -86,11 +88,20 @@ Flowance Phase1 の REST API 共通仕様を定義する。対象は認証、ク
 | 2026-07-16 | 1.2 | 予定生成 API /work-schedules/generate、dryRun、dayOfWeek定義、生成期間上限100日を反映。 |
 | 2026-07-20 | 1.3 | 契約isCurrent、削除権限・CONTRACT_IN_USE、期間重複式、workloadRate非推奨を反映 |
 
-## 9. Settings API（2026-07-21追加）
+## 9. Settings API（2026-07-30更新）
 
-- GET /api/v1/settingsで現在利用者・組織の複合設定を取得する。
-- PATCH /api/v1/settingsでprofile、organization、business、appearanceのうち指定した領域だけを一括更新する。
-- requestのversionsは更新する集約のversionだけ必須とし、profile/appearanceはuser、organizationはorganization、businessはbusinessを使う。
-- 複数領域は原子的に更新し、権限違反、入力不正、競合時は部分成功させない。
-- OWNER以外がorganization/businessを含めた場合は403、version不一致は409 CONCURRENT_MODIFICATIONとする。
-- emailはレスポンスのみ、銀行口座・通知設定はPhase2とする。
+- GET /api/v1/settings/profile と PATCH /api/v1/settings/profile は認証済み利用者本人が利用する。
+- GET /api/v1/settings/organization は組織メンバー、PATCHは OWNER / ADMIN が利用する。
+- プロフィールは displayName必須100文字以内、lastName / firstName各50文字以内、email 254文字以内かつメール形式、phone数字のみ15桁以内、bio 1000文字以内とする。
+- 組織は name必須150文字以内、tradeName 150文字以内、postalCode 20文字以内、prefecture 20文字以内、address 500文字以内とする。
+- 組織更新では version を必須とし、不一致は409 CONCURRENT_MODIFICATIONとする。
+- 適格請求書発行事業者番号は Phase1 対象外とする。
+
+## 10. 入力バリデーション契約
+
+- パスワードは12文字以上128文字以下とし、Django標準バリデータを適用する。
+- 案件statusは ACTIVE / PAUSED / COMPLETED / ARCHIVED とする。
+- アイコンはJPEG / PNG / WebP、5MB、4096px x 4096px、16,777,216 pixelsを上限とする。
+- スケジュールは workContent必須200文字以内、notes 1000文字以内、状態はPLANNED / CANCELLED / COMPLETEDとする。
+- 稼働実績のnotesは1000文字以内とし、休憩は実績時間内かつ相互に重複しないことを検証する。
+- 項目エラーは400 VALIDATION_ERRORのfieldErrorsで返す。

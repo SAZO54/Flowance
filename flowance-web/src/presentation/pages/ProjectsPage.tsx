@@ -21,6 +21,7 @@ type ProjectsPageProps = {
   pagination: ProjectPagination
   query: string
   status: ProjectStatusFilter
+  canCreate: boolean
   hasLoaded: boolean
   isLoading: boolean
   error: string | null
@@ -88,6 +89,7 @@ export function ProjectsPage({
   projects,
   pagination,
   query,
+  canCreate,
   status,
   hasLoaded,
   isLoading,
@@ -105,9 +107,9 @@ export function ProjectsPage({
         <h1>案件</h1>
         <p>案件の基本情報、状態、管理期間を確認できます。</p>
       </div>
-      <button type="button" className="add-btn" onClick={onAdd}>
+      {canCreate && <button type="button" className="add-btn" onClick={onAdd}>
         <Plus size="1.0625rem"/>新しい案件
-      </button>
+      </button>}
     </div>
 
     <section className="projects-panel" aria-busy={isLoading}>
@@ -145,7 +147,7 @@ export function ProjectsPage({
       {!isLoading && !error && hasLoaded && projects.length === 0 && <div className="projects-empty">
         <Search size="1.5rem"/>
         <strong>{query || status !== 'ALL' ? '条件に一致する案件がありません' : '案件がまだ登録されていません'}</strong>
-        <p>{query || status !== 'ALL' ? '検索条件を変更してお試しください。' : '「新しい案件」から最初の案件を登録できます。'}</p>
+        <p>{query || status !== 'ALL' ? '検索条件を変更してお試しください。' : canCreate ? '「新しい案件」から最初の案件を登録できます。' : '登録済みの案件はありません。'}</p>
       </div>}
 
       {!isLoading && !error && projects.length > 0 && <>

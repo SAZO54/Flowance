@@ -7,6 +7,7 @@ import {useRouter} from 'next/navigation'
 import type {ClientListItem, ClientListResult} from '@/domain/client'
 import type {ProjectListItem} from '@/domain/project'
 import type {UpdateProjectCommand} from '@/domain/projectUpdate'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {ProjectEditForm} from './ProjectEditForm'
 
 export type ProjectEditUseCases = {
@@ -20,6 +21,8 @@ export function ProjectEditContainer({projectId, useCases}: {
   useCases: ProjectEditUseCases
 }) {
   const router = useRouter()
+  const {context} = useAuthSession()
+  const canEdit = Boolean(context?.permissions.includes('projects:update'))
   const [project, setProject] = useState<ProjectListItem | null>(null)
   const [clients, setClients] = useState<ClientListItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -46,8 +49,12 @@ export function ProjectEditContainer({projectId, useCases}: {
   }, [projectId, useCases])
 
   useEffect(() => {
+    if (!canEdit) {
+      router.replace(`/case/${projectId}`)
+      return
+    }
     void load()
-  }, [load])
+  }, [canEdit, load, projectId, router])
 
   const save = async (command: UpdateProjectCommand) => {
     setIsSubmitting(true)
@@ -62,6 +69,8 @@ export function ProjectEditContainer({projectId, useCases}: {
       setIsSubmitting(false)
     }
   }
+
+  if (!canEdit) return null
 
   if (isLoading) return <div className="project-detail-state" role="status"><RefreshCw/><p>案件を読み込んでいます</p></div>
   if (!project) return <div className="project-detail-state" role="alert"><h1>案件を編集できません</h1><p>{error}</p><button type="button" onClick={() => void load()}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/case"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>

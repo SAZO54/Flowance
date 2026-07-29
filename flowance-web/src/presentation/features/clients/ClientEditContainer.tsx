@@ -6,6 +6,7 @@ import {ArrowLeft, RefreshCw} from 'lucide-react'
 import {useRouter} from 'next/navigation'
 import type {ClientListItem} from '@/domain/client'
 import type {UpdateClientCommand} from '@/domain/clientUpdate'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {ClientEditForm} from './ClientEditForm'
 
 export type ClientEditUseCases = {
@@ -18,6 +19,8 @@ export function ClientEditContainer({clientId, useCases}: {
   useCases: ClientEditUseCases
 }) {
   const router = useRouter()
+  const {context} = useAuthSession()
+  const canEdit = Boolean(context?.permissions.includes('clients:update'))
   const [client, setClient] = useState<ClientListItem | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -37,8 +40,12 @@ export function ClientEditContainer({clientId, useCases}: {
   }, [clientId, useCases])
 
   useEffect(() => {
+    if (!canEdit) {
+      router.replace(`/client/${clientId}`)
+      return
+    }
     void load()
-  }, [load])
+  }, [canEdit, clientId, load, router])
 
   const save = async (command: UpdateClientCommand) => {
     setIsSubmitting(true)
@@ -53,6 +60,8 @@ export function ClientEditContainer({clientId, useCases}: {
       setIsSubmitting(false)
     }
   }
+
+  if (!canEdit) return null
 
   if (isLoading) return <div className="client-detail-state" role="status"><RefreshCw/><p>クライアントを読み込んでいます</p></div>
   if (!client) return <div className="client-detail-state" role="alert"><h1>クライアントを編集できません</h1><p>{error}</p><button type="button" onClick={() => void load()}><RefreshCw size="0.875rem"/>再読み込み</button><Link href="/client"><ArrowLeft size="0.875rem"/>一覧へ戻る</Link></div>

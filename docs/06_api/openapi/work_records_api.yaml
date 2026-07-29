@@ -143,7 +143,7 @@ components:
           items: { $ref: '#/components/schemas/BreakPeriod' }
         isBillable: { type: boolean }
         status: { $ref: '#/components/schemas/WorkRecordStatus' }
-        notes: { type: string, nullable: true }
+        notes: { type: string, maxLength: 1000, nullable: true }
     UpdateWorkRecordRequest:
       allOf:
         - $ref: '#/components/schemas/CreateWorkRecordRequest'

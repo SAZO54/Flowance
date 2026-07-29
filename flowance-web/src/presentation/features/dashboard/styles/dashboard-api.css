@@ -5,33 +5,45 @@
 }
 
 .dashboard-api-welcome {
-  min-height: 8rem;
+  position: relative;
+  overflow: hidden;
+  min-height: 9.5rem;
   display: flex;
   align-items: center;
-  border: 0.0625rem solid #e5f2fa;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #e5f2fa, #fff 68%);
-  padding: 1.5rem;
+  border: 0.0625rem solid #dceef7;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 90% 6%, #ffffff 0 8%, transparent 8.4%),
+    radial-gradient(circle at 82% 78%, #c3e7f6 0 15%, transparent 15.4%),
+    linear-gradient(135deg, #e5f2fa 0%, #fff 66%);
+  box-shadow: 0 1.5rem 3.5rem #73a9c31f;
+  padding: 1.75rem 2rem;
 }
 
 .dashboard-api-welcome .eyebrow {
+  position: relative;
+  z-index: 1;
   min-height: 0.875rem;
   margin: 0 0 0.5rem;
 }
 
 .dashboard-api-welcome h1 {
+  position: relative;
+  z-index: 1;
   min-height: 2rem;
   margin: 0;
-  color: #294b5b;
-  font-size: 1.625rem;
-  letter-spacing: -0.04em;
+  color: #1c3a4a;
+  font-size: 1.875rem;
+  letter-spacing: -0.045em;
 }
 
 .dashboard-api-welcome div > p:last-child {
+  position: relative;
+  z-index: 1;
   min-height: 1rem;
-  margin: 0.4375rem 0 0;
-  color: #7895a3;
-  font-size: 0.85rem;
+  margin: 0.5625rem 0 0;
+  color: #5f7f8f;
+  font-size: 0.9375rem;
 }
 
 .dashboard-api-status {
@@ -70,7 +82,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -129,7 +141,7 @@
   min-height: 1.375rem;
   display: block;
   margin: 0.3125rem 0 0.1875rem;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 1.0625rem;
 }
 
@@ -143,9 +155,9 @@
 .dashboard-api-panel {
   overflow: hidden;
   border: 0.0625rem solid #e5f2fa;
-  border-radius: 0.875rem;
+  border-radius: 1.125rem;
   background: #fff;
-  box-shadow: 0 0.875rem 2rem #73a9c314;
+  box-shadow: 0 1.125rem 2.75rem #73a9c322;
 }
 
 .dashboard-recent-panel {
@@ -163,7 +175,7 @@
 
 .dashboard-api-panel-head h2 {
   margin: 0;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.875rem;
 }
 
@@ -179,7 +191,7 @@
   align-items: center;
   gap: 0.25rem;
   flex: none;
-  color: #4f91ae;
+  color: #2f86b0;
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
@@ -241,7 +253,7 @@
 .dashboard-project-list strong,
 .dashboard-record-list strong {
   overflow: hidden;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.85rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -260,7 +272,7 @@
 .dashboard-schedule-list article > span {
   border-radius: 0.375rem;
   background: #edf8fd;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.25rem 0.4375rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -320,7 +332,7 @@
 .dashboard-record-list em {
   border-radius: 0.375rem;
   background: #edf8fd;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.25rem 0.4375rem;
   font-size: 0.85rem;
   font-style: normal;

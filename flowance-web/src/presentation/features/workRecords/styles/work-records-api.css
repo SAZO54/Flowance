@@ -34,7 +34,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   padding: 0.5rem 1.75rem 0.5rem 0.625rem;
   font-size: 0.85rem;
 }
@@ -72,7 +72,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -150,7 +150,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.4375rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
 }
 
 .record-status.cancelled {
@@ -176,7 +176,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -226,7 +226,7 @@
 
 .work-record-modal-head h2 {
   margin: 0;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 1.0625rem;
 }
 
@@ -265,7 +265,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.5rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   padding: 0.625rem 0.6875rem;
   font: inherit;
   font-size: 0.85rem;
@@ -311,7 +311,7 @@
 }
 
 .work-record-breaks h3 {
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.85rem;
 }
 
@@ -328,7 +328,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.4375rem;
   background: #fff;
-  color: #4f91ae;
+  color: #2f86b0;
   padding: 0.5rem 0.6875rem;
   font-size: 0.85rem;
   font-weight: 700;

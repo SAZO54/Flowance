@@ -1,12 +1,12 @@
 'use client'
 
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, Mail } from 'lucide-react'
+import Link from 'next/link'
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import {loginCurrentSession} from '@/application/auth'
+import {authApi} from '@/infrastructure/api/authApi'
 import styles from './login.module.css'
-
-type ApiError = {message?: string; details?: Array<{message?: string}>}
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,17 +21,7 @@ export default function LoginPage() {
     setError('')
     setSubmitting(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-        body: JSON.stringify({email: email.trim(), password}),
-      })
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => ({}))) as ApiError
-        const detail = payload.details?.find(item => item.message)?.message
-        throw new Error(detail ?? payload.message ?? 'メールアドレスまたはパスワードを確認してください。')
-      }
+      await loginCurrentSession(authApi, {email: email.trim(), password})
       router.replace('/dashboard')
       router.refresh()
     } catch (cause) {
@@ -48,7 +38,7 @@ export default function LoginPage() {
         <div className={styles.copy}>
           <p className={styles.eyebrow}>WORK, IN A BETTER FLOW</p>
           <h1>仕事の流れを、<br/><span>もっと軽やかに。</span></h1>
-          <p>案件、稼働、請求まで。フリーランスの毎日を、ひとつの場所で心地よく整えます。</p>
+          <p>案件、予定、稼働まで。フリーランスの毎日を、ひとつの場所で心地よく整えます。</p>
         </div>
         <div className={styles.preview} aria-hidden="true">
           <div className={styles.previewHeader}><span>今月の稼働</span><b>順調です</b></div>
@@ -79,7 +69,7 @@ export default function LoginPage() {
             {submitting ? <><LoaderCircle className={styles.spinner} size={18}/>ログイン中...</> : 'ログイン'}
           </button>
         </form>
-        <p className={styles.support}>ログインでお困りの場合は、管理者にお問い合わせください。</p>
+        <p className={styles.support}>はじめてご利用ですか？ <Link href="/register">アカウントを作成</Link></p>
       </div>
     </section>
   </main>

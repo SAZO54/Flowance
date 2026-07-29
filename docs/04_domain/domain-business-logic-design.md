@@ -28,7 +28,7 @@
 
 ### 1.3 レイヤー方針
 
-業務ルールは原則として Spring Boot の Domain 層または Application 層へ置く。
+業務ルールは原則として Django アプリケーション内の Domain 相当層または Application 相当層へ置く。
 
 | レイヤー | 責務 |
 | --- | --- |
@@ -185,7 +185,7 @@ Client は Projects の内部実装へ依存しない。案件数、累計売上
 | Value Object | 内容 | 主な制約 |
 | --- | --- | --- |
 | EmailAddress | メールアドレス | 小文字正規化、形式検証 |
-| Money | 金額 | BigDecimal、通貨、原則0以上 |
+| Money | 金額 | decimal.Decimal、通貨、原則0以上 |
 | TaxRate | 税率 | 0〜100 |
 | TimeRange | 日時範囲 | start < end |
 | DateRange | 日付範囲 | from <= until |
@@ -313,6 +313,8 @@ FINALIZED は終端状態とする。
 | ACCOUNTANT | 精算・請求・入金系の操作 |
 
 MEMBER の案件アクセスは ProjectMember で制御する。
+
+Phase1ではクライアント・案件・契約の閲覧と、自身の予定・稼働実績の操作を許可する。マスタ、契約、精算の変更は OWNER / ADMIN のみに許可し、案件単位の細粒度権限は Phase3 で扱う。
 
 ### 6.3 初期アイコン生成
 
@@ -620,8 +622,8 @@ totalAmount = taxableAmount + taxAmount - withholdingAmount
 
 ## 10. 実装時の注意点
 
-- Domain 層は Spring Boot、JPA、HTTP、Redis、Storage に依存しない。
-- 金額は BigDecimal を使用し、浮動小数点を使用しない。
+- Domain 層は Django、Django ORM、HTTP、Redis、Storage に依存しない。
+- 金額は Python の decimal.Decimal と Django DecimalField を使用し、浮動小数点を使用しない。
 - 日時は UTC で保存し、表示時に利用者 timezone へ変換する。
 - API の DELETE では requestBody を使用せず、version は query parameter で受け取る。
 - 計算結果はフロントエンドから受け取らず、バックエンドで再現可能にする。
@@ -629,25 +631,13 @@ totalAmount = taxableAmount + taxAmount - withholdingAmount
 - 非同期処理は BackgroundTask と状態をDBで追跡する。
 - Phase2 の請求・入金・分析に依存する画面やメニューは TODO として明示し、Phase1 実装範囲から外す。
 
-## 11. 未確定事項
+## 11. Phase1 対応結果と将来検討
 
-| 項目 | 内容 |
+| 項目 | Phase1採用方針 |
 | --- | --- |
-| 金額端数処理 | 税額、源泉徴収、合計額の丸め方式 |
-| 月額精算の控除計算 | 控除対象を baseMinutes 差分にするか minimumMinutes 差分にするか |
-| MEMBER権限 | 案件単位の編集権限をどこまで細分化するか |
-| 請求・入金 | Phase2 でAPI・画面・状態遷移を再確定する |
-## 12. 変更履歴
-| 日付 | バージョン | 内容 |
-| --- | --- | --- |
-| 2026-07-20 | 1.1 | 契約4種の検証、期間重複制約、現在契約判定、権限、精算参照時の論理削除条件を確定 |
-
-## 17. Settings ユースケース（2026-07-21追加）
-
-Settings自体は独立した集約ではなく、現在利用者のUser、所属Organization、OrganizationBusinessProfileを統合するApplicationユースケースとする。
-
-- profileとappearanceはUser集約に属し、同じUser versionを共有する。
-- organizationはOrganization version、businessはOrganizationBusinessProfile versionで楽観ロックする。
-- 複数領域の更新はUser、Organization、OrganizationBusinessProfileの順にロックし、同一トランザクションで成功または全ロールバックする。
-- OWNERだけがOrganizationと事業情報を更新できる。
-- 更新対象集約ごとに監査ログを作成し、電話番号、自己紹介、住所の生値は監査ログへ複製しない。
+| 契約期間重複 | 同一案件内は禁止、別案件間は許可。Application検証とPostgreSQL exclusion constraintで担保 |
+| 金額端数処理 | 消費税と源泉徴収は税率単位で1回だけROUND_DOWN。丸め済み金額から合計を算出 |
+| 月額精算の控除計算 | baseMinutesとの差分を控除・超過計算に使用 |
+| MEMBER権限 | 閲覧と自身の予定・実績操作を許可。マスタ・契約・精算変更はOWNER / ADMINのみ |
+| 案件単位の細粒度権限 | Phase3で扱う |
+| 請求・入金 | Phase2でAPI・画面・状態遷移を確定する |

@@ -1,8 +1,9 @@
 'use client'
 
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import type {CreateClientCommand, CreateClientResult} from '@/domain/clientCreate'
+import {useAuthSession} from '@/presentation/providers/AuthSessionProvider'
 import {ClientCreate} from './ClientCreate'
 
 export type ClientCreateUseCases = {
@@ -11,8 +12,14 @@ export type ClientCreateUseCases = {
 
 export function ClientCreateContainer({useCases}: {useCases: ClientCreateUseCases}) {
   const router = useRouter()
+  const {context} = useAuthSession()
+  const canCreate = Boolean(context?.permissions.includes('clients:create'))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    if (!canCreate) router.replace('/client')
+  }, [canCreate, router])
+
 
   const submit = async (command: CreateClientCommand) => {
     setIsSubmitting(true)
@@ -27,6 +34,8 @@ export function ClientCreateContainer({useCases}: {useCases: ClientCreateUseCase
       setIsSubmitting(false)
     }
   }
+  if (!canCreate) return null
+
 
   return <ClientCreate
     isSubmitting={isSubmitting}

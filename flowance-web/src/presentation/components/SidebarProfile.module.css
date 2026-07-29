@@ -68,7 +68,7 @@
   border: 0.0625rem solid #d9e6e0;
   border-radius: 0.875rem;
   background: #fff;
-  color: #294b5b;
+  color: #1c3a4a;
   box-shadow: 0 1rem 2.5rem rgba(29, 54, 45, 0.2), 0 0.25rem 0.75rem rgba(29, 54, 45, 0.08);
 }
 
@@ -91,7 +91,7 @@
 
 .menu :is(a, button):hover {
   background: #e5f2fa;
-  color: #294b5b;
+  color: #1c3a4a;
 }
 
 .menu button:disabled {

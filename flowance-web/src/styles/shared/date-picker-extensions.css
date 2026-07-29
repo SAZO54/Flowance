@@ -33,7 +33,7 @@
   border: 0.0625rem solid #a5d1e7;
   border-radius: 0.125rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   padding: 0.4375rem 0.5rem;
   font-size: 0.85rem;
   font-weight: 400;
@@ -41,7 +41,7 @@
 
 .date-time-picker-time-selects option {
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   font-weight: 400;
 }
 
@@ -85,7 +85,7 @@
   border: 0;
   border-radius: 0.125rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.85rem;
   font-weight: 400;
 }
@@ -120,7 +120,7 @@
   border: 0.0625rem solid #a5d1e7;
   border-radius: 0.125rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   padding: 0.5rem;
   font-size: 0.85rem;
 }

@@ -143,6 +143,10 @@ erDiagram
 | normalized_email | varchar(254) | NO | 重複判定用。trimと小文字化で生成。UNIQUE。 |
 | password | varchar(128) | NO | Djangoハッシュ済みパスワード。平文は保持しない。 |
 | display_name | varchar(100) | NO | 表示名。 |
+| last_name | varchar(50) | YES | 姓。 |
+| first_name | varchar(50) | YES | 名。 |
+| phone | varchar(20) | YES | 電話番号。入力は数字のみ15桁以内。 |
+| bio | varchar(1000) | YES | 自己紹介。 |
 | timezone | varchar(64) | NO | 利用者タイムゾーン。例: Asia/Tokyo。 |
 | status | varchar(20) | NO | ACTIVE, SUSPENDED, DELETED。 |
 | is_active | boolean | NO | Django互換。有効ユーザーか。 |
@@ -167,6 +171,10 @@ erDiagram
 |---|---|---|---|
 | id | uuid | NO | 主キー。 |
 | name | varchar(150) | NO | 組織名。 |
+| trade_name | varchar(150) | YES | 屋号。 |
+| postal_code | varchar(20) | YES | 郵便番号。 |
+| prefecture | varchar(20) | YES | 都道府県。 |
+| address | varchar(500) | YES | 住所。 |
 | owner_user_id | uuid | NO | 初期OWNER。usersテーブルのidを参照。 |
 | currency | char(3) | NO | 既定通貨。Phase1はJPY中心。 |
 | timezone | varchar(64) | NO | 組織既定タイムゾーン。 |
@@ -276,7 +284,7 @@ erDiagram
 | postal_code | varchar(20) | YES | 郵便番号。 |
 | address | text | YES | 住所。 |
 | status | varchar(20) | NO | ACTIVE, INACTIVE。 |
-| notes | text | YES | 備考。 |
+| notes | varchar(1000) | YES | メモ。 |
 | icon_type | varchar(20) | NO | DEFAULT, UPLOADED。 |
 | icon_status | varchar(20) | NO | READY, PENDING, PROCESSING, FAILED。 |
 | icon_file_id | uuid | YES | stored_filesテーブルのidを参照。DEFAULT時はnull、UPLOADED時はnot null。 |
@@ -307,7 +315,7 @@ erDiagram
 | name | varchar(150) | NO | 案件名。クライアント内で論理削除されていない名前は一意。 |
 | description | text | YES | 説明。 |
 | label_color | char(7) | NO | カレンダー表示色。 |
-| status | varchar(20) | NO | ACTIVE, INACTIVE, COMPLETED。 |
+| status | varchar(20) | NO | ACTIVE, PAUSED, COMPLETED, ARCHIVED。 |
 | start_date | date | YES | 案件管理上の開始日。契約期間ではない。 |
 | end_date | date | YES | 案件管理上の終了日。契約期間ではない。 |
 | workload_rate | numeric(5,2) | YES | 後方互換用の非推奨項目。0から100。Phase1 UIでは非表示。 |
@@ -411,11 +419,11 @@ erDiagram
 | project_id | uuid | NO | projectsテーブルのidを参照。 |
 | user_id | uuid | NO | 担当利用者。usersテーブルのidを参照。 |
 | weekly_schedule_id | uuid | YES | 生成元週次予定。project_weekly_schedulesテーブルのidを参照。 |
-| title | varchar(150) | NO | 表示タイトル。 |
+| work_content | varchar(200) | NO | 作業内容。 |
 | scheduled_start_at | timestamptz | NO | 予定開始日時。 |
 | scheduled_end_at | timestamptz | NO | 予定終了日時。scheduled_start_atより後。 |
 | break_minutes | integer | NO | 予定休憩分。0以上。 |
-| status | varchar(20) | NO | PLANNED, CANCELLED。 |
+| status | varchar(20) | NO | PLANNED, CANCELLED, COMPLETED。 |
 | is_generated | boolean | NO | 週次予定から生成されたか。 |
 | is_manually_overridden | boolean | NO | 手動上書きされたか。 |
 | notes | text | YES | 備考。 |

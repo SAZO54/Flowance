@@ -49,7 +49,7 @@
   border-radius: 0.125rem;
   background: #fbfeff;
   box-shadow: 0 0.625rem 1.5rem rgb(117 168 199 / 18%);
-  color: #294b5b;
+  color: #1c3a4a;
 }
 
 .date-time-picker-head {
@@ -120,7 +120,7 @@
   border: 0;
   border-radius: 0.125rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   font-size: 0.85rem;
   font-weight: 400;
 }
@@ -133,7 +133,7 @@
 
 .date-time-picker-days button.selected {
   background: #e5f2fa;
-  color: #294b5b;
+  color: #1c3a4a;
 }
 
 .date-time-picker-days button.outside {
@@ -181,7 +181,7 @@
   border: 0.0625rem solid #dceef7;
   border-radius: 0.125rem;
   background: #fbfeff;
-  color: #294b5b;
+  color: #1c3a4a;
   padding: 0.4375rem 0.5rem;
   font-size: 0.85rem;
 }
