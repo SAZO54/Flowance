@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: Flowance Client API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /clients:
+    post:
+      operationId: createClient
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ClientInput'
+                - type: object
+                  properties:
+                    icon:
+                      type: string
+                      format: binary
+                      description: JPEG, PNG, or WebP; max 5 MB, 4096x4096, 16777216 pixels.
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: VALIDATION_ERROR
+  /clients/{clientId}:
+    patch:
+      operationId: updateClient
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ClientInput'
+                - type: object
+                  required: [version]
+                  properties:
+                    version:
+                      type: integer
+                      minimum: 1
+                    icon:
+                      type: string
+                      format: binary
+      responses:
+        '200':
+          description: Updated
+        '409':
+          description: CONCURRENT_MODIFICATION
+components:
+  schemas:
+    ClientInput:
+      type: object
+      required: [name, status]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        contactName:
+          type: string
+          maxLength: 100
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          pattern: '^[0-9]{1,15}$'
+        postalCode:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+          maxLength: 1000

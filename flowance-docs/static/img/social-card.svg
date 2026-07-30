@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="FLOWANCE Docs">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect x="72" y="72" width="1056" height="486" rx="32" fill="#f8fafc"/>
+  <path d="M142 376c86 0 86-90 172-90s86 90 172 90 86-90 172-90 86 90 172 90 86-90 172-90" fill="none" stroke="#0f766e" stroke-width="26" stroke-linecap="round"/>
+  <text x="140" y="186" font-family="Arial, sans-serif" font-size="58" font-weight="700" fill="#0f172a">FLOWANCE Docs</text>
+  <text x="140" y="250" font-family="Arial, sans-serif" font-size="30" fill="#334155">docs/を正本にしたHTML設計書サイト</text>
+  <text x="140" y="484" font-family="Arial, sans-serif" font-size="26" fill="#0f766e">Notionは入口、HTMLは閲覧、履歴はPhaseごとに固定</text>
+</svg>

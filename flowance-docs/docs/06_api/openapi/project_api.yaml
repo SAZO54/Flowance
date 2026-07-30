@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Flowance Project API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /projects:
+    post:
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ProjectInput'
+                - type: object
+                  properties:
+                    icon:
+                      type: string
+                      format: binary
+                      description: JPEG, PNG, or WebP; max 5 MB, 4096x4096, 16777216 pixels.
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: VALIDATION_ERROR
+  /projects/{projectId}:
+    patch:
+      operationId: updateProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ProjectInput'
+                - type: object
+                  required: [version]
+                  properties:
+                    version:
+                      type: integer
+                      minimum: 1
+      responses:
+        '200':
+          description: Updated
+        '409':
+          description: CONCURRENT_MODIFICATION
+components:
+  schemas:
+    ProjectInput:
+      type: object
+      required: [name, clientId, status]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        clientId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ACTIVE, PAUSED, COMPLETED, ARCHIVED]
+        description:
+          type: string
+          maxLength: 1000
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          description: Must be on or after startDate.
+        notes:
+          type: string
+          maxLength: 1000

@@ -2,17 +2,17 @@
 
 ## 0. Mandatory Workflow for Agents
 
-Before executing any request from the chat, agents must first inspect this AGENTS.md and the relevant files under /docs/.
+Before executing any request from the chat, agents must first inspect this AGENTS.md and the relevant files under /flowance-docs/docs/.
 
 Required workflow:
 
 1. Read this AGENTS.md.
-2. Inspect the relevant files under /docs/.
-3. Treat /docs/ as the current source of truth for Flowance specifications.
-4. Execute the user request in a way that is consistent with /docs/.
-5. If the chat request conflicts with /docs/, clearly explain the conflict and ask for direction before making a conflicting change.
+2. Inspect the relevant files under /flowance-docs/docs/.
+3. Treat /flowance-docs/docs/ as the current source of truth for Flowance specifications.
+4. Execute the user request in a way that is consistent with /flowance-docs/docs/.
+5. If the chat request conflicts with /flowance-docs/docs/, clearly explain the conflict and ask for direction before making a conflicting change.
 
-Do not rely only on prior assumptions. Do not rely on outdated technology choices from old conversations. Current project decisions are documented under /docs/.
+Do not rely only on prior assumptions. Do not rely on outdated technology choices from old conversations. Current project decisions are documented under /flowance-docs/docs/.
 
 ---
 
@@ -66,11 +66,11 @@ Current main directories:
 
 Directory roles:
 
-- docs: Requirements, design documents, API design, database design, architecture, security, operations, testing, and ADRs.
+- flowance-docs: Dedicated Docusaurus documentation site. Its `docs/` directory contains requirements, design documents, API design, database design, architecture, security, operations, testing, ADRs, and OpenAPI YAML.
 - flowance-api: Django / DRF backend API and Celery worker.
 - flowance-web: Next.js frontend.
 
-When a directory name in older documents differs from the current repository, prefer the actual current directory names while preserving the architecture described in /docs/.
+When a directory name in older documents differs from the current repository, prefer the actual current directory names while preserving the architecture described in /flowance-docs/docs/.
 
 Do not split Flowance into separate repositories unless the user explicitly decides to change the repository strategy.
 
@@ -214,7 +214,7 @@ Do not implement the following as Phase1 production features unless the user exp
 - Complex approval workflows
 - Multi-currency settlement
 
-When these appear in existing UI, keep them hidden, commented out, or clearly marked as Phase2 according to /docs/.
+When these appear in existing UI, keep them hidden, commented out, or clearly marked as Phase2 according to /flowance-docs/docs/.
 
 ---
 
@@ -289,7 +289,7 @@ colors: {
 
 Flowance backend uses Django pragmatically while following Clean Architecture and DDD-inspired responsibility separation.
 
-All backend design and implementation must follow Clean Architecture and Domain-Driven Design principles as defined in /docs/. Agents must model business concepts in the Domain layer first, orchestrate use cases in the Application layer, and keep framework, database, storage, HTTP, and Celery details in outer layers.
+All backend design and implementation must follow Clean Architecture and Domain-Driven Design principles as defined in /flowance-docs/docs/. Agents must model business concepts in the Domain layer first, orchestrate use cases in the Application layer, and keep framework, database, storage, HTTP, and Celery details in outer layers.
 
 Recommended backend app layout:
 
@@ -373,7 +373,7 @@ Contract period overlap rule:
 - Overlap is allowed across different projects.
 - Enforce overlap with both Application validation and PostgreSQL exclusion constraint.
 - Store valid_from and valid_until as ordinary columns.
-- Use daterange expression in the database constraint rather than storing a dedicated DateRangeField unless /docs/ is changed.
+- Use daterange expression in the database constraint rather than storing a dedicated DateRangeField unless /flowance-docs/docs/ is changed.
 
 ### 6.4 Money and settlement
 
@@ -381,7 +381,7 @@ Contract period overlap rule:
 - Use DecimalField in Django.
 - Use numeric in PostgreSQL.
 - Do not use float for money.
-- Tax, withholding tax, and total amount rounding must follow the rules in /docs/.
+- Tax, withholding tax, and total amount rounding must follow the rules in /flowance-docs/docs/.
 - Monthly range settlement uses base_minutes difference as the basis for deduction and overtime calculation.
 
 ### 6.5 Schedule generation
@@ -399,7 +399,7 @@ Contract period overlap rule:
 - Backend calculates actualMinutes and billableMinutes.
 - Frontend must not send calculated actualMinutes or billableMinutes as source-of-truth values.
 - Phase1 is DRAFT-centered.
-- Strict DRAFT / CONFIRMED operation is Phase2 or later unless /docs/ changes.
+- Strict DRAFT / CONFIRMED operation is Phase2 or later unless /flowance-docs/docs/ changes.
 
 ### 6.7 Files and icons
 
@@ -410,7 +410,7 @@ Contract period overlap rule:
 - Do not store file binaries in PostgreSQL.
 - Keep original uploaded image path using a clear column such as original_image_path where relevant.
 - Generated display images should use versioned object keys for cache safety.
-- SVG is not allowed for Phase1 icon upload unless /docs/ changes.
+- SVG is not allowed for Phase1 icon upload unless /flowance-docs/docs/ changes.
 
 ---
 
@@ -522,7 +522,7 @@ Celery handles:
 - Old image deletion
 - Orphan file cleanup
 - Outbox event processing when introduced
-- Other slow or retryable background work documented in /docs/
+- Other slow or retryable background work documented in /flowance-docs/docs/
 
 Rules:
 
@@ -572,7 +572,7 @@ Before handing off code changes, run the smallest meaningful verification that m
 - Prefer small, focused changes.
 - Do not edit generated or unrelated files unnecessarily.
 - Keep documents and implementation consistent when a change affects both.
-- Use /docs/ as the source for deciding whether a behavior belongs to Phase1.
+- Use /flowance-docs/docs/ as the source for deciding whether a behavior belongs to Phase1.
 
 ---
 
@@ -610,12 +610,12 @@ When instructions conflict, use this priority:
 
 1. System and developer instructions from the current Codex session.
 2. Explicit user request in the current chat.
-3. Current /docs/ specifications.
+3. Current /flowance-docs/docs/ specifications.
 4. This AGENTS.md.
 5. Existing code conventions.
 6. Older conversation assumptions.
 
-If a higher-priority instruction conflicts with /docs/, explain the conflict and make the smallest safe change needed to satisfy the user.
+If a higher-priority instruction conflicts with /flowance-docs/docs/, explain the conflict and make the smallest safe change needed to satisfy the user.
 
 ---
 

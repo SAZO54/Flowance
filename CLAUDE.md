@@ -6,14 +6,14 @@ Before reviewing any pull request, you MUST:
 
 1. Read the repository-root `AGENTS.md` in full.
 2. Identify the areas affected by the pull request.
-3. Read the relevant specifications and design documents under `docs/`.
-4. Treat `docs/` as the current source of truth, following the decision priority and workflow defined in `AGENTS.md`.
+3. Read the relevant specifications and design documents under `flowance-docs/docs/`.
+4. Treat `flowance-docs/docs/` as the current source of truth, following the decision priority and workflow defined in `AGENTS.md`.
 
 Do not review from the diff alone. Do not rely only on general framework conventions or prior assumptions.
 
 ## Specification Consistency Review
 
-Compare the pull request with `AGENTS.md` and the relevant documents under `docs/`.
+Compare the pull request with `AGENTS.md` and the relevant documents under `flowance-docs/docs/`.
 
 Verify that:
 
@@ -33,7 +33,7 @@ If the documents are ambiguous or conflict with each other, report the ambiguity
 
 ## Primary Review Focus: Clean Architecture and DDD
 
-This is a high-priority review requirement. Review whether the implementation follows pragmatic Clean Architecture and Domain-Driven Design best practices defined in `AGENTS.md` and `docs/`.
+This is a high-priority review requirement. Review whether the implementation follows pragmatic Clean Architecture and Domain-Driven Design best practices defined in `AGENTS.md` and `flowance-docs/docs/`.
 
 Pay particular attention to:
 
@@ -62,7 +62,7 @@ Do not recommend abstractions, patterns, repositories, entities, or value object
 Prioritize findings in this order:
 
 1. Bugs, security issues, data loss, tenant isolation, and authorization failures.
-2. Differences from `docs/` or `AGENTS.md`.
+2. Differences from `flowance-docs/docs/` or `AGENTS.md`.
 3. Clean Architecture and DDD responsibility or dependency violations.
 4. Missing tests for changed behavior and important edge cases.
 

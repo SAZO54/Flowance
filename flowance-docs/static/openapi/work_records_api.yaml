@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: Flowance Work Records API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /work-records:
+    post:
+      operationId: createWorkRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRecordInput'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: VALIDATION_ERROR
+components:
+  schemas:
+    WorkRecordInput:
+      type: object
+      required: [projectId, actualStartAt, actualEndAt, status]
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        actualStartAt:
+          type: string
+          format: date-time
+        actualEndAt:
+          type: string
+          format: date-time
+          description: Must be after actualStartAt.
+        status:
+          type: string
+          enum: [DRAFT, CONFIRMED]
+        notes:
+          type: string
+          maxLength: 1000
+        billable:
+          type: boolean
+        breaks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkBreakInput'
+          description: Breaks must be inside the work interval and must not overlap.
+    WorkBreakInput:
+      type: object
+      required: [startAt, endAt]
+      properties:
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+          description: Must be after startAt.
