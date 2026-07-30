@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: Flowance Settlement API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /settlements/calculate:
+    post:
+      operationId: calculateSettlement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [projectId, settlementMonth, calculationBasis]
+              properties:
+                projectId:
+                  type: string
+                  format: uuid
+                settlementMonth:
+                  type: string
+                  pattern: '^[0-9]{4}-(0[1-9]|1[0-2])$'
+                calculationBasis:
+                  type: string
+                  enum: [ACTUAL, SCHEDULED]
+      responses:
+        '201':
+          description: Calculated
+        '422':
+          description: Settlement business rule violation
+  /settlements/{settlementId}/finalize:
+    post:
+      operationId: finalizeSettlement
+      parameters:
+        - name: settlementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Finalized
+        '409':
+          description: Conflict or already finalized

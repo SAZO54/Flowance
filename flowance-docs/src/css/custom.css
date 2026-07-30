@@ -1,0 +1,259 @@
+﻿@import 'swagger-ui-react/swagger-ui.css';
+
+:root {
+  --flowance-primary: #75A8C7;
+  --flowance-secondary: #8DBFD3;
+  --flowance-accent: #A5D1E7;
+  --flowance-soft: #C3E7F6;
+  --flowance-background: #E5F2FA;
+  --flowance-paper: #ffffff;
+  --flowance-ink: #172b35;
+  --flowance-muted: #52636c;
+  --flowance-line: rgba(117, 168, 199, 0.28);
+
+  --ifm-color-primary: #75a8c7;
+  --ifm-color-primary-dark: #5f9abc;
+  --ifm-color-primary-darker: #548fb0;
+  --ifm-color-primary-darkest: #3f748f;
+  --ifm-color-primary-light: #8dbfd3;
+  --ifm-color-primary-lighter: #a5d1e7;
+  --ifm-color-primary-lightest: #c3e7f6;
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-font-color-base: #172b35;
+  --ifm-color-content: #172b35;
+  --ifm-color-content-secondary: #52636c;
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-navbar-link-color: #172b35;
+  --ifm-menu-color: #52636c;
+  --ifm-menu-color-active: #172b35;
+  --ifm-toc-border-color: var(--flowance-line);
+  --ifm-table-border-color: var(--flowance-line);
+  --ifm-code-background: #e5f2fa;
+  --ifm-code-font-size: 95%;
+  --ifm-heading-letter-spacing: 0;
+  --ifm-font-family-base:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+[data-theme='dark'] {
+  --flowance-paper: #0f1c23;
+  --flowance-ink: #f7fbfd;
+  --flowance-muted: #c6d6de;
+  --flowance-line: rgba(165, 209, 231, 0.28);
+
+  --ifm-color-primary: #a5d1e7;
+  --ifm-color-primary-dark: #8dbfd3;
+  --ifm-color-primary-darker: #75a8c7;
+  --ifm-color-primary-darkest: #5f9abc;
+  --ifm-color-primary-light: #c3e7f6;
+  --ifm-color-primary-lighter: #d3eff9;
+  --ifm-color-primary-lightest: #e5f2fa;
+  --ifm-background-color: #0b171d;
+  --ifm-background-surface-color: #0f1c23;
+  --ifm-font-color-base: #f7fbfd;
+  --ifm-color-content: #f7fbfd;
+  --ifm-color-content-secondary: #c6d6de;
+  --ifm-navbar-background-color: #0f1c23;
+  --ifm-navbar-link-color: #f7fbfd;
+  --ifm-menu-color: #c6d6de;
+  --ifm-menu-color-active: #ffffff;
+  --ifm-code-background: #172b35;
+}
+
+html,
+body {
+  background: var(--ifm-background-color);
+}
+
+body {
+  color: var(--flowance-ink);
+}
+
+.navbar {
+  border-bottom: 1px solid var(--flowance-line);
+  box-shadow: none;
+}
+
+.navbar__title {
+  color: var(--flowance-ink);
+  font-weight: 700;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: #3f748f;
+}
+
+.button.button--primary {
+  border-color: var(--flowance-primary);
+  background: var(--flowance-primary);
+  color: #10212a;
+  font-weight: 700;
+}
+
+.button.button--primary:hover {
+  border-color: var(--flowance-secondary);
+  background: var(--flowance-secondary);
+  color: #10212a;
+}
+
+.button.button--secondary {
+  border-color: var(--flowance-accent);
+  background: #ffffff;
+  color: #172b35;
+  font-weight: 700;
+}
+
+.button.button--secondary:hover {
+  border-color: var(--flowance-secondary);
+  background: var(--flowance-background);
+  color: #172b35;
+}
+
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--flowance-line);
+  background: #ffffff;
+}
+
+.menu__link {
+  border-radius: 8px;
+  color: var(--flowance-muted);
+  font-weight: 500;
+}
+
+.menu__link:hover {
+  background: var(--flowance-background);
+  color: var(--flowance-ink);
+}
+
+.menu__link--active:not(.menu__link--sublist),
+.menu__list-item-collapsible--active {
+  background: var(--flowance-soft);
+  color: var(--flowance-ink);
+  font-weight: 700;
+}
+
+.menu__list-item-collapsible--active {
+  border-radius: 8px;
+}
+
+.table-of-contents__link {
+  color: var(--flowance-muted);
+}
+
+.table-of-contents__link--active,
+.table-of-contents__link:hover {
+  color: #3f748f;
+}
+
+.theme-doc-markdown {
+  color: var(--flowance-ink);
+}
+
+.theme-doc-markdown h1 {
+  color: var(--flowance-ink);
+  font-size: 2.35rem;
+}
+
+.theme-doc-markdown h2 {
+  border-bottom: 1px solid var(--flowance-line);
+  color: var(--flowance-ink);
+  padding-bottom: 0.35rem;
+}
+
+.theme-doc-markdown h3 {
+  color: var(--flowance-ink);
+}
+
+.theme-doc-markdown a {
+  color: #3f748f;
+  font-weight: 700;
+}
+
+.theme-doc-markdown table {
+  display: table;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--flowance-line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.theme-doc-markdown thead {
+  background: var(--flowance-background);
+}
+
+.theme-doc-markdown th {
+  color: var(--flowance-ink);
+  font-weight: 700;
+}
+
+.theme-doc-markdown td,
+.theme-doc-markdown th {
+  border-color: var(--flowance-line);
+}
+
+.theme-doc-markdown blockquote {
+  border-left-color: var(--flowance-primary);
+  border-radius: 8px;
+  background: var(--flowance-background);
+  color: var(--flowance-muted);
+  padding: 0.8rem 1rem;
+}
+
+.theme-code-block {
+  border: 1px solid var(--flowance-line);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.pagination-nav__link {
+  border-color: var(--flowance-line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--flowance-secondary);
+  background: var(--flowance-background);
+}
+
+.breadcrumbs__link {
+  border-radius: 8px;
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  background: var(--flowance-background);
+  color: var(--flowance-ink);
+}
+
+.footer {
+  border-top: 1px solid var(--flowance-line);
+  background: #ffffff;
+  color: var(--flowance-muted);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container,
+[data-theme='dark'] .footer,
+[data-theme='dark'] .theme-doc-markdown table,
+[data-theme='dark'] .pagination-nav__link {
+  background: #0f1c23;
+}
+
+[data-theme='dark'] .navbar,
+[data-theme='dark'] .footer {
+  border-color: rgba(165, 209, 231, 0.28);
+}
+
+[data-theme='dark'] .theme-doc-markdown thead,
+[data-theme='dark'] .theme-doc-markdown blockquote,
+[data-theme='dark'] .menu__link:hover,
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist),
+[data-theme='dark'] .menu__list-item-collapsible--active,
+[data-theme='dark'] .breadcrumbs__item--active .breadcrumbs__link,
+[data-theme='dark'] .pagination-nav__link:hover {
+  background: #172b35;
+}
+

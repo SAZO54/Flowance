@@ -1,0 +1,36 @@
+{
+    "name":  "flowance-docs-site",
+    "version":  "0.1.0",
+    "private":  true,
+    "description":  "FLOWANCE documentation site generated from docs/ as the single source of truth.",
+    "scripts":  {
+                    "start":  "docusaurus start --host 127.0.0.1 --port 3001",
+                    "build":  "docusaurus build",
+                    "serve":  "docusaurus serve",
+                    "clear":  "docusaurus clear",
+                    "docs:version":  "docusaurus docs:version",
+                    "sync:openapi":  "node scripts/sync-openapi.js",
+                    "prestart":  "npm run sync:openapi",
+                    "prebuild":  "npm run sync:openapi"
+                },
+    "dependencies":  {
+                         "@docusaurus/core":  "^3.8.1",
+                         "@docusaurus/preset-classic":  "^3.8.1",
+                         "@mdx-js/react":  "^3.1.0",
+                         "clsx":  "^2.1.1",
+                         "prism-react-renderer":  "^2.4.1",
+                         "react":  "^19.0.0",
+                         "react-dom":  "^19.0.0",
+                         "swagger-ui-dist":  "^5.32.11",
+                         "swagger-ui-react":  "^5.32.11"
+                     },
+    "devDependencies":  {
+                            "@docusaurus/module-type-aliases":  "^3.8.1",
+                            "@docusaurus/tsconfig":  "^3.8.1",
+                            "@docusaurus/types":  "^3.8.1",
+                            "typescript":  "~5.6.2"
+                        },
+    "engines":  {
+                    "node":  "\u003e=18.0"
+                }
+}

@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: Flowance Settings API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /settings/profile:
+    patch:
+      operationId: updateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileInput'
+      responses:
+        '200':
+          description: Updated
+        '400':
+          description: VALIDATION_ERROR
+  /settings/organization:
+    patch:
+      operationId: updateOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationInput'
+      responses:
+        '200':
+          description: Updated
+        '403':
+          description: OWNER or ADMIN required
+        '409':
+          description: CONCURRENT_MODIFICATION
+components:
+  schemas:
+    ProfileInput:
+      type: object
+      required: [displayName, email]
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        lastName:
+          type: string
+          maxLength: 50
+        firstName:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          pattern: '^[0-9]{1,15}$'
+        bio:
+          type: string
+          maxLength: 1000
+    OrganizationInput:
+      type: object
+      required: [name, version]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        tradeName:
+          type: string
+          maxLength: 150
+        postalCode:
+          type: string
+          maxLength: 20
+        prefecture:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+          maxLength: 500
+        version:
+          type: integer
+          minimum: 1

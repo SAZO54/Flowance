@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Flowance Schedule API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /work-schedules:
+    post:
+      operationId: createWorkSchedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkScheduleInput'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: VALIDATION_ERROR
+  /work-schedules/{scheduleId}:
+    patch:
+      operationId: updateWorkSchedule
+      parameters:
+        - name: scheduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/WorkScheduleInput'
+                - type: object
+                  required: [version]
+                  properties:
+                    version:
+                      type: integer
+                      minimum: 1
+      responses:
+        '200':
+          description: Updated
+        '409':
+          description: CONCURRENT_MODIFICATION
+components:
+  schemas:
+    WorkScheduleInput:
+      type: object
+      required: [projectId, workContent, scheduledStartAt, scheduledEndAt]
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        workContent:
+          type: string
+          minLength: 1
+          maxLength: 200
+        scheduledStartAt:
+          type: string
+          format: date-time
+        scheduledEndAt:
+          type: string
+          format: date-time
+          description: Must be after scheduledStartAt.
+        notes:
+          type: string
+          maxLength: 1000
+        plannedBreakMinutes:
+          type: integer
+          minimum: 0
+        status:
+          type: string
+          enum: [PLANNED, CANCELLED, COMPLETED]

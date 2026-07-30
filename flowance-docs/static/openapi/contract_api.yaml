@@ -1,0 +1,77 @@
+openapi: 3.0.3
+info:
+  title: Flowance Contract API
+  version: 1.1.0
+servers:
+  - url: /api/v1
+paths:
+  /projects/{projectId}/contracts:
+    post:
+      operationId: createContract
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractInput'
+      responses:
+        '201':
+          description: Created
+        '409':
+          description: CONTRACT_PERIOD_OVERLAP
+        '422':
+          description: INVALID_CONTRACT_CONDITION
+components:
+  schemas:
+    ContractInput:
+      type: object
+      required: [contractType, currency, validFrom, status]
+      properties:
+        contractType:
+          type: string
+          enum: [HOURLY, MONTHLY_RANGE, MONTHLY_FIXED, PERFORMANCE]
+        currency:
+          type: string
+          enum: [JPY]
+        validFrom:
+          type: string
+          format: date
+        validUntil:
+          type: string
+          format: date
+          nullable: true
+          description: Inclusive and must be on or after validFrom.
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        hourlyRate:
+          type: integer
+          minimum: 0
+        monthlyRate:
+          type: integer
+          minimum: 0
+        performanceAmount:
+          type: integer
+          minimum: 0
+        minimumMinutes:
+          type: integer
+          minimum: 0
+        maximumMinutes:
+          type: integer
+          minimum: 0
+        baseMinutes:
+          type: integer
+          minimum: 0
+        roundingUnitMinutes:
+          type: integer
+          enum: [1, 5, 10, 15, 30, 60]
+        roundingMethod:
+          type: string
+          enum: [ROUND_DOWN, ROUND_UP, ROUND_HALF_UP]
