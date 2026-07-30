@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.exceptions import RequestDataTooBig
 from django.test import RequestFactory, SimpleTestCase
 from rest_framework import exceptions
 
@@ -40,6 +41,25 @@ class ErrorResponseTests(SimpleTestCase):
         self.assertEqual(response.data["code"], "VALIDATION_ERROR")
         self.assertEqual(response.data["details"][0]["field"], "name")
         self.assertEqual(response["X-Trace-ID"], str(request.trace_id))
+
+    def test_nested_validation_error_keeps_full_field_path(self):
+        request = RequestFactory().get("/")
+
+        response = flowance_exception_handler(
+            exceptions.ValidationError({"breaks": [{"startAt": ["必須です。"]}]}),
+            {"request": request},
+        )
+
+        self.assertEqual(response.data["details"][0]["field"], "breaks.0.startAt")
+        self.assertEqual(response.data["details"][0]["code"], "INVALID_FORMAT")
+
+    def test_request_data_too_big_is_mapped_to_413(self):
+        request = RequestFactory().post("/")
+
+        response = flowance_exception_handler(RequestDataTooBig(), {"request": request})
+
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(response.data["code"], "PAYLOAD_TOO_LARGE")
 
     def test_concurrent_modification_contains_versions(self):
         error = ConcurrentModificationError(2, 3)

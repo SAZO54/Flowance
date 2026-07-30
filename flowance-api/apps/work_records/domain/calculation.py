@@ -5,31 +5,27 @@ from datetime import datetime
 from decimal import Decimal, ROUND_DOWN, ROUND_HALF_UP, ROUND_UP
 
 from apps.common.domain.errors import DomainValidationError
+from apps.common.error_codes import ErrorCode
 
 
 class InvalidWorkRecordTimeRangeError(DomainValidationError):
-    code = "INVALID_WORK_RECORD_TIME_RANGE"
-    default_message = "実績終了日時は実績開始日時より後にしてください。"
+    code = ErrorCode.INVALID_WORK_RECORD_TIME_RANGE
 
 
 class InvalidBreakPeriodError(DomainValidationError):
-    code = "INVALID_BREAK_PERIOD"
-    default_message = "休憩終了日時は休憩開始日時より後にしてください。"
+    code = ErrorCode.INVALID_BREAK_PERIOD
 
 
 class BreakOutsideWorkRecordError(DomainValidationError):
-    code = "BREAK_OUTSIDE_WORK_RECORD"
-    default_message = "休憩時間は実績時間内に指定してください。"
+    code = ErrorCode.BREAK_OUTSIDE_WORK_RECORD
 
 
 class BreakPeriodOverlapError(DomainValidationError):
-    code = "BREAK_PERIOD_OVERLAP"
-    default_message = "休憩時間同士を重複させることはできません。"
+    code = ErrorCode.BREAK_PERIOD_OVERLAP
 
 
 class InvalidRoundingRuleError(DomainValidationError):
-    code = "INVALID_ROUNDING_RULE"
-    default_message = "契約の時間丸め設定が正しくありません。"
+    code = ErrorCode.INVALID_ROUNDING_RULE
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,7 +97,7 @@ def calculate_work_time(
     gross_minutes = _minutes_between(actual_start_at, actual_end_at)
     break_minutes = sum(item.minutes for item in calculated_breaks)
     actual_minutes = gross_minutes - break_minutes
-    if actual_minutes < 0:
+    if actual_minutes <= 0:
         raise BreakOutsideWorkRecordError()
     billable_minutes = (
         round_minutes(actual_minutes, rounding_unit_minutes, rounding_method)

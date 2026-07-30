@@ -91,9 +91,9 @@ class User(
     email = models.EmailField(max_length=254)
     normalized_email = models.EmailField(max_length=254, unique=True, editable=False)
     display_name = models.CharField(max_length=100)
-    family_name = models.CharField(max_length=100, blank=True, default="")
-    given_name = models.CharField(max_length=100, blank=True, default="")
-    phone_number = models.CharField(max_length=32, blank=True, default="")
+    family_name = models.CharField(max_length=50, blank=True, default="")
+    given_name = models.CharField(max_length=50, blank=True, default="")
+    phone_number = models.CharField(max_length=20, blank=True, default="")
     bio = models.TextField(blank=True, default="")
     timezone = models.CharField(max_length=64, default="Asia/Tokyo")
     week_starts_on = models.CharField(

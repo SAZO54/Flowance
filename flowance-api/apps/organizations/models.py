@@ -95,9 +95,9 @@ class OrganizationBusinessProfile(UUIDModel, TimeStampedModel, VersionedModel):
         related_name="business_profile",
     )
     business_name = models.CharField(max_length=150, blank=True, default="")
-    postal_code = models.CharField(max_length=8, blank=True, default="")
+    postal_code = models.CharField(max_length=20, blank=True, default="")
     prefecture = models.CharField(max_length=20, blank=True, default="")
-    address = models.CharField(max_length=255, blank=True, default="")
+    address = models.CharField(max_length=500, blank=True, default="")
     invoice_registration_number = models.CharField(
         max_length=14,
         blank=True,

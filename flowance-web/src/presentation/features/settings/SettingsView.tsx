@@ -121,42 +121,42 @@ export function SettingsView({
             <div className="settings-avatar" aria-hidden="true">{initials(draft.profile.displayName)}</div>
           </div>
           <div className="settings-form-grid">
-            <label className="full"><span className="field-label">表示名 <i className="required-symbol">※</i></span><input required maxLength={100} value={draft.profile.displayName} onChange={event => updateProfile({displayName: event.target.value})}/></label>
-            <label>姓<input maxLength={100} value={draft.profile.familyName} onChange={event => updateProfile({familyName: event.target.value})}/></label>
-            <label>名<input maxLength={100} value={draft.profile.givenName} onChange={event => updateProfile({givenName: event.target.value})}/></label>
-            <label className="full">メールアドレス<input type="email" value={draft.profile.email} readOnly aria-readonly="true"/><small>メールアドレスの変更はPhase2で対応します。</small></label>
-            <label className="full">電話番号<input type="tel" maxLength={32} pattern="[0-9+()\-\s]*" value={draft.profile.phoneNumber} onChange={event => updateProfile({phoneNumber: event.target.value})}/></label>
-            <label className="full">自己紹介<textarea maxLength={1000} value={draft.profile.bio} onChange={event => updateProfile({bio: event.target.value})}/></label>
+            <label className="full"><span className="field-label">表示名 <i className="required-symbol">※</i></span><input name="displayName" required data-max-length={100} value={draft.profile.displayName} onChange={event => updateProfile({displayName: event.target.value})}/></label>
+            <label>姓<input name="familyName" data-max-length={50} value={draft.profile.familyName} onChange={event => updateProfile({familyName: event.target.value})}/></label>
+            <label>名<input name="givenName" data-max-length={50} value={draft.profile.givenName} onChange={event => updateProfile({givenName: event.target.value})}/></label>
+            <label className="full">メールアドレス<input type="email" name="email" value={draft.profile.email} readOnly aria-readonly="true"/><small>メールアドレスの変更はPhase2で対応します。</small></label>
+            <label className="full">電話番号<input type="tel" name="phoneNumber" data-max-length={15} pattern="[0-9]{0,15}" value={draft.profile.phoneNumber} onChange={event => updateProfile({phoneNumber: event.target.value})}/></label>
+            <label className="full">自己紹介<textarea name="bio" data-max-length={1000} value={draft.profile.bio} onChange={event => updateProfile({bio: event.target.value})}/></label>
           </div>
         </>}
         {section === 'organization' && <>
           <div className="settings-section-head"><div><h2>組織</h2><p>所属組織の基本情報を管理します。</p></div>{!draft.organization.canEdit && <span className="settings-readonly">閲覧のみ</span>}</div>
           <div className="settings-form-grid">
-            <label className="full"><span className="field-label">組織名 <i className="required-symbol">※</i></span><input required maxLength={150} value={draft.organization.name} readOnly={!draft.organization.canEdit} onChange={event => updateOrganization({name: event.target.value})}/></label>
-            <label>組織タイムゾーン<select value={draft.organization.timezone} disabled={!draft.organization.canEdit} onChange={event => updateOrganization({timezone: event.target.value})}>{timezoneOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-            <label>通貨<input value={draft.organization.currency} readOnly aria-readonly="true"/><small>Phase1はJPY固定です。</small></label>
+            <label className="full"><span className="field-label">組織名 <i className="required-symbol">※</i></span><input name="name" required data-max-length={150} value={draft.organization.name} readOnly={!draft.organization.canEdit} onChange={event => updateOrganization({name: event.target.value})}/></label>
+            <label>組織タイムゾーン<select name="timezone" value={draft.organization.timezone} disabled={!draft.organization.canEdit} onChange={event => updateOrganization({timezone: event.target.value})}>{timezoneOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+            <label>通貨<input name="currency" value={draft.organization.currency} readOnly aria-readonly="true"/><small>Phase1はJPY固定です。</small></label>
           </div>
         </>}
         {section === 'business' && <>
           <div className="settings-section-head"><div><h2>事業情報</h2><p>将来の請求書作成に利用する基本情報です。</p></div>{!draft.business.canEdit && <span className="settings-readonly">閲覧のみ</span>}</div>
           <div className="settings-form-grid">
-            <label className="full">屋号<input maxLength={150} value={draft.business.businessName} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({businessName: event.target.value})}/></label>
-            <label>郵便番号<input maxLength={8} pattern="(?:\d{3}-?\d{4})?" value={draft.business.postalCode} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({postalCode: event.target.value})}/></label>
-            <label>都道府県<input maxLength={20} value={draft.business.prefecture} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({prefecture: event.target.value})}/></label>
-            <label className="full">住所<input maxLength={255} value={draft.business.address} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({address: event.target.value})}/></label>
-            <label>適格請求書発行事業者番号<input maxLength={14} pattern="(?:T\d{13})?" placeholder="T1234567890123" value={draft.business.invoiceRegistrationNumber} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({invoiceRegistrationNumber: event.target.value})}/></label>
-            <label>既定消費税率<select value={draft.business.defaultTaxRate ?? ''} disabled={!draft.business.canEdit} onChange={event => updateBusiness({defaultTaxRate: event.target.value || null})}><option value="">未設定</option><option value="10.00">10%</option><option value="8.00">8%</option></select><small>契約・精算の税率は変更しません。</small></label>
+            <label className="full">屋号<input name="businessName" data-max-length={150} value={draft.business.businessName} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({businessName: event.target.value})}/></label>
+            <label>郵便番号<input name="postalCode" data-max-length={20} value={draft.business.postalCode} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({postalCode: event.target.value})}/></label>
+            <label>都道府県<input name="prefecture" data-max-length={20} value={draft.business.prefecture} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({prefecture: event.target.value})}/></label>
+            <label className="full">住所<input name="address" data-max-length={500} value={draft.business.address} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({address: event.target.value})}/></label>
+            <label>適格請求書発行事業者番号<input name="invoiceRegistrationNumber" data-max-length={14} pattern="(?:T\d{13})?" placeholder="T1234567890123" value={draft.business.invoiceRegistrationNumber} readOnly={!draft.business.canEdit} onChange={event => updateBusiness({invoiceRegistrationNumber: event.target.value})}/></label>
+            <label>既定消費税率<select name="defaultTaxRate" value={draft.business.defaultTaxRate ?? ''} disabled={!draft.business.canEdit} onChange={event => updateBusiness({defaultTaxRate: event.target.value || null})}><option value="">未設定</option><option value="10.00">10%</option><option value="8.00">8%</option></select><small>契約・精算の税率は変更しません。</small></label>
           </div>
         </>}
         {section === 'appearance' && <>
           <div className="settings-section-head"><div><h2>表示設定</h2><p>カレンダーや一覧画面の表示方法を設定します。</p></div></div>
           <div className="settings-form-grid">
-            <label>週の開始曜日<select value={draft.appearance.weekStartsOn} onChange={event => updateAppearance({weekStartsOn: event.target.value as SettingsData['appearance']['weekStartsOn']})}><option value="MONDAY">月曜日</option><option value="SUNDAY">日曜日</option></select></label>
-            <label>時間表示<select value={draft.appearance.timeFormat} onChange={event => updateAppearance({timeFormat: event.target.value as SettingsData['appearance']['timeFormat']})}><option value="H24">24時間表示</option><option value="H12">12時間表示</option></select></label>
-            <label className="full">利用者タイムゾーン<select value={draft.appearance.timezone} onChange={event => updateAppearance({timezone: event.target.value})}>{timezoneOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+            <label>週の開始曜日<select name="weekStartsOn" value={draft.appearance.weekStartsOn} onChange={event => updateAppearance({weekStartsOn: event.target.value as SettingsData['appearance']['weekStartsOn']})}><option value="MONDAY">月曜日</option><option value="SUNDAY">日曜日</option></select></label>
+            <label>時間表示<select name="timeFormat" value={draft.appearance.timeFormat} onChange={event => updateAppearance({timeFormat: event.target.value as SettingsData['appearance']['timeFormat']})}><option value="H24">24時間表示</option><option value="H12">12時間表示</option></select></label>
+            <label className="full">利用者タイムゾーン<select name="timezone" value={draft.appearance.timezone} onChange={event => updateAppearance({timezone: event.target.value})}>{timezoneOptions.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
           </div>
           <div className="settings-toggle-list compact-setting">
-            <label><span><strong>コンパクト表示</strong><small>一覧とカードの余白を狭くして、多くの情報を表示します。</small></span><input type="checkbox" checked={draft.appearance.compactMode} onChange={event => updateAppearance({compactMode: event.target.checked})}/><i/></label>
+            <label><span><strong>コンパクト表示</strong><small>一覧とカードの余白を狭くして、多くの情報を表示します。</small></span><input type="checkbox" name="compactMode" checked={draft.appearance.compactMode} onChange={event => updateAppearance({compactMode: event.target.checked})}/><i/></label>
           </div>
         </>}
         <div className="settings-actions">

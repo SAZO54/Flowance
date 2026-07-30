@@ -1,14 +1,19 @@
-export type ApiErrorPayload = {
-  code?: string
-  message?: string
-  details?: unknown
-  traceId?: string
-}
+import {ERROR_CODE} from '@/shared/errors/errorCodes'
+import {errorMessage} from '@/shared/errors/errorMessages'
+import {
+  apiErrorDetails,
+  normalizedApiMessage,
+  notifyFormApiError,
+  type ApiErrorDetail,
+  type ApiErrorPayload,
+} from '@/shared/errors/errorHandling'
+
+export type {ApiErrorPayload} from '@/shared/errors/errorHandling'
 
 export class ApiError extends Error {
   readonly status: number
   readonly code: string
-  readonly details: unknown
+  readonly details: ApiErrorDetail[]
   readonly traceId: string | undefined
 
   constructor({
@@ -21,14 +26,14 @@ export class ApiError extends Error {
     status: number
     code: string
     message: string
-    details?: unknown
+    details?: ApiErrorDetail[]
     traceId?: string
   }) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.code = code
-    this.details = details
+    this.details = details ?? []
     this.traceId = traceId
   }
 }
@@ -87,9 +92,8 @@ export class ApiClient {
       if (cause instanceof ApiError) throw cause
       throw new ApiError({
         status: 0,
-        code: 'NETWORK_ERROR',
-        message: 'APIに接続できませんでした。通信環境を確認して再度お試しください。',
-        details: cause,
+        code: ERROR_CODE.NETWORK_ERROR,
+        message: errorMessage(ERROR_CODE.NETWORK_ERROR),
       })
     }
   }
@@ -132,13 +136,21 @@ export class ApiClient {
 
   private async toApiError(response: Response): Promise<ApiError> {
     const payload = await readErrorPayload(response)
-    return new ApiError({
+    const details = apiErrorDetails(payload.details)
+    const error = new ApiError({
       status: response.status,
       code: payload.code ?? `HTTP_${response.status}`,
-      message: payload.message ?? 'APIリクエストに失敗しました。',
-      details: payload.details,
+      message: normalizedApiMessage(payload, response.status),
+      details,
       traceId: payload.traceId ?? response.headers.get('X-Trace-Id') ?? undefined,
     })
+    notifyFormApiError({
+      code: error.code,
+      message: error.message,
+      details,
+      traceId: error.traceId,
+    })
+    return error
   }
 }
 

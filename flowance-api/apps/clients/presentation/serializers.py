@@ -1,5 +1,13 @@
 from rest_framework import serializers
 
+from apps.common.error_codes import ValidationCode
+from apps.common.validation import (
+    PHONE_PATTERN,
+    POSTAL_CODE_PATTERN,
+    validate_optional_pattern,
+    validation_error,
+)
+
 from ..models import ClientStatus
 
 
@@ -17,10 +25,28 @@ class ClientWriteSerializer(serializers.Serializer):
     postalCode = serializers.CharField(
         max_length=20, allow_null=True, allow_blank=True, required=False
     )
-    address = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    address = serializers.CharField(
+        max_length=500, allow_null=True, allow_blank=True, required=False
+    )
     status = serializers.ChoiceField(choices=ClientStatus.choices)
-    notes = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    notes = serializers.CharField(
+        max_length=1000, allow_null=True, allow_blank=True, required=False
+    )
     iconFile = serializers.FileField(required=False, write_only=True)
+
+    def validate_phone(self, value: str | None) -> str | None:
+        return validate_optional_pattern(
+            value,
+            pattern=PHONE_PATTERN,
+            code=ValidationCode.PHONE_INVALID_FORMAT,
+        )
+
+    def validate_postalCode(self, value: str | None) -> str | None:
+        return validate_optional_pattern(
+            value,
+            pattern=POSTAL_CODE_PATTERN,
+            code=ValidationCode.POSTAL_CODE_INVALID_FORMAT,
+        )
 
     def model_data(self):
         values = self.validated_data
@@ -44,8 +70,9 @@ class ClientUpdateSerializer(ClientWriteSerializer):
 
     def validate(self, attrs):
         if attrs.get("iconFile") and attrs.get("iconAction") == "DELETE":
-            raise serializers.ValidationError(
-                {"iconAction": "iconFileとDELETEは同時に指定できません。"}
+            raise validation_error(
+                "iconAction",
+                ValidationCode.MUTUALLY_EXCLUSIVE,
             )
         return attrs
 

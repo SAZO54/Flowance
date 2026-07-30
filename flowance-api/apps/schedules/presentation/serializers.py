@@ -1,4 +1,10 @@
+from datetime import date, datetime
+
 from rest_framework import serializers
+
+from apps.common.error_codes import ValidationCode
+from apps.common.error_messages import validation_message
+from apps.common.validation import validate_ordered_range, validation_error
 
 from ..models import WeeklyScheduleStatus
 
@@ -16,6 +22,34 @@ class WeeklyScheduleWriteSerializer(serializers.Serializer):
         default=WeeklyScheduleStatus.ACTIVE,
         required=False,
     )
+
+    def validate(self, attrs):
+        validate_ordered_range(
+            attrs,
+            start_field="startTime",
+            end_field="endTime",
+            code=ValidationCode.INVALID_TIME_RANGE,
+        )
+        validate_ordered_range(
+            attrs,
+            start_field="validFrom",
+            end_field="validUntil",
+            code=ValidationCode.INVALID_DATE_RANGE,
+            allow_equal=True,
+        )
+        start_time = attrs.get("startTime")
+        end_time = attrs.get("endTime")
+        break_minutes = attrs.get("breakMinutes")
+        if start_time and end_time and break_minutes is not None:
+            duration = datetime.combine(date.min, end_time) - datetime.combine(
+                date.min, start_time
+            )
+            if break_minutes > duration.total_seconds() // 60:
+                raise validation_error(
+                    "breakMinutes",
+                    ValidationCode.SCHEDULE_BREAK_TOO_LONG,
+                )
+        return attrs
 
     def model_data(self):
         values = self.validated_data
@@ -41,7 +75,8 @@ class WeeklyScheduleBulkSerializer(serializers.Serializer):
     def validate_items(self, value):
         if len(value) > 50:
             raise serializers.ValidationError(
-                "一度に登録できる週次予定は50件までです。"
+                validation_message(ValidationCode.MAX_VALUE),
+                code=ValidationCode.MAX_VALUE,
             )
         return value
 
@@ -63,10 +98,21 @@ class WeeklyScheduleBulkSerializer(serializers.Serializer):
 
 class WorkScheduleWriteSerializer(serializers.Serializer):
     projectId = serializers.UUIDField()
-    title = serializers.CharField(max_length=150)
+    title = serializers.CharField(max_length=200)
     scheduledStartAt = serializers.DateTimeField()
     scheduledEndAt = serializers.DateTimeField()
-    notes = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    notes = serializers.CharField(
+        max_length=1000, allow_null=True, allow_blank=True, required=False
+    )
+
+    def validate(self, attrs):
+        validate_ordered_range(
+            attrs,
+            start_field="scheduledStartAt",
+            end_field="scheduledEndAt",
+            code=ValidationCode.INVALID_TIME_RANGE,
+        )
+        return attrs
 
     def model_data(self):
         values = self.validated_data
@@ -95,6 +141,23 @@ class GenerateWorkSchedulesSerializer(serializers.Serializer):
     )
     dryRun = serializers.BooleanField(default=False, required=False)
 
+    def validate(self, attrs):
+        validate_ordered_range(
+            attrs,
+            start_field="fromDate",
+            end_field="toDate",
+            code=ValidationCode.INVALID_DATE_RANGE,
+            allow_equal=True,
+        )
+        from_date = attrs.get("fromDate")
+        to_date = attrs.get("toDate")
+        if from_date and to_date and (to_date - from_date).days > 100:
+            raise validation_error(
+                "toDate",
+                ValidationCode.GENERATION_RANGE_TOO_LARGE,
+            )
+        return attrs
+
 
 class DateTimeRangeQuerySerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
@@ -102,6 +165,15 @@ class DateTimeRangeQuerySerializer(serializers.Serializer):
         self.fields["from"] = serializers.DateTimeField()
         self.fields["to"] = serializers.DateTimeField()
         self.fields["projectId"] = serializers.UUIDField(required=False)
+
+    def validate(self, attrs):
+        validate_ordered_range(
+            attrs,
+            start_field="from",
+            end_field="to",
+            code=ValidationCode.INVALID_TIME_RANGE,
+        )
+        return attrs
 
 
 class CalendarQuerySerializer(DateTimeRangeQuerySerializer):

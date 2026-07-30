@@ -78,7 +78,7 @@ export function WorkRecordForm({projects, record, isSubmitting, error, onCancel,
           <label><span>終了日時 <i>※</i></span><DateTimePickerInput name="actualEndAt" required defaultValue={record ? localDateTime(record.actualEndAt) : ''} min={actualStartAt || undefined} ariaLabel="終了日時"/></label>
           <label><span>状態 <i>※</i></span><select name="status" required defaultValue={record?.status ?? 'DRAFT'}><option value="DRAFT">下書き</option><option value="CONFIRMED">確定</option>{record?.status === 'CANCELLED' && <option value="CANCELLED">取消</option>}</select></label>
           <label className="work-record-billable"><input type="checkbox" name="isBillable" defaultChecked={record?.isBillable ?? true}/><span>請求対象にする</span></label>
-          <label className="full"><span>備考</span><textarea name="notes" rows={3} defaultValue={record?.notes ?? ''}/></label>
+          <label className="full"><span>備考</span><textarea name="notes" data-max-length={1000} rows={3} defaultValue={record?.notes ?? ''}/></label>
         </div>
 
         <section className="work-record-breaks">
@@ -86,8 +86,8 @@ export function WorkRecordForm({projects, record, isSubmitting, error, onCancel,
           {breaks.length === 0
             ? <p className="work-record-break-empty">休憩は登録されていません。</p>
             : breaks.map((item, index) => <div className="work-record-break-row" key={index}>
-              <label><span>開始 <i>※</i></span><DateTimePickerInput required value={item.startAt} min={actualStartAt || undefined} onValueChange={value => updateBreak(index, 'startAt', value)} ariaLabel={`休憩${index + 1}の開始日時`}/></label>
-              <label><span>終了 <i>※</i></span><DateTimePickerInput required value={item.endAt} min={item.startAt || actualStartAt || undefined} onValueChange={value => updateBreak(index, 'endAt', value)} ariaLabel={`休憩${index + 1}の終了日時`}/></label>
+              <label><span>開始 <i>※</i></span><DateTimePickerInput name={`breaks.${index}.startAt`} required value={item.startAt} min={actualStartAt || undefined} onValueChange={value => updateBreak(index, 'startAt', value)} ariaLabel={`休憩${index + 1}の開始日時`}/></label>
+              <label><span>終了 <i>※</i></span><DateTimePickerInput name={`breaks.${index}.endAt`} required value={item.endAt} min={item.startAt || actualStartAt || undefined} onValueChange={value => updateBreak(index, 'endAt', value)} ariaLabel={`休憩${index + 1}の終了日時`}/></label>
               <button type="button" aria-label={`休憩${index + 1}を削除`} onClick={() => setBreaks(current => current.filter((_, itemIndex) => itemIndex !== index))}><Trash2 size="0.9375rem"/></button>
             </div>)}
         </section>

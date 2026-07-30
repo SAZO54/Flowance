@@ -4,6 +4,9 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from rest_framework import serializers
 
 from apps.accounts.models import TimeFormat, WeekStartsOn
+from apps.common.error_codes import ValidationCode
+from apps.common.error_messages import validation_message
+from apps.common.validation import SETTINGS_PHONE_PATTERN, validate_optional_pattern
 
 
 def validate_timezone(value: str) -> None:
@@ -11,28 +14,39 @@ def validate_timezone(value: str) -> None:
         ZoneInfo(value)
     except ZoneInfoNotFoundError as exc:
         raise serializers.ValidationError(
-            "有効なIANAタイムゾーンを指定してください。"
+            validation_message(ValidationCode.INVALID_CHOICE),
+            code=ValidationCode.INVALID_CHOICE,
         ) from exc
 
 
 class NonEmptySectionSerializer(serializers.Serializer):
     def validate(self, attrs):
         if not attrs:
-            raise serializers.ValidationError("更新項目を1つ以上指定してください。")
+            raise serializers.ValidationError(
+                validation_message(ValidationCode.REQUIRED),
+                code=ValidationCode.REQUIRED,
+            )
         return attrs
 
 
 class ProfileSettingsSerializer(NonEmptySectionSerializer):
     displayName = serializers.CharField(max_length=100, required=False)
-    familyName = serializers.CharField(max_length=100, allow_blank=True, required=False)
-    givenName = serializers.CharField(max_length=100, allow_blank=True, required=False)
-    phoneNumber = serializers.RegexField(
-        re.compile(r"^[0-9+()\-\s]*$"),
-        max_length=32,
+    familyName = serializers.CharField(max_length=50, allow_blank=True, required=False)
+    givenName = serializers.CharField(max_length=50, allow_blank=True, required=False)
+    phoneNumber = serializers.CharField(
+        max_length=15,
         allow_blank=True,
         required=False,
     )
     bio = serializers.CharField(max_length=1000, allow_blank=True, required=False)
+
+    def validate_phoneNumber(self, value: str) -> str:
+        validated = validate_optional_pattern(
+            value,
+            pattern=SETTINGS_PHONE_PATTERN,
+            code=ValidationCode.SETTINGS_PHONE_INVALID_FORMAT,
+        )
+        return validated or ""
 
 
 class OrganizationSettingsSerializer(NonEmptySectionSerializer):
@@ -46,14 +60,9 @@ class BusinessSettingsSerializer(NonEmptySectionSerializer):
     businessName = serializers.CharField(
         max_length=150, allow_blank=True, required=False
     )
-    postalCode = serializers.RegexField(
-        re.compile(r"^(?:\d{3}-?\d{4})?$"),
-        max_length=8,
-        allow_blank=True,
-        required=False,
-    )
+    postalCode = serializers.CharField(max_length=20, allow_blank=True, required=False)
     prefecture = serializers.CharField(max_length=20, allow_blank=True, required=False)
-    address = serializers.CharField(max_length=255, allow_blank=True, required=False)
+    address = serializers.CharField(max_length=500, allow_blank=True, required=False)
     invoiceRegistrationNumber = serializers.RegexField(
         re.compile(r"^(?:T\d{13})?$"),
         max_length=14,
@@ -96,7 +105,10 @@ class SettingsUpdateSerializer(serializers.Serializer):
         sections = {"profile", "organization", "business", "appearance"}
         present = sections.intersection(attrs)
         if not present:
-            raise serializers.ValidationError("更新対象を1つ以上指定してください。")
+            raise serializers.ValidationError(
+                validation_message(ValidationCode.REQUIRED),
+                code=ValidationCode.REQUIRED,
+            )
         versions = attrs["versions"]
         requirements = {
             "user": bool({"profile", "appearance"}.intersection(present)),
@@ -110,6 +122,14 @@ class SettingsUpdateSerializer(serializers.Serializer):
         ]
         if missing:
             raise serializers.ValidationError(
-                {"versions": {name: "versionは必須です。" for name in missing}}
+                {
+                    "versions": {
+                        name: serializers.ErrorDetail(
+                            validation_message(ValidationCode.REQUIRED),
+                            code=ValidationCode.REQUIRED,
+                        )
+                        for name in missing
+                    }
+                }
             )
         return attrs

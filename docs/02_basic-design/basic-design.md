@@ -16,7 +16,7 @@ Phase1 の基本構成は次の通り。
 
 - Browser → Next.js → Django REST Framework
 - Django REST Framework → PostgreSQL / File Storage
-- Redis / Celery Worker
+- Redis / Celery Worke
 
 Redis / Celery は Phase1 内で導入する。Redis は Celery Broker として利用し、Celery Worker は画像処理、ファイル補償処理、非同期タスク処理を担当する。
 
@@ -175,11 +175,11 @@ Application 相当層はユースケースと処理手順を管理する。
 
 代表的な Use Case:
 
-- RegisterUser
-- LoginUser
+- RegisterUse
+- LoginUse
 - RefreshToken
-- LogoutUser
-- GetCurrentUser
+- LogoutUse
+- GetCurrentUse
 - CreateClient
 - UpdateClient
 - UploadClientIcon
@@ -225,12 +225,12 @@ Infrastructure 相当層は外部技術との接続を担当する。
 Presentation 層は HTTP リクエストとレスポンスを担当する。
 
 - APIView / ViewSet
-- Serializer
+- Serialize
 - Permission
 - URL
-- Filter
+- Filte
 - Pagination
-- Exception Handler
+- Exception Handle
 - OpenAPI Schema
 - multipart/form-data の受付
 
@@ -348,9 +348,11 @@ Phase1 で Celery を導入するため、config/celery.py と非同期処理を
 - サイドナビゲーション
 - ヘッダー
 - 全体検索
-- 稼働追加ボタン
+- 稼働実績追加のグローバルショートカット（低強調のアイコンボタン、ツールチップ付き）
 - 利用者メニュー
 - メインコンテンツ
+
+ヘッダーの稼働実績追加は全画面共通の補助操作として扱い、ページ固有の登録・追加ボタンより視覚的な強調を抑える。稼働記録画面ではページ内の「稼働実績を追加」と機能が重複するため、ヘッダー側のショートカットを表示しない。
 
 ### 6.4 レスポンシブ対応
 
@@ -548,7 +550,7 @@ stored_files には次を保持する。
 - width
 - height
 - variant
-- storage_provider
+- storage_provide
 
 ## 10. 認証・認可設計
 
@@ -874,7 +876,7 @@ Phase1 の稼働実績は DRAFT 中心で運用する。DRAFT / CONFIRMED を用
 
 ### 15.2 認証API
 
-- POST /api/v1/auth/register
+- POST /api/v1/auth/registe
 - POST /api/v1/auth/login
 - POST /api/v1/auth/token/refresh
 - POST /api/v1/auth/logout
@@ -1009,8 +1011,8 @@ clients と projects に次を保持する。
 - icon_file_id
 - icon_updated_at
 - default_icon_text
-- default_icon_background_color
-- default_icon_text_color
+- default_icon_background_colo
+- default_icon_text_colo
 
 ファイル実体の詳細は stored_files に保持する。
 
@@ -1209,7 +1211,7 @@ Docker Compose で次を起動する。
 - backend
 - postgres
 - redis
-- celery-worker
+- celery-worke
 - file-storage 用 Volume
 
 必要に応じて追加する。

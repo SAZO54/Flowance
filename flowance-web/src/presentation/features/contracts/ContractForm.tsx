@@ -90,8 +90,8 @@ export function ContractForm({
       <section className="client-form-section">
         <div className="client-form-section-head"><h2>契約形態</h2><p>契約形態に応じて必要な金額・時間条件を入力します。</p></div>
         <div className="client-form-fields">
-          <label><span className="field-label">契約形態 <i className="required-symbol">※</i></span><span className="select-wrap"><select value={contractType} onChange={event => setContractType(event.target.value as ContractType)}><option value="HOURLY">時間単価</option><option value="MONTHLY_RANGE">月額精算幅</option><option value="MONTHLY_FIXED">月額固定</option><option value="PERFORMANCE">成果報酬</option></select><ChevronDown size="1.0625rem"/></span></label>
-          <label><span className="field-label">通貨</span><input value="JPY" readOnly/></label>
+          <label><span className="field-label">契約形態 <i className="required-symbol">※</i></span><span className="select-wrap"><select name="contractType" value={contractType} onChange={event => setContractType(event.target.value as ContractType)}><option value="HOURLY">時間単価</option><option value="MONTHLY_RANGE">月額精算幅</option><option value="MONTHLY_FIXED">月額固定</option><option value="PERFORMANCE">成果報酬</option></select><ChevronDown size="1.0625rem"/></span></label>
+          <label><span className="field-label">通貨</span><input name="currency" value="JPY" readOnly/></label>
           {contractType === 'HOURLY' && <label><span className="field-label">時間単価（円） <i className="required-symbol">※</i></span><input type="number" name="hourlyRate" min="0" required defaultValue={contract?.hourlyRate ?? ''}/></label>}
           {(contractType === 'MONTHLY_RANGE' || contractType === 'MONTHLY_FIXED') && <label><span className="field-label">月額（円） <i className="required-symbol">※</i></span><input type="number" name="monthlyRate" min="0" required defaultValue={contract?.monthlyRate ?? ''}/></label>}
           {contractType === 'PERFORMANCE' && <label><span className="field-label">成果報酬額（円） <i className="required-symbol">※</i></span><input type="number" name="performanceAmount" min="0" required defaultValue={contract?.performanceAmount ?? ''}/></label>}

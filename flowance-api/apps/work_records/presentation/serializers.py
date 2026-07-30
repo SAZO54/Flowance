@@ -1,5 +1,8 @@
 from rest_framework import serializers
 
+from apps.common.error_codes import ValidationCode
+from apps.common.error_messages import validation_message
+
 from ..models import WorkRecordStatus
 
 
@@ -16,7 +19,9 @@ class WorkRecordWriteSerializer(serializers.Serializer):
     breaks = BreakPeriodSerializer(many=True, allow_empty=True)
     isBillable = serializers.BooleanField()
     status = serializers.ChoiceField(choices=WorkRecordStatus.choices)
-    notes = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    notes = serializers.CharField(
+        max_length=1000, allow_null=True, allow_blank=True, required=False
+    )
 
     def validate(self, attrs):
         forbidden = {
@@ -27,7 +32,10 @@ class WorkRecordWriteSerializer(serializers.Serializer):
         if forbidden:
             raise serializers.ValidationError(
                 {
-                    field: "この項目はバックエンドで計算されます。"
+                    field: serializers.ErrorDetail(
+                        validation_message(ValidationCode.READ_ONLY),
+                        code=ValidationCode.READ_ONLY,
+                    )
                     for field in sorted(forbidden)
                 }
             )

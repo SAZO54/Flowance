@@ -1,0 +1,119 @@
+.header-quick-action {
+  position: relative;
+  width: 2.625rem;
+  height: 2.625rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0.0625rem solid #c3e7f6;
+  border-radius: 0.5625rem;
+  background: #f7fcfe;
+  color: #45606c;
+  text-decoration: none;
+  box-shadow: 0 0.25rem 0.75rem rgb(117 168 199 / 12%);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.header-quick-action:hover {
+  border-color: #a5d1e7;
+  background: #e5f2fa;
+  color: #294b5b;
+  box-shadow: 0 0.375rem 0.875rem rgb(117 168 199 / 20%);
+  transform: translateY(-0.0625rem);
+}
+
+.header-quick-action:active {
+  background: #c3e7f6;
+  box-shadow: 0 0.125rem 0.375rem rgb(117 168 199 / 18%);
+  transform: translateY(0);
+}
+
+.header-quick-action:focus-visible {
+  outline: 0.1875rem solid rgb(117 168 199 / 35%);
+  outline-offset: 0.125rem;
+}
+
+.header-quick-action-icon {
+  position: relative;
+  width: 1.375rem;
+  height: 1.375rem;
+  display: grid;
+  place-items: center;
+}
+
+.header-quick-action-icon > svg:first-child {
+  width: 1.3125rem;
+  height: 1.3125rem;
+  stroke-width: 1.8;
+}
+
+.header-quick-action-icon > svg:last-child {
+  position: absolute;
+  right: -0.3125rem;
+  bottom: -0.1875rem;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  padding: 0.0625rem;
+  border-radius: 50%;
+  background: #75a8c7;
+  color: #fff;
+  stroke-width: 2.75;
+  box-shadow: 0 0 0 0.125rem #f7fcfe;
+}
+
+.header-quick-action:hover .header-quick-action-icon > svg:last-child {
+  background: #668fa2;
+  box-shadow: 0 0 0 0.125rem #e5f2fa;
+}
+
+.header-quick-action-tooltip {
+  position: absolute;
+  top: calc(100% + 0.625rem);
+  right: 0;
+  z-index: 10;
+  width: max-content;
+  max-width: 12rem;
+  padding: 0.375rem 0.5625rem;
+  border-radius: 0.375rem;
+  background: #294b5b;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-0.1875rem);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.header-quick-action-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 0.875rem;
+  bottom: 100%;
+  border-right: 0.3125rem solid transparent;
+  border-bottom: 0.3125rem solid #294b5b;
+  border-left: 0.3125rem solid transparent;
+}
+
+.header-quick-action:hover .header-quick-action-tooltip,
+.header-quick-action:focus-visible .header-quick-action-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-quick-action,
+  .header-quick-action-tooltip {
+    transition: none;
+  }
+}

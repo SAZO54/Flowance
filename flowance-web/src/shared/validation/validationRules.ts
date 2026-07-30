@@ -1,0 +1,227 @@
+import {z} from 'zod'
+import {VALIDATION_CODE} from '@/shared/errors/errorCodes'
+import {validationMessage} from '@/shared/errors/errorMessages'
+
+export type ValidationIssue = {code: string; message: string}
+
+type FormControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+
+const emailSchema = z.string().email()
+const phoneSchema = z.string().regex(/^\+?[0-9]{10,15}$/)
+const settingsPhoneSchema = z.string().regex(/^[0-9]{1,15}$/)
+const postalCodeSchema = z.string().regex(/^[0-9]{7}$/)
+const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const textLimits: Record<string, number> = {
+  name: 150,
+  displayName: 100,
+  organizationName: 150,
+  contactName: 100,
+  familyName: 50,
+  givenName: 50,
+  businessName: 150,
+  prefecture: 20,
+  address: 500,
+  description: 1000,
+  notes: 1000,
+  bio: 1000,
+  title: 200,
+  workContent: 200,
+  email: 254,
+}
+
+const rangePairs = [
+  ['startDate', 'endDate', true],
+  ['validFrom', 'validUntil', true],
+  ['fromDate', 'toDate', true],
+  ['startAt', 'endAt', false],
+  ['actualStartAt', 'actualEndAt', false],
+  ['scheduledStartAt', 'scheduledEndAt', false],
+  ['startTime', 'endTime', false],
+] as const
+
+function issue(code: string): ValidationIssue {
+  return {code, message: validationMessage(code)}
+}
+
+function numericValue(form: HTMLFormElement, name: string): number | null {
+  const control = form.elements.namedItem(name)
+  if (!(control instanceof HTMLInputElement) || control.value === '') return null
+  const value = Number(control.value)
+  return Number.isFinite(value) ? value : null
+}
+
+function validateContractRange(control: FormControl): ValidationIssue | null {
+  if (!control.form || !['minimumMinutes', 'maximumMinutes', 'baseMinutes'].includes(control.name)) {
+    return null
+  }
+  const minimum = numericValue(control.form, 'minimumMinutes')
+  const maximum = numericValue(control.form, 'maximumMinutes')
+  const baseMinutes = numericValue(control.form, 'baseMinutes')
+  if (minimum !== null && maximum !== null && minimum > maximum) {
+    return issue(VALIDATION_CODE.INVALID_CONTRACT_RANGE)
+  }
+  if (
+    baseMinutes !== null &&
+    ((minimum !== null && baseMinutes < minimum) ||
+      (maximum !== null && baseMinutes > maximum))
+  ) {
+    return issue(VALIDATION_CODE.INVALID_CONTRACT_RANGE)
+  }
+  return null
+}
+
+function configuredMaxLength(control: FormControl): number | null {
+  if (
+    !(control instanceof HTMLInputElement) &&
+    !(control instanceof HTMLTextAreaElement)
+  ) {
+    return null
+  }
+  const configured = Number(control.dataset.maxLength)
+  return Number.isInteger(configured) && configured > 0 ? configured : null
+}
+
+export function validateImageFile(file: File): ValidationIssue | null {
+  if (!imageTypes.has(file.type)) return issue(VALIDATION_CODE.UNSUPPORTED_FILE_TYPE)
+  if (file.size > 5 * 1024 * 1024) return issue(VALIDATION_CODE.FILE_TOO_LARGE)
+  return null
+}
+
+export function validateControl(control: FormControl): ValidationIssue | null {
+  if (control.disabled || control.type === 'hidden') return null
+
+  const value = control.value.trim()
+  if (control.required && !value) return issue(VALIDATION_CODE.REQUIRED)
+  if (!value && control.type !== 'file') return null
+
+  if (control instanceof HTMLInputElement && control.type === 'file') {
+    const file = control.files?.[0]
+    if (!file) return control.required ? issue(VALIDATION_CODE.REQUIRED) : null
+    return validateImageFile(file)
+  }
+  const limit = configuredMaxLength(control) ?? textLimits[control.name]
+  if (limit && Array.from(value).length > limit) return issue(VALIDATION_CODE.MAX_LENGTH)
+
+  if (
+    control.validity.typeMismatch ||
+    (control.type === 'email' && !emailSchema.safeParse(value).success)
+  ) {
+    return issue(VALIDATION_CODE.INVALID_FORMAT)
+  }
+  if (control.validity.patternMismatch) return issue(VALIDATION_CODE.INVALID_FORMAT)
+  if (control.validity.tooShort) return issue(VALIDATION_CODE.MIN_LENGTH)
+  if (control.validity.tooLong) return issue(VALIDATION_CODE.MAX_LENGTH)
+  if (control.validity.rangeUnderflow) return issue(VALIDATION_CODE.MIN_VALUE)
+  if (control.validity.rangeOverflow) return issue(VALIDATION_CODE.MAX_VALUE)
+
+  if (
+    control.name === 'phone' &&
+    !phoneSchema.safeParse(value).success
+  ) {
+    return issue(VALIDATION_CODE.PHONE_INVALID_FORMAT)
+  }
+  if (
+    control.name === 'phoneNumber' &&
+    !settingsPhoneSchema.safeParse(value).success
+  ) {
+    return issue(VALIDATION_CODE.SETTINGS_PHONE_INVALID_FORMAT)
+  }
+  if (
+    control.name === 'postalCode' &&
+    control instanceof HTMLInputElement &&
+    configuredMaxLength(control) === 7 &&
+    !postalCodeSchema.safeParse(value).success
+  ) {
+    return issue(VALIDATION_CODE.POSTAL_CODE_INVALID_FORMAT)
+  }
+
+  return validateContractRange(control)
+}
+
+function namedInput(form: HTMLFormElement, name: string): HTMLInputElement | null {
+  const control = form.elements.namedItem(name)
+  return control instanceof HTMLInputElement ? control : null
+}
+
+function breakRange(control: FormControl): [string, string, false] | null {
+  const match = /^breaks\.(\d+)\.(startAt|endAt)$/.exec(control.name)
+  if (!match) return null
+  return [`breaks.${match[1]}.startAt`, `breaks.${match[1]}.endAt`, false]
+}
+
+function milliseconds(value: string): number | null {
+  if (!value) return null
+  const result = new Date(value).getTime()
+  return Number.isNaN(result) ? null : result
+}
+
+function validateBreakRules(
+  control: FormControl,
+  start: HTMLInputElement,
+  end: HTMLInputElement,
+): ValidationIssue | null {
+  const form = control.form
+  if (!form || !control.name.startsWith('breaks.')) return null
+  const actualStart = namedInput(form, 'actualStartAt')
+  const actualEnd = namedInput(form, 'actualEndAt')
+  const actualStartMs = milliseconds(actualStart?.value ?? '')
+  const actualEndMs = milliseconds(actualEnd?.value ?? '')
+  const startMs = milliseconds(start.value)
+  const endMs = milliseconds(end.value)
+  if (
+    startMs === null ||
+    endMs === null ||
+    actualStartMs === null ||
+    actualEndMs === null
+  ) {
+    return null
+  }
+  if (startMs < actualStartMs || endMs > actualEndMs) {
+    return issue(VALIDATION_CODE.BREAK_OUTSIDE_WORK_RECORD)
+  }
+
+  const currentPrefix = control.name.split('.').slice(0, 2).join('.')
+  let totalBreakMs = 0
+  for (const candidate of Array.from(form.elements)) {
+    if (!(candidate instanceof HTMLInputElement)) continue
+    const match = /^breaks\.(\d+)\.startAt$/.exec(candidate.name)
+    if (!match) continue
+    const candidateEnd = namedInput(form, `breaks.${match[1]}.endAt`)
+    const candidateStartMs = milliseconds(candidate.value)
+    const candidateEndMs = milliseconds(candidateEnd?.value ?? '')
+    if (candidateStartMs === null || candidateEndMs === null) continue
+    totalBreakMs += candidateEndMs - candidateStartMs
+    const candidatePrefix = `breaks.${match[1]}`
+    if (
+      candidatePrefix !== currentPrefix &&
+      startMs < candidateEndMs &&
+      endMs > candidateStartMs
+    ) {
+      return issue(VALIDATION_CODE.BREAK_PERIOD_OVERLAP)
+    }
+  }
+  if (totalBreakMs >= actualEndMs - actualStartMs) {
+    return issue(VALIDATION_CODE.BREAK_TOTAL_TOO_LARGE)
+  }
+  return null
+}
+
+export function validateRange(control: FormControl): ValidationIssue | null {
+  const pair =
+    breakRange(control) ??
+    rangePairs.find(([start, end]) => control.name === start || control.name === end)
+  if (!pair || !control.form) return null
+
+  const [startName, endName, allowEqual] = pair
+  const start = namedInput(control.form, startName)
+  const end = namedInput(control.form, endName)
+  if (!start || !end || !start.value || !end.value) return null
+
+  const valid = allowEqual ? start.value <= end.value : start.value < end.value
+  if (!valid) {
+    return issue(
+      allowEqual ? VALIDATION_CODE.INVALID_DATE_RANGE : VALIDATION_CODE.INVALID_TIME_RANGE,
+    )
+  }
+  return validateBreakRules(control, start, end)
+}
