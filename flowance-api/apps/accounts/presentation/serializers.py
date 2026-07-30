@@ -6,6 +6,9 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 
 from rest_framework import serializers
 
+from apps.common.error_codes import ValidationCode
+from apps.common.error_messages import validation_message
+
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
@@ -24,7 +27,8 @@ class RegisterSerializer(serializers.Serializer):
             ZoneInfo(value)
         except ZoneInfoNotFoundError as exc:
             raise serializers.ValidationError(
-                "有効なIANAタイムゾーンを指定してください。", code="invalid"
+                validation_message(ValidationCode.INVALID_CHOICE),
+                code=ValidationCode.INVALID_CHOICE,
             ) from exc
         return value
 

@@ -5,11 +5,11 @@ from decimal import Decimal
 from typing import Any
 
 from apps.common.domain.errors import DomainValidationError
+from apps.common.error_codes import ErrorCode
 
 
 class InvalidContractConditionError(DomainValidationError):
-    code = "INVALID_CONTRACT_CONDITION"
-    default_message = "契約条件を確認してください。"
+    code = ErrorCode.INVALID_CONTRACT_CONDITION
 
 
 CONTRACT_TYPES = {"HOURLY", "MONTHLY_RANGE", "MONTHLY_FIXED", "PERFORMANCE"}

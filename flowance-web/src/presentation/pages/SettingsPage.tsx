@@ -27,7 +27,7 @@ export function SettingsPage() {
       <form className="settings-panel" onSubmit={saveSettings}>
         {section==='profile'&&<>
           <div className="settings-section-head"><div><h2>プロフィール</h2><p>サービス内で使用する基本情報を設定します。</p></div><div className="settings-avatar">SA</div></div>
-          <div className="settings-form-grid"><label>姓<input defaultValue="佐藤"/></label><label>名<input defaultValue="あかり"/></label><label className="full">メールアドレス<input type="email" defaultValue="akari.sato@example.com"/></label><label className="full">電話番号<input type="tel" defaultValue="090-1234-5678"/></label><label className="full">自己紹介<textarea defaultValue="Webサービスの設計・開発を中心に活動しているフリーランスエンジニアです。"/></label></div>
+          <div className="settings-form-grid"><label>姓<input defaultValue="佐藤"/></label><label>名<input defaultValue="あかり"/></label><label className="full">メールアドレス<input type="email" defaultValue="akari.sato@example.com"/></label><label className="full">電話番号<input type="tel" defaultValue="090-1234-5678"/></label><label className="full">自己紹介<textarea data-max-length={1000} defaultValue="Webサービスの設計・開発を中心に活動しているフリーランスエンジニアです。"/></label></div>
         </>}
         {section==='business'&&<>
           <div className="settings-section-head"><div><h2>事業情報</h2><p>請求書などに記載する情報を設定します。</p></div></div>

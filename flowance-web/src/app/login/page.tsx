@@ -61,7 +61,7 @@ export default function LoginPage() {
             <Mail size={18}/><input type="email" name="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} required disabled={submitting}/>
           </div></label>
           <label><span>パスワード <i className="required-symbol">※</i></span><div className={styles.inputWrap}>
-            <LockKeyhole size={18}/><input type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" placeholder="パスワードを入力" value={password} onChange={event => setPassword(event.target.value)} required disabled={submitting}/>
+            <LockKeyhole size={18}/><input type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" data-max-length={128} placeholder="パスワードを入力" value={password} onChange={event => setPassword(event.target.value)} required disabled={submitting}/>
             <button type="button" className={styles.visibility} onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}>{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
           </div></label>
           {error && <div className={styles.error} role="alert" aria-live="polite">{error}</div>}

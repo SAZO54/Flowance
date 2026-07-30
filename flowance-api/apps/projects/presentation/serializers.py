@@ -1,5 +1,8 @@
 from rest_framework import serializers
 
+from apps.common.error_codes import ValidationCode
+from apps.common.validation import validate_ordered_range, validation_error
+
 from ..models import ProjectStatus
 
 
@@ -7,7 +10,7 @@ class ProjectWriteSerializer(serializers.Serializer):
     clientId = serializers.UUIDField()
     name = serializers.CharField(max_length=150)
     description = serializers.CharField(
-        allow_null=True, allow_blank=True, required=False
+        max_length=1000, allow_null=True, allow_blank=True, required=False
     )
     labelColor = serializers.RegexField(
         regex=r"^#[0-9A-Fa-f]{6}$", default="#3B82F6", required=False
@@ -23,16 +26,19 @@ class ProjectWriteSerializer(serializers.Serializer):
         required=False,
     )
     status = serializers.ChoiceField(choices=ProjectStatus.choices)
-    notes = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    notes = serializers.CharField(
+        max_length=1000, allow_null=True, allow_blank=True, required=False
+    )
     iconFile = serializers.FileField(required=False, write_only=True)
 
     def validate(self, attrs):
-        start_date = attrs.get("startDate")
-        end_date = attrs.get("endDate")
-        if start_date and end_date and start_date > end_date:
-            raise serializers.ValidationError(
-                {"endDate": "終了日は開始日以降を指定してください。"}
-            )
+        validate_ordered_range(
+            attrs,
+            start_field="startDate",
+            end_field="endDate",
+            code=ValidationCode.INVALID_DATE_RANGE,
+            allow_equal=True,
+        )
         return attrs
 
     def model_data(self):
@@ -59,8 +65,9 @@ class ProjectUpdateSerializer(ProjectWriteSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if attrs.get("iconFile") and attrs.get("iconAction") == "DELETE":
-            raise serializers.ValidationError(
-                {"iconAction": "iconFileとDELETEは同時に指定できません。"}
+            raise validation_error(
+                "iconAction",
+                ValidationCode.MUTUALLY_EXCLUSIVE,
             )
         return attrs
 

@@ -3,10 +3,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
+from apps.common.error_codes import ErrorCode
+from apps.common.error_messages import error_message
+
 
 class DomainError(Exception):
-    code = "BUSINESS_RULE_VIOLATION"
-    default_message = "業務ルールにより処理できません。"
+    code = ErrorCode.BUSINESS_RULE_VIOLATION
 
     def __init__(
         self,
@@ -15,8 +17,8 @@ class DomainError(Exception):
         code: str | None = None,
         details: Sequence[dict[str, Any]] | None = None,
     ) -> None:
-        self.message = message or self.default_message
         self.code = code or self.code
+        self.message = message or error_message(self.code)
         self.details = list(details or [])
         super().__init__(self.message)
 

@@ -74,6 +74,7 @@ LANGUAGE_CODE = "ja"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+CSRF_FAILURE_VIEW = "apps.common.views.csrf_failure"
 
 STATIC_URL = "static/"
 MEDIA_URL = env("MEDIA_URL", default="/media/")

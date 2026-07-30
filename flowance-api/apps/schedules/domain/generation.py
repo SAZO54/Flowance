@@ -6,31 +6,27 @@ from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from apps.common.domain.errors import DomainValidationError
+from apps.common.error_codes import ErrorCode
 
 
 class InvalidScheduleTimeRangeError(DomainValidationError):
-    code = "INVALID_SCHEDULE_TIME_RANGE"
-    default_message = "予定終了日時は予定開始日時より後にしてください。"
+    code = ErrorCode.INVALID_SCHEDULE_TIME_RANGE
 
 
 class InvalidBreakMinutesError(DomainValidationError):
-    code = "INVALID_BREAK_MINUTES"
-    default_message = "休憩時間は予定時間未満で指定してください。"
+    code = ErrorCode.INVALID_BREAK_MINUTES
 
 
 class InvalidScheduleDateRangeError(DomainValidationError):
-    code = "INVALID_SCHEDULE_DATE_RANGE"
-    default_message = "有効終了日は有効開始日以降を指定してください。"
+    code = ErrorCode.INVALID_SCHEDULE_DATE_RANGE
 
 
 class ScheduleGenerationRangeTooLargeError(DomainValidationError):
-    code = "SCHEDULE_GENERATION_RANGE_TOO_LARGE"
-    default_message = "予定生成期間は100日以内で指定してください。"
+    code = ErrorCode.SCHEDULE_GENERATION_RANGE_TOO_LARGE
 
 
 class ScheduleGenerationLimitExceededError(DomainValidationError):
-    code = "SCHEDULE_GENERATION_LIMIT_EXCEEDED"
-    default_message = "一度に生成できる予定候補は300件までです。"
+    code = ErrorCode.SCHEDULE_GENERATION_LIMIT_EXCEEDED
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,7 +67,7 @@ def validate_weekly_schedule(
     duration = (
         datetime.combine(date.min, end_time) - datetime.combine(date.min, start_time)
     ).total_seconds() // 60
-    if break_minutes < 0 or break_minutes >= duration:
+    if break_minutes < 0 or break_minutes > duration:
         raise InvalidBreakMinutesError()
     if valid_until is not None and valid_from > valid_until:
         raise InvalidScheduleDateRangeError()

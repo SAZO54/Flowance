@@ -3,10 +3,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
+from apps.common.error_codes import ErrorCode, ValidationCode
+from apps.common.error_messages import error_message, validation_message
+
 
 class FlowanceError(Exception):
-    code = "BUSINESS_RULE_VIOLATION"
-    default_message = "業務ルールにより処理できません。"
+    code = ErrorCode.BUSINESS_RULE_VIOLATION
     status_code = 422
 
     def __init__(
@@ -16,53 +18,47 @@ class FlowanceError(Exception):
         code: str | None = None,
         details: Sequence[dict[str, Any]] | None = None,
     ) -> None:
-        self.message = message or self.default_message
         self.code = code or self.code
+        self.message = message or error_message(self.code)
         self.details = list(details or [])
         super().__init__(self.message)
 
 
 class AuthenticationError(FlowanceError):
-    code = "UNAUTHORIZED"
-    default_message = "認証が必要です。"
+    code = ErrorCode.UNAUTHORIZED
     status_code = 401
 
 
 class AuthorizationError(FlowanceError):
-    code = "FORBIDDEN"
-    default_message = "この操作を実行する権限がありません。"
+    code = ErrorCode.FORBIDDEN
     status_code = 403
 
 
 class CsrfFailedError(FlowanceError):
-    code = "CSRF_FAILED"
-    default_message = "CSRF検証に失敗しました。"
+    code = ErrorCode.CSRF_FAILED
     status_code = 403
 
 
 class ResourceNotFoundError(FlowanceError):
-    code = "NOT_FOUND"
-    default_message = "対象のリソースが見つかりません。"
+    code = ErrorCode.NOT_FOUND
     status_code = 404
 
 
 class ConflictError(FlowanceError):
-    code = "CONFLICT"
-    default_message = "現在の状態と競合したため処理できません。"
+    code = ErrorCode.CONFLICT
     status_code = 409
 
 
 class ConcurrentModificationError(ConflictError):
-    code = "CONCURRENT_MODIFICATION"
-    default_message = "他の操作によりデータが更新されています。"
+    code = ErrorCode.CONCURRENT_MODIFICATION
 
     def __init__(self, submitted_version: int, current_version: int) -> None:
         super().__init__(
             details=[
                 {
                     "field": "version",
-                    "code": "VERSION_MISMATCH",
-                    "message": "最新の内容を取得し直してください。",
+                    "code": ValidationCode.VERSION_MISMATCH,
+                    "message": validation_message(ValidationCode.VERSION_MISMATCH),
                     "submittedVersion": submitted_version,
                     "currentVersion": current_version,
                 }
@@ -71,11 +67,9 @@ class ConcurrentModificationError(ConflictError):
 
 
 class InfrastructureError(FlowanceError):
-    code = "SERVICE_UNAVAILABLE"
-    default_message = "一時的にサービスを利用できません。"
+    code = ErrorCode.SERVICE_UNAVAILABLE
     status_code = 503
 
 
 class AuditLogImmutableError(ConflictError):
-    code = "AUDIT_LOG_IMMUTABLE"
-    default_message = "監査ログは変更または削除できません。"
+    code = ErrorCode.AUDIT_LOG_IMMUTABLE

@@ -86,7 +86,7 @@ class WorkSchedule(OrganizationScopedModel):
         blank=True,
         related_name="generated_work_schedules",
     )
-    title = models.CharField(max_length=150)
+    title = models.CharField(max_length=200)
     scheduled_start_at = models.DateTimeField()
     scheduled_end_at = models.DateTimeField()
     break_minutes = models.PositiveIntegerField(default=0)
