@@ -57,7 +57,7 @@ class SettingsAPITests(APITestCase):
                     "displayName": "Owner Updated",
                     "familyName": "山田",
                     "givenName": "花子",
-                    "phoneNumber": "090-0000-0000",
+                    "phoneNumber": "09000000000",
                     "bio": "プロフィール",
                 },
                 "organization": {

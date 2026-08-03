@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  flowance-api:
+    name: flowance-api
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flowance-api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker compose build api
+
+      - name: Start backend services
+        run: docker compose up -d postgres redis
+
+      - name: Wait for PostgreSQL
+        run: |
+          for attempt in $(seq 1 30); do
+            if docker compose exec -T postgres pg_isready -U flowance -d flowance; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Run backend checks
+        run: |
+          docker compose run --rm api sh -c "
+            ruff check . &&
+            ruff format --check . &&
+            mypy apps config &&
+            python manage.py check --settings=config.settings.test &&
+            python manage.py makemigrations --check --dry-run --settings=config.settings.test &&
+            python manage.py test --settings=config.settings.test
+          "
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v

@@ -1,5 +1,3 @@
-from datetime import date, datetime
-
 from rest_framework import serializers
 
 from apps.common.error_codes import ValidationCode
@@ -37,18 +35,6 @@ class WeeklyScheduleWriteSerializer(serializers.Serializer):
             code=ValidationCode.INVALID_DATE_RANGE,
             allow_equal=True,
         )
-        start_time = attrs.get("startTime")
-        end_time = attrs.get("endTime")
-        break_minutes = attrs.get("breakMinutes")
-        if start_time and end_time and break_minutes is not None:
-            duration = datetime.combine(date.min, end_time) - datetime.combine(
-                date.min, start_time
-            )
-            if break_minutes > duration.total_seconds() // 60:
-                raise validation_error(
-                    "breakMinutes",
-                    ValidationCode.SCHEDULE_BREAK_TOO_LONG,
-                )
         return attrs
 
     def model_data(self):

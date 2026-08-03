@@ -1,0 +1,1322 @@
+<title>Flowance テストカバレッジ調査報告</title>
+<style>
+  :root {
+    --paper:      #FCFDFE;
+    --paper-sunk: #F2F7FA;
+    --ink:        #16232C;
+    --ink-2:      #47606E;
+    --ink-3:      #7A8F9C;
+    --rule:       #D6E2EA;
+    --rule-firm:  #B4C8D5;
+    --primary:    #4E88AA;
+    --primary-2:  #75A8C7;
+    --soft:       #E5F2FA;
+    --critical:   #A8443A;
+    --critical-bg:#F7E7E4;
+    --warn:       #946A15;
+    --warn-bg:    #F8EFDC;
+    --good:       #35735A;
+    --good-bg:    #E2F0E9;
+
+    --display: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "Noto Serif JP", "Songti SC", "Times New Roman", serif;
+    --body: "Hiragino Kaku Gothic ProN", "Yu Gothic", YuGothic, "Noto Sans JP", Meiryo, system-ui, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:      #0D161C;
+      --paper-sunk: #131F27;
+      --ink:        #DCE8EF;
+      --ink-2:      #9DB3C0;
+      --ink-3:      #6E8593;
+      --rule:       #22343F;
+      --rule-firm:  #35505F;
+      --primary:    #8FC0DC;
+      --primary-2:  #75A8C7;
+      --soft:       #16303E;
+      --critical:   #E8938A;
+      --critical-bg:#331D1A;
+      --warn:       #DDB667;
+      --warn-bg:    #302512;
+      --good:       #7DBFA0;
+      --good-bg:    #12291F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:      #0D161C;
+    --paper-sunk: #131F27;
+    --ink:        #DCE8EF;
+    --ink-2:      #9DB3C0;
+    --ink-3:      #6E8593;
+    --rule:       #22343F;
+    --rule-firm:  #35505F;
+    --primary:    #8FC0DC;
+    --primary-2:  #75A8C7;
+    --soft:       #16303E;
+    --critical:   #E8938A;
+    --critical-bg:#331D1A;
+    --warn:       #DDB667;
+    --warn-bg:    #302512;
+    --good:       #7DBFA0;
+    --good-bg:    #12291F;
+  }
+
+  :root[data-theme="light"] {
+    --paper:      #FCFDFE;
+    --paper-sunk: #F2F7FA;
+    --ink:        #16232C;
+    --ink-2:      #47606E;
+    --ink-3:      #7A8F9C;
+    --rule:       #D6E2EA;
+    --rule-firm:  #B4C8D5;
+    --primary:    #4E88AA;
+    --primary-2:  #75A8C7;
+    --soft:       #E5F2FA;
+    --critical:   #A8443A;
+    --critical-bg:#F7E7E4;
+    --warn:       #946A15;
+    --warn-bg:    #F8EFDC;
+    --good:       #35735A;
+    --good-bg:    #E2F0E9;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1rem;
+    line-height: 1.85;
+    -webkit-font-smoothing: antialiased;
+    text-size-adjust: 100%;
+  }
+
+  .sheet {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.75rem 7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.25rem;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 2.9rem);
+    line-height: 1.28;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    max-width: 44rem;
+    color: var(--ink-2);
+    font-size: 1.03rem;
+  }
+  .standfirst strong { color: var(--ink); font-weight: 600; }
+
+  .runsheet {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.1rem;
+    background: var(--rule);
+    border-block: 0.0625rem solid var(--rule);
+    margin-top: 0.5rem;
+  }
+  .runsheet div { background: var(--paper); padding: 0.7rem 0.9rem 0.8rem; }
+  .runsheet dt {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+  .runsheet dd {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    line-height: 1.5;
+    word-break: break-all;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+    border-bottom: 0.125rem solid var(--ink);
+    padding-bottom: 0.55rem;
+  }
+  .sec-num {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+    flex: none;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  h3 {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    margin-top: 0.6rem;
+  }
+
+  h4 {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 0.74rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  p { max-width: 46rem; }
+  section > p, section > ul, section > ol { max-width: 46rem; }
+
+  a { color: var(--primary); text-decoration-thickness: 0.0625rem; text-underline-offset: 0.18em; }
+  a:hover { text-decoration-thickness: 0.125rem; }
+  a:focus-visible, summary:focus-visible {
+    outline: 0.125rem solid var(--primary);
+    outline-offset: 0.15rem;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--paper-sunk);
+    border: 0.0625rem solid var(--rule);
+    padding: 0.05em 0.3em;
+    word-break: break-word;
+  }
+
+  ul, ol { padding-left: 1.4rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  li::marker { color: var(--ink-3); }
+
+  /* ---------- verdict panels ---------- */
+
+  .verdict {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 0.1rem;
+    background: var(--rule-firm);
+    border: 0.0625rem solid var(--rule-firm);
+  }
+  .verdict > article {
+    background: var(--paper);
+    padding: 1.4rem 1.35rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .repo {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .score {
+    font-family: var(--mono);
+    font-size: 2.9rem;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .score small { font-size: 0.95rem; font-weight: 400; color: var(--ink-3); margin-left: 0.35rem; }
+  .score.is-zero { color: var(--critical); }
+  .verdict dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 1rem;
+    font-size: 0.87rem;
+    border-top: 0.0625rem solid var(--rule);
+    padding-top: 0.85rem;
+  }
+  .verdict dt { color: var(--ink-3); }
+  .verdict dd { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+  /* ---------- chips ---------- */
+
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.5rem 0.2rem;
+    border: 0.0625rem solid currentColor;
+    line-height: 1.4;
+    white-space: nowrap;
+    vertical-align: 0.12em;
+  }
+  .chip.crit { color: var(--critical); background: var(--critical-bg); }
+  .chip.warn { color: var(--warn);     background: var(--warn-bg); }
+  .chip.info { color: var(--primary);  background: var(--soft); }
+  .chip.good { color: var(--good);     background: var(--good-bg); }
+
+  /* ---------- findings ---------- */
+
+  .findings { display: flex; flex-direction: column; gap: 0; }
+  .finding {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 0;
+    border-top: 0.0625rem solid var(--rule);
+  }
+  .finding:last-child { border-bottom: 0.0625rem solid var(--rule); }
+  .finding-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; }
+  .finding-head h3 { margin: 0; font-size: 1.06rem; }
+  .finding p { margin: 0; }
+  .fix {
+    background: var(--soft);
+    border-left: 0.1875rem solid var(--primary-2);
+    padding: 0.75rem 1rem;
+    font-size: 0.92rem;
+    max-width: 46rem;
+  }
+  .fix strong { font-weight: 700; }
+
+  /* ---------- code ---------- */
+
+  pre {
+    background: var(--paper-sunk);
+    border: 0.0625rem solid var(--rule);
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.7;
+    tab-size: 2;
+  }
+  pre code { background: none; border: none; padding: 0; font-size: inherit; }
+  .cap {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    margin-bottom: -0.75rem;
+  }
+  .stack { display: flex; flex-direction: column; gap: 1rem; }
+
+  /* ---------- tables ---------- */
+
+  .scroller { overflow-x: auto; border-block: 0.0625rem solid var(--rule-firm); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.88rem; min-width: 34rem; }
+  th, td { text-align: left; padding: 0.6rem 0.85rem; border-bottom: 0.0625rem solid var(--rule); vertical-align: top; }
+  thead th {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 0.68rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 0.0625rem solid var(--rule-firm);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.path { font-family: var(--mono); font-size: 0.79rem; word-break: break-all; }
+
+  /* ---------- layer chart ---------- */
+
+  .chart { display: flex; flex-direction: column; gap: 0.1rem; background: var(--rule); border: 0.0625rem solid var(--rule); }
+  .row {
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 0.75rem 1rem;
+    align-items: center;
+    padding: 0.85rem 1rem;
+  }
+  .row-label { display: flex; flex-direction: column; gap: 0.1rem; }
+  .row-label b { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; }
+  .row-label span { font-size: 0.72rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .bars { display: flex; flex-direction: column; gap: 0.3rem; }
+  .bar { display: flex; align-items: center; gap: 0.55rem; }
+  .bar-track { flex: 1; height: 0.7rem; background: var(--paper-sunk); border: 0.0625rem solid var(--rule); position: relative; }
+  .bar-fill { position: absolute; inset-block: 0; left: 0; background: var(--primary-2); }
+  .bar-fill.empty { background: repeating-linear-gradient(135deg, var(--critical) 0 0.125rem, transparent 0.125rem 0.375rem); width: 100%; }
+  .bar-fill.src { background: var(--ink-3); opacity: 0.45; }
+  .bar-val { font-family: var(--mono); font-size: 0.74rem; font-variant-numeric: tabular-nums; color: var(--ink-2); min-width: 5.5rem; text-align: right; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.75rem; color: var(--ink-3); font-family: var(--mono); }
+  .legend span { display: flex; align-items: center; gap: 0.4rem; }
+  .swatch { width: 0.85rem; height: 0.7rem; border: 0.0625rem solid var(--rule); flex: none; }
+  .swatch.t { background: var(--primary-2); }
+  .swatch.s { background: var(--ink-3); opacity: 0.45; }
+
+  /* ---------- callouts ---------- */
+
+  .note {
+    border: 0.0625rem solid var(--rule-firm);
+    border-left: 0.1875rem solid var(--ink-3);
+    padding: 0.9rem 1.1rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    max-width: 46rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .note strong { color: var(--ink); }
+
+  .rule-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.1rem;
+    background: var(--rule);
+    border: 0.0625rem solid var(--rule);
+  }
+  .rule-map > div { background: var(--paper); padding: 1rem 1.1rem 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .rule-map cite {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    font-style: normal;
+  }
+  .rule-map q { font-size: 0.87rem; color: var(--ink-2); display: block; }
+  .rule-map p { font-size: 0.87rem; margin: 0; }
+
+  /* ---------- roadmap ---------- */
+
+  .phase { display: flex; flex-direction: column; gap: 0.9rem; padding: 1.5rem 0; border-top: 0.0625rem solid var(--rule); }
+  .phase:last-child { border-bottom: 0.0625rem solid var(--rule); }
+  .phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.7rem; }
+  .phase-head b { font-family: var(--display); font-size: 1.15rem; font-weight: 600; }
+  .phase-head .est { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); letter-spacing: 0.06em; }
+  .phase ol { counter-reset: none; }
+
+  details {
+    border: 0.0625rem solid var(--rule);
+    background: var(--paper-sunk);
+  }
+  details + details { border-top: none; }
+  summary {
+    cursor: pointer;
+    padding: 0.7rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    list-style-position: inside;
+  }
+  details[open] summary { border-bottom: 0.0625rem solid var(--rule); }
+  details .body { padding: 1rem; background: var(--paper); display: flex; flex-direction: column; gap: 0.9rem; }
+  details pre { background: var(--paper-sunk); }
+
+  footer {
+    border-top: 0.0625rem solid var(--rule);
+    padding-top: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    font-family: var(--mono);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 34rem) {
+    .row { grid-template-columns: 1fr; }
+    .bar-val { min-width: 4.5rem; }
+    .sheet { padding: 2.25rem 1.1rem 4rem; gap: 2.5rem; }
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="eyebrow">Flowance / 品質調査報告</div>
+    <h1>単体テスト充足度の調査結果と、<br>AGENTS.md に則ったテスト整備方針</h1>
+    <p class="standfirst">
+      <code>flowance-api</code> と <code>flowance-web</code> の単体テスト実装状況を、実際にテストスイートを実行して調査した。
+      結論として、<strong>flowance-web にはテストが 1 本も存在せず</strong>、<strong>flowance-api は API 層に偏っており Application 層のテストがゼロ</strong>である。
+      さらに、既存テストのうち 11 件が実行対象から漏れていること、1 件が実装不整合により失敗していることを確認した。
+    </p>
+    <dl class="runsheet">
+      <div><dt>対象ブランチ</dt><dd>feature/FLOW-4</dd></div>
+      <div><dt>調査日</dt><dd>2026-07-31</dd></div>
+      <div><dt>実行環境</dt><dd>flowance-api-api-1 (Docker)</dd></div>
+      <div><dt>実行コマンド</dt><dd>manage.py test --settings=config.settings.test</dd></div>
+      <div><dt>カバレッジ計測</dt><dd>coverage run --source=apps</dd></div>
+      <div><dt>参照仕様</dt><dd>AGENTS.md §13 / docs/16_testing</dd></div>
+    </dl>
+  </header>
+
+  <!-- ============ 概況 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§0</span><h2>概況</h2></div>
+
+    <div class="verdict">
+      <article>
+        <div class="repo">flowance-api</div>
+        <div class="score">86<small>% 行カバレッジ</small></div>
+        <p style="font-size:0.9rem;color:var(--ink-2);margin:0">
+          数値上は良好に見えるが、その大半は API テストが副次的に通過した行である。
+          業務ルールを意図的に検証したテストは限定的。
+        </p>
+        <dl>
+          <dt>テストファイル</dt><dd>18</dd>
+          <dt>実行テスト数</dt><dd>60</dd>
+          <dt>失敗</dt><dd style="color:var(--critical)">1</dd>
+          <dt>未実行（検出漏れ）</dt><dd style="color:var(--critical)">11</dd>
+          <dt>対象ソース</dt><dd>8,005 行</dd>
+          <dt>未到達ステートメント</dt><dd>463 / 3,408</dd>
+        </dl>
+      </article>
+      <article>
+        <div class="repo">flowance-web</div>
+        <div class="score is-zero">0<small>件のテスト</small></div>
+        <p style="font-size:0.9rem;color:var(--ink-2);margin:0">
+          テストコードだけでなく、Vitest / React Testing Library / Playwright / ESLint がいずれも未導入。
+          品質ゲートは <code>tsc --noEmit</code> のみ。
+        </p>
+        <dl>
+          <dt>テストファイル</dt><dd>0</dd>
+          <dt>テストランナー</dt><dd>未導入</dd>
+          <dt>Lint</dt><dd>未導入</dd>
+          <dt>E2E</dt><dd>未導入</dd>
+          <dt>対象ソース</dt><dd>約 5,900 行</dd>
+          <dt>テスト容易な純粋ロジック</dt><dd>約 900 行</dd>
+        </dl>
+      </article>
+    </div>
+
+    <div class="note">
+      <strong>いずれの CI でもテストは実行されていない。</strong>
+      <span><code>.github/workflows/</code> にあるのは <code>claude.yml</code> と <code>claude-code-review.yml</code> の 2 本のみで、
+      AGENTS.md §13 が要求する Ruff / Ruff format / mypy / Django system check / migration check / pytest / Next.js build / Vitest を実行するワークフローが存在しない。
+      後述の検出事項がいずれも気付かれずに残っている直接の原因である。</span>
+    </div>
+  </section>
+
+  <!-- ============ 検出事項 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§1</span><h2>検出事項</h2></div>
+    <p>スイートを実際に実行して判明した、テストを増やす前に塞ぐべき穴。</p>
+
+    <div class="findings">
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip crit">重大</span>
+          <h3>apps/settings のテスト 11 件が丸ごと実行されていない</h3>
+        </div>
+        <p>
+          <code>apps/settings/tests/</code> と <code>apps/settings/tests/presentation/</code> に <code>__init__.py</code> が存在しない。
+          他の 11 アプリにはすべて配置されているため、settings だけが Django のテストディスカバリからパッケージとして認識されず、
+          <strong>エラーも警告も出さずに沈黙している</strong>。
+        </p>
+        <pre><code>$ docker exec flowance-api-api-1 python manage.py test apps.settings \
+    --settings=config.settings.test
+Found 0 test(s).
+NO TESTS RAN</code></pre>
+        <p>
+          grep 上のテストメソッドは 71 件あるが、ランナーが検出するのは 60 件。差分 11 件が settings の
+          <code>test_api.py</code>（8 件）と <code>test_validation.py</code>（3 件）にちょうど一致する。
+          カバレッジ最下位の <code>apps/settings/application/service.py</code> <b>33%</b>、
+          <code>apps/settings/presentation/views.py</code> <b>48%</b> はこれが原因。
+        </p>
+        <p>
+          結果として、<strong>OWNER 以外による組織情報・事業者情報の更新拒否</strong>、
+          <strong>version 競合時に他セクションもロールバックされること</strong>、
+          <strong>Cookie 認証時の CSRF 必須</strong>、<strong>email が更新不可であること</strong>
+          といった、AGENTS.md §6.2・§8 に直結する検証がすべて未実行のまま出荷されている。
+        </p>
+        <div class="fix">
+          <strong>対処：</strong>以下 2 ファイルを空で追加するだけで 11 件が復活する。<br>
+          <code>apps/settings/tests/__init__.py</code> / <code>apps/settings/tests/presentation/__init__.py</code><br>
+          復活後にテストが通ることの確認まで含めて 1 コミット。
+        </div>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip crit">重大</span>
+          <h3>既存テストが 1 件失敗している — 週次予定と個別予定で業務ルールの境界が食い違う</h3>
+        </div>
+        <pre><code>FAIL: test_weekly_schedule_crud_bulk_and_validation
+  File "apps/schedules/tests/presentation/test_api.py", line 114
+    self.assertEqual(invalid.status_code, 422)
+AssertionError: 201 != 422</code></pre>
+        <p>
+          10:00–18:00（実働 480 分）に対し <code>breakMinutes=480</code> を指定すると、
+          <strong>実働 0 分の週次予定が作成できてしまう</strong>。原因は同一ファイル内の比較演算子の不一致。
+        </p>
+        <pre><code># apps/schedules/domain/generation.py
+
+def validate_weekly_schedule(...):
+    ...
+    if break_minutes &lt; 0 or break_minutes &gt; duration:    # L70  休憩 == 実働 を許容
+        raise InvalidBreakMinutesError()
+
+def validate_work_schedule(...):
+    ...
+    if break_minutes &lt; 0 or break_minutes &gt;= duration:   # L85  休憩 == 実働 を拒否
+        raise InvalidBreakMinutesError()</code></pre>
+        <p>
+          <code>apps/schedules/presentation/serializers.py:47</code> も <code>&gt;</code> 側であり、
+          週次予定（テンプレート）と個別予定（生成後の実体）で同じ業務ルールの境界が異なる。
+          テンプレートが実働 0 分の予定を量産できる一方、生成された個別予定は同じ値を拒否するため、整合性が取れていない。
+        </p>
+        <div class="fix">
+          <strong>対処：</strong>まず <code>flowance-docs/docs/14_schedule-generation</code> に境界仕様（休憩 == 実働 を許すか）を明記する。
+          現状この文書に <code>breakMinutes</code> の記述はなく、<strong>どちらが正か仕様上決まっていない</strong>ため、
+          実装だけを直すと再発する。仕様確定後に両関数の演算子を揃え、境界値テストを
+          <code>apps/schedules/tests/domain/</code> に <code>SimpleTestCase</code> として追加する。
+        </div>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip warn">構造</span>
+          <h3>Application 層のテストがゼロ — テストピラミッドが逆立ちしている</h3>
+        </div>
+        <p>
+          <code>docs/16_testing/test-design.md</code> の基本方針は
+          「業務ルールは Domain / Application のテストで重点的に検証する」だが、実態は完全に逆である。
+          <code>schedules/application/work_service.py</code>（431 行）、
+          <code>settlements/application/service.py</code>（433 行）、
+          <code>projects/application/services.py</code>（320 行）、
+          <code>work_records/application/services.py</code>（316 行）は、
+          いずれも HTTP 経由でしか実行されたことがない。
+        </p>
+        <p>
+          カバレッジ 84〜92% という数値は「API テストがたまたま通過した行」であり、
+          ユースケース単位の異常系・権限分岐・トランザクション境界を意図して検証した結果ではない。
+        </p>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip warn">基盤</span>
+          <h3>pytest が実行不能／テストユーティリティが未使用</h3>
+        </div>
+        <p>
+          <code>requirements.txt</code> には <code>pytest==9.1.1</code> / <code>pytest-django==4.12.0</code> /
+          <code>pytest-cov==7.1.0</code> / <code>factory_boy</code> / <code>Faker</code> / <code>freezegun</code> が入っているが、
+          <code>pytest.ini</code> / <code>pyproject.toml</code> / <code>setup.cfg</code> / <code>conftest.py</code> が
+          リポジトリのどこにも存在しない。<code>DJANGO_SETTINGS_MODULE</code> が解決できず <code>pytest</code> は起動できない。
+        </p>
+        <p>
+          実際には <code>manage.py test</code>（unittest）で動いており、AGENTS.md §3.2・§13 の「pytest」という記述と乖離している。
+          また <code>factory_boy</code> / <code>Faker</code> / <code>freezegun</code> のテストコードからの利用は <b>0 件</b>で、
+          各 <code>setUp</code> に組織・ユーザー・案件・契約の生成が手書きで重複している。
+        </p>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip info">配置</span>
+          <h3>純粋な計算テストが APITestCase で書かれている</h3>
+        </div>
+        <p>
+          <code>settlements/tests/presentation/test_api.py::SettlementCalculationTests</code> と
+          <code>work_records/tests/presentation/test_api.py::WorkRecordCalculationTests</code> は、
+          金額計算・丸め規則という純粋なドメイン検証にもかかわらず <code>APITestCase</code> で書かれており、
+          DB と HTTP スタックを毎回起動している。本来 <code>tests/domain/</code> の <code>SimpleTestCase</code> に置くべきもので、
+          境界値を増やすほど遅くなりテストが書かれなくなる構造になっている。
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ 層別分布 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§2</span><h2>テストの層別分布</h2></div>
+    <p>
+      AGENTS.md §6 が定める <code>domain / application / infrastructure / presentation</code> の 4 層に対し、
+      テストメソッド数と対象ソース行数を並べたもの。Application 層の網掛けは「対象 2,800 行に対しテスト 0 件」を示す。
+    </p>
+
+    <div class="chart">
+      <div class="row">
+        <div class="row-label"><b>domain</b><span>業務ルールの中核</span></div>
+        <div class="bars">
+          <div class="bar"><div class="bar-track"><div class="bar-fill" style="width:10.9%"></div></div><div class="bar-val">6 tests</div></div>
+          <div class="bar"><div class="bar-track"><div class="bar-fill src" style="width:17.9%"></div></div><div class="bar-val">約 500 行</div></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="row-label"><b>application</b><span>ユースケース調整</span></div>
+        <div class="bars">
+          <div class="bar"><div class="bar-track"><div class="bar-fill empty"></div></div><div class="bar-val" style="color:var(--critical)">0 tests</div></div>
+          <div class="bar"><div class="bar-track"><div class="bar-fill src" style="width:100%"></div></div><div class="bar-val">約 2,800 行</div></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="row-label"><b>infrastructure</b><span>ORM・トークン・外部 I/O</span></div>
+        <div class="bars">
+          <div class="bar"><div class="bar-track"><div class="bar-fill" style="width:18.2%"></div></div><div class="bar-val">10 tests</div></div>
+          <div class="bar"><div class="bar-track"><div class="bar-fill src" style="width:5.4%"></div></div><div class="bar-val">約 150 行</div></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="row-label"><b>presentation</b><span>HTTP 入出力・認証認可</span></div>
+        <div class="bars">
+          <div class="bar"><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">55 tests</div></div>
+          <div class="bar"><div class="bar-track"><div class="bar-fill src" style="width:78.6%"></div></div><div class="bar-val">約 2,200 行</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="swatch t"></i>テストメソッド数</span>
+      <span><i class="swatch s"></i>対象ソース行数</span>
+    </div>
+
+    <div class="note">
+      <strong>この形の実務上のリスク。</strong>
+      <span>金額計算や契約期間重複のような分岐の多い規則を API 経由でしか検証できないため、
+      境界値を 1 つ増やすたびに組織・ユーザー・案件・契約のセットアップが必要になる。
+      結果として境界値テストが書かれず、<code>ROUND_FLOOR</code> の丸め方向や源泉徴収の計算順序といった
+      「間違えても 200 が返る」種類の不具合が検出されないまま残る。</span>
+    </div>
+  </section>
+
+  <!-- ============ 未テスト領域 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§3</span><h2>仕様上必須だが未テストの領域</h2></div>
+    <p>
+      <code>docs/16_testing/test-design.md</code> が名指しで検証対象としているにもかかわらず、
+      専用テストが存在しないもの。カバレッジ列は <code>coverage</code> 実測値。
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th>未テスト領域</th>
+            <th>該当ソース</th>
+            <th class="num">行数</th>
+            <th class="num">cov</th>
+            <th>仕様根拠（test-design.md）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>金額計算・消費税・源泉徴収・丸め</td>
+            <td class="path">settlements/domain/calculation.py</td>
+            <td class="num">102</td><td class="num">80%</td>
+            <td>「4種契約の金額計算、消費税、源泉徴収を検証する」</td>
+          </tr>
+          <tr>
+            <td>4種契約の条件検証・期間重複判定</td>
+            <td class="path">contracts/domain/validation.py</td>
+            <td class="num">120</td><td class="num">81%</td>
+            <td>「契約種別、契約期間重複を検証する」</td>
+          </tr>
+          <tr>
+            <td>予定生成ロジック</td>
+            <td class="path">schedules/domain/generation.py</td>
+            <td class="num">151</td><td class="num">86%</td>
+            <td>「予定生成を検証する」</td>
+          </tr>
+          <tr>
+            <td>Celery タスク（変換・EXIF削除・retry・補償）</td>
+            <td class="path">files/tasks.py</td>
+            <td class="num">233</td><td class="num">65%</td>
+            <td>「Celery task、Redis broker、retry、タスク状態、補償」</td>
+          </tr>
+          <tr>
+            <td>画像検証（形式・SVG拒否・サイズ）</td>
+            <td class="path">files/image_validation.py</td>
+            <td class="num">108</td><td class="num">84%</td>
+            <td>「アイコン初期生成、変換、EXIF削除」</td>
+          </tr>
+          <tr>
+            <td>apps/files アプリ全体（テストファイル 0 件）</td>
+            <td class="path">apps/files/</td>
+            <td class="num">486</td><td class="num">—</td>
+            <td>Phase1 受入条件「アイコンを初期表示、アップロード、削除できる」</td>
+          </tr>
+          <tr>
+            <td>メール正規化・パスワード強度</td>
+            <td class="path">accounts/application/auth_service.py</td>
+            <td class="num">212</td><td class="num">84%</td>
+            <td>「メール正規化、パスワード強度を検証する」</td>
+          </tr>
+          <tr>
+            <td>Idempotency-Key（settlements の 1 箇所のみ）</td>
+            <td class="path">common/models.py ほか</td>
+            <td class="num">—</td><td class="num">86%</td>
+            <td>「Idempotency-Key を検証する」</td>
+          </tr>
+          <tr>
+            <td>audit_logs 記録（contracts / settings の 2 アプリのみ）</td>
+            <td class="path">audit_logs/services.py</td>
+            <td class="num">78</td><td class="num">83%</td>
+            <td>「audit_logs を検証する」</td>
+          </tr>
+          <tr>
+            <td>OpenAPI YAML の参照解決・Swagger UI 読込</td>
+            <td class="path">flowance-docs/static/openapi/*.yaml（8 本）</td>
+            <td class="num">—</td><td class="num">—</td>
+            <td>Phase1 受入条件「Swagger UI で読み込める」</td>
+          </tr>
+          <tr>
+            <td>Redis 統合テスト</td>
+            <td class="path">—</td>
+            <td class="num">—</td><td class="num">—</td>
+            <td>「Redis integration tests」</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ web ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§4</span><h2>flowance-web の現状</h2></div>
+    <p><code>package.json</code> の全内容がこれである。</p>
+    <pre><code>"scripts":         { "dev", "build", "start", "typecheck" }
+"dependencies":    { "lucide-react", "next", "react", "react-dom", "zod" }
+"devDependencies": { "@types/node", "@types/react", "@types/react-dom", "typescript" }</code></pre>
+    <p>
+      AGENTS.md §3.1・§13 が要求する <strong>Vitest / React Testing Library / Playwright / ESLint がいずれも未インストール</strong>で、
+      <code>test</code> / <code>lint</code> スクリプトもない。
+      <code>vitest.config.ts</code>、<code>playwright.config.ts</code>、<code>eslint.config.mjs</code> も存在しない。
+    </p>
+    <p>
+      一方で、AGENTS.md §9 の層分離自体は守られており、<strong>テストを書きやすい構造はすでにできている</strong>。
+      React に依存しないロジックが約 900 行あり、ここは追加コストがほぼゼロで単体テストを書ける。
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>対象</th><th class="num">行数</th><th>性質</th><th>必要な環境</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="path">application/workRecords/monthRange.ts</td><td class="num">25</td><td>純粋関数（月→APIレンジ変換、JST 固定）</td><td class="path">node</td></tr>
+          <tr><td class="path">application/schedules/calendarRange.ts</td><td class="num">89</td><td>純粋関数（カレンダー表示範囲算出）</td><td class="path">node</td></tr>
+          <tr><td class="path">domain/ 14 ファイル</td><td class="num">約 570</td><td>型・変換・判定（contract 68 / settings 76 / schedule 73 / workRecord 72 ほか）</td><td class="path">node</td></tr>
+          <tr><td class="path">shared/errors/ 3 ファイル</td><td class="num">184</td><td>API エラーコード → 表示メッセージ変換</td><td class="path">node</td></tr>
+          <tr><td class="path">application/dashboard/loadDashboard.ts</td><td class="num">62</td><td>ports 経由のユースケース（スタブ注入で検証可）</td><td class="path">node</td></tr>
+          <tr><td class="path">shared/validation/validationRules.ts</td><td class="num">226</td><td>フォーム検証。<code>HTMLFormElement</code> に依存するため純粋ではない</td><td class="path">jsdom</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <strong>補足。</strong>
+      <span><code>validationRules.ts</code> は <code>HTMLInputElement</code> / <code>HTMLFormElement</code> を直接参照しており、
+      AGENTS.md §9「ドメイン概念を React・ブラウザ API から独立させる」の観点ではやや外れている。
+      ただし用途はフォーム UX 補助であり、業務検証は Django 側が正であるという §9 の原則自体は守られている。
+      テスト導入時は <code>jsdom</code> 環境で扱えば十分で、テストのためだけにリファクタする必要はない。</span>
+    </div>
+  </section>
+
+  <!-- ============ すすめ ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§5</span><h2>AGENTS.md に則った単体テストのすすめ</h2></div>
+    <p>
+      ここからは調査結果ではなく提案である。AGENTS.md の各条項を、そのままテストの置き場所と書き方に落とし込む。
+    </p>
+
+    <h3>5.1 まず、AGENTS.md の条項をテスト方針に翻訳する</h3>
+
+    <div class="rule-map">
+      <div>
+        <cite>AGENTS.md §6</cite>
+        <q>Domain code must not depend on Django, DRF, ORM, Redis, Celery, Pillow, Storage, or HTTP.</q>
+        <p>→ Domain のテストは <code>SimpleTestCase</code>（DB なし）で書ける。<strong>書けないなら依存方向が壊れている</strong>という設計チェックとして機能する。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §6</cite>
+        <q>Business rules belong primarily in Domain or Application layers.</q>
+        <p>→ 業務ルールの<strong>境界値は Domain テストで、権限とトランザクションは Application テストで</strong>網羅する。API テストで境界値を潰さない。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §8</cite>
+        <q>401 / 403 / 404 / 409 / 422 の使い分け、ErrorResponse 統一</q>
+        <p>→ Presentation テストの守備範囲を「ステータスコード・エラー形状・Cookie・CSRF」に限定し、金額や日付の正しさは検証しない。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §9</cite>
+        <q>Keep domain concepts independent from React, Next.js, TanStack Query, ... and browser APIs.</q>
+        <p>→ flowance-web も同じ判定が使える。<code>src/domain/</code> と <code>src/application/</code> は <code>environment: node</code> でテストできるはず。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §11</cite>
+        <q>Use version columns for optimistic locking / exclusion constraint for contract overlap</q>
+        <p>→ DB 制約に依存する検証は <code>TestCase</code>（PostgreSQL 実接続）で。SQLite 代替は使わない。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §13</cite>
+        <q>Before handing off code changes, run the smallest meaningful verification that matches the risk of the change.</q>
+        <p>→ 「Domain だけ 1 秒で回る」状態を作ることが前提条件。現状は全件 DB 起動のため、この条項が実行不可能になっている。</p>
+      </div>
+    </div>
+
+    <h3>5.2 判断基準：どの層に何を書くか</h3>
+    <p>迷ったときの一枚表。既存の <code>apps/&lt;app&gt;/tests/&lt;layer&gt;/</code> 構造をそのまま活かす。</p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>層</th><th>基底クラス</th><th class="num">DB</th><th>ここで検証すること</th><th>ここで検証しないこと</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="path">tests/domain/</td>
+            <td class="path">SimpleTestCase</td><td class="num">不要</td>
+            <td>金額・時間の計算、丸め、境界値、契約種別ごとの必須条件、期間重複の判定、予定生成の展開規則、ドメイン例外の送出</td>
+            <td>権限、テナント、HTTP</td>
+          </tr>
+          <tr>
+            <td class="path">tests/application/</td>
+            <td class="path">SimpleTestCase<br>または TestCase</td><td class="num">原則不要</td>
+            <td>OWNER/ADMIN/MEMBER の分岐、organization 境界、version 不一致、Idempotency-Key、audit_logs 記録、失敗時の補償</td>
+            <td>計算の正しさ（Domain 済み）、レスポンス形状</td>
+          </tr>
+          <tr>
+            <td class="path">tests/infrastructure/</td>
+            <td class="path">TestCase</td><td class="num">必要</td>
+            <td>PostgreSQL 制約（exclusion constraint、unique）、論理削除マネージャ、JWT 発行と blacklist、Celery タスクの冪等性</td>
+            <td>業務ルールの分岐</td>
+          </tr>
+          <tr>
+            <td class="path">tests/presentation/</td>
+            <td class="path">APITestCase</td><td class="num">必要</td>
+            <td>401/403/404/409/422、ErrorResponse の形（code・message・details・traceId）、Cookie 認証、CSRF、URL が OpenAPI と一致すること</td>
+            <td>金額・分数の値、境界値の網羅</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>5.3 flowance-api：pytest を動く状態にする</h3>
+    <p>
+      依存はすでに入っているため、設定 2 ファイルの追加で済む。<code>manage.py test</code> も併存できるので、既存テストは書き換え不要。
+    </p>
+
+    <div class="stack">
+      <div class="cap">flowance-api/pytest.ini（新規）</div>
+      <pre><code>[pytest]
+DJANGO_SETTINGS_MODULE = config.settings.test
+python_files = test_*.py
+testpaths = apps
+addopts =
+    --strict-markers
+    --ds=config.settings.test
+markers =
+    domain: DB を使わない業務ルールの検証
+    application: ユースケース単位の検証
+    integration: PostgreSQL / Redis / Celery を伴う検証</code></pre>
+
+      <div class="cap">flowance-api/conftest.py（新規）— 全テスト共通の土台</div>
+      <pre><code>import pytest
+from apps.accounts.models import User
+from apps.organizations.models import Organization, Membership
+
+
+@pytest.fixture
+def organization(db):
+    return Organization.objects.create(name="調査用組織")
+
+
+@pytest.fixture
+def owner(db, organization):
+    """OWNER ロールの Membership 付きユーザー。各 setUp の重複を吸収する。"""
+    user = User.objects.create_user(
+        email="Owner@Example.com", password="Passw0rd!flow"
+    )
+    Membership.objects.create(
+        organization=organization, user=user, role="OWNER"
+    )
+    return user
+
+
+@pytest.fixture
+def other_organization(db):
+    """テナント分離の検証用。organization 境界テストは必ずこれと対で書く。"""
+    return Organization.objects.create(name="別組織")</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>あわせて <code>factory_boy</code> を使い始める。</strong>
+      <span>依存に入っているのに未使用のため、<code>apps/common/tests/factories.py</code> を新設し、
+      Organization / User / Membership / Client / Project / Contract のファクトリを定義する。
+      現在 6 つの <code>test_api.py</code> に散らばっている <code>setUp</code> の重複が消え、
+      境界値テストを 1 行で足せるようになる。これが §5.4 以降を実行可能にする前提条件。</span>
+    </div>
+
+    <h3>5.4 Domain テストの書き方 — 精算計算を例に</h3>
+    <p>
+      <code>settlements/domain/calculation.py</code> は Django に一切依存していない（<code>Decimal</code> と
+      自前の <code>DomainValidationError</code> のみ）。つまり AGENTS.md §6 の依存方向は守られており、
+      <strong>DB もフィクスチャもなしにテストできる</strong>。現状これが API テスト経由でしか検証されていないのが機会損失である。
+    </p>
+
+    <div class="stack">
+      <div class="cap">apps/settlements/tests/domain/test_calculation.py（新規）</div>
+      <pre><code>from decimal import Decimal
+import pytest
+
+from apps.settlements.domain.calculation import (
+    InvalidContractConfigurationError,
+    NegativeSettlementTotalError,
+    SettlementContractTerms,
+    calculate_amounts,
+)
+
+pytestmark = pytest.mark.domain
+
+
+def terms(**overrides) -> SettlementContractTerms:
+    base = dict(
+        contract_type="HOURLY", hourly_rate=5000, monthly_rate=None,
+        base_minutes=None, deduction_rate=None, overtime_rate=None,
+        performance_amount=None,
+        tax_rate=Decimal("10"), withholding_tax_rate=Decimal("10.21"),
+    )
+    return SettlementContractTerms(**{**base, **overrides})
+
+
+class TestHourly:
+    def test_端数は切り捨てられる(self):
+        # 10 分 x 5000 円/h = 833.33... -> ROUND_FLOOR で 833
+        result = calculate_amounts(contract_terms=terms(), target_minutes=10)
+        assert result.base_amount == 833
+
+    def test_時間単価が無いと契約設定エラー(self):
+        with pytest.raises(InvalidContractConfigurationError):
+            calculate_amounts(contract_terms=terms(hourly_rate=None), target_minutes=60)
+
+
+class TestMonthlyRange:
+    """AGENTS.md §6.4「base_minutes 差分を控除・超過計算の基礎とする」の検証。"""
+
+    def spec(self, **o):
+        return terms(contract_type="MONTHLY_RANGE", hourly_rate=None,
+                     monthly_rate=500_000, base_minutes=9600,
+                     deduction_rate=3000, overtime_rate=3500, **o)
+
+    def test_基準時間ちょうどなら控除も超過も発生しない(self):
+        result = calculate_amounts(contract_terms=self.spec(), target_minutes=9600)
+        assert (result.deduction_amount, result.overtime_amount) == (0, 0)
+        assert result.base_amount == 500_000
+
+    def test_不足分は控除され超過分は加算される(self):
+        under = calculate_amounts(contract_terms=self.spec(), target_minutes=9000)
+        over = calculate_amounts(contract_terms=self.spec(), target_minutes=10200)
+        assert under.deduction_amount == 30_000   # 600分 x 3000/60
+        assert over.overtime_amount == 35_000     # 600分 x 3500/60
+
+    def test_控除が月額を上回ると負値エラー(self):
+        with pytest.raises(NegativeSettlementTotalError):
+            calculate_amounts(contract_terms=self.spec(monthly_rate=1000),
+                              target_minutes=0)
+
+
+@pytest.mark.parametrize("contract_type,field", [
+    ("MONTHLY_FIXED", "monthly_rate"),
+    ("PERFORMANCE", "performance_amount"),
+])
+def test_必須項目が欠けると契約設定エラー(contract_type, field):
+    with pytest.raises(InvalidContractConfigurationError):
+        calculate_amounts(
+            contract_terms=terms(contract_type=contract_type, hourly_rate=None,
+                                 **{field: None}),
+            target_minutes=9600,
+        )
+
+
+def test_源泉徴収は税抜額に対して計算され合計から差し引かれる():
+    # AGENTS.md §6.4: 消費税と源泉徴収の計算順序を固定する
+    result = calculate_amounts(
+        contract_terms=terms(contract_type="MONTHLY_FIXED", hourly_rate=None,
+                             monthly_rate=100_000),
+        target_minutes=0,
+    )
+    assert result.tax_amount == 10_000          # 100,000 x 10%
+    assert result.withholding_amount == 10_210  # 100,000 x 10.21%（税抜基準）
+    assert result.total_amount == 99_790</code></pre>
+    </div>
+
+    <p>
+      同じ形で <code>contracts/tests/domain/test_validation.py</code>（4 種契約の必須条件、期間重複の境界日）と
+      <code>schedules/tests/domain/test_generation.py</code>（100 日境界、手動上書き保護、<code>day_of_week</code> の 0=日曜、
+      §1 で見つかった <code>breakMinutes</code> の境界）を追加する。
+      いずれも DB 不要のため、この 3 ファイルだけなら 1 秒未満で回る。
+    </p>
+
+    <h3>5.5 Application テストの書き方 — 依存をスタブに差し替える</h3>
+    <p>
+      Application 層のテストがゼロである最大の理由は、テストするために組織・ユーザー・案件・契約を毎回 DB に作る必要があるためだと推測される。
+      AGENTS.md §6「Database access belongs behind repository or infrastructure boundaries where practical」に沿って、
+      <strong>まずテストしたいユースケース 1 つに限定して依存を引数化する</strong>のが最小の一歩である。
+    </p>
+
+    <div class="stack">
+      <div class="cap">apps/settlements/tests/application/test_finalize.py（新規・方針例）</div>
+      <pre><code>import pytest
+
+pytestmark = pytest.mark.application
+
+
+class FakeIdempotencyStore:
+    """Idempotency-Key の保存先を差し替える。DB も Redis も起動しない。"""
+
+    def __init__(self):
+        self.saved = {}
+
+    def find(self, *, organization_id, key):
+        return self.saved.get((organization_id, key))
+
+    def save(self, *, organization_id, key, request_hash, response):
+        self.saved[(organization_id, key)] = (request_hash, response)
+
+
+def test_同じキーで同じ内容なら再計算せず保存済み結果を返す():
+    store = FakeIdempotencyStore()
+    # ... finalize_settlement(store=store, idempotency_key="k1", ...) を 2 回呼ぶ
+    # 2 回目は副作用が起きないこと（呼び出し回数）を assert する
+
+
+def test_同じキーで異なる内容なら IdempotencyConflictError():
+    ...
+
+
+def test_MEMBER は確定できず audit_logs も記録されない():
+    # AGENTS.md §6.2 の権限分岐。403 ではなくドメイン例外の型を検証する。
+    ...</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>全面リファクタは不要。</strong>
+      <span>AGENTS.md は「Do not recommend abstractions, patterns, repositories, entities, or value objects solely for architectural purity」とも述べている。
+      全ユースケースにリポジトリを導入するのではなく、<strong>権限分岐・冪等性・補償処理という「壊れると業務影響が大きい 3 点」に限って</strong>
+      依存を引数化する。それ以外は既存どおり <code>TestCase</code> + factory で DB を使って書けばよい。</span>
+    </div>
+
+    <h3>5.6 flowance-web：Vitest を導入する</h3>
+    <p>
+      AGENTS.md §3.1 の指定どおり Vitest + React Testing Library を入れる。
+      §9 の層分離が守られているので、<code>src/domain/</code> と <code>src/application/</code> は
+      <code>jsdom</code> すら不要で <code>node</code> 環境で回る。ここから始めるのが最も費用対効果が高い。
+    </p>
+
+    <div class="stack">
+      <div class="cap">導入コマンド</div>
+      <pre><code>npm i -D vitest @vitest/coverage-v8 jsdom \
+        @testing-library/react @testing-library/jest-dom @testing-library/user-event \
+        eslint eslint-config-next</code></pre>
+
+      <div class="cap">flowance-web/package.json — scripts に追加</div>
+      <pre><code>"test":          "vitest run",
+"test:watch":    "vitest",
+"test:coverage": "vitest run --coverage",
+"lint":          "next lint"</code></pre>
+
+      <div class="cap">flowance-web/vitest.config.ts（新規）</div>
+      <pre><code>import {defineConfig} from 'vitest/config'
+import path from 'node:path'
+
+export default defineConfig({
+  resolve: {alias: {'@': path.resolve(__dirname, 'src')}},
+  test: {
+    // 既定は node。DOM が要るテストだけファイル先頭で
+    // // @vitest-environment jsdom を宣言する。
+    environment: 'node',
+    setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/domain/**', 'src/application/**', 'src/shared/**'],
+    },
+  },
+})</code></pre>
+
+      <div class="cap">flowance-web/src/application/workRecords/monthRange.test.ts（新規）</div>
+      <pre><code>import {describe, expect, it} from 'vitest'
+import {workRecordMonthRange} from './monthRange'
+
+describe('workRecordMonthRange', () => {
+  it('月を [from, to) の半開区間に変換する', () => {
+    expect(workRecordMonthRange('2026-07')).toEqual({
+      from: '2026-07-01T00:00:00+09:00',
+      to: '2026-08-01T00:00:00+09:00',
+    })
+  })
+
+  it('12月は翌年1月へ繰り上がる', () => {
+    expect(workRecordMonthRange('2026-12')).toEqual({
+      from: '2026-12-01T00:00:00+09:00',
+      to: '2027-01-01T00:00:00+09:00',
+    })
+  })
+
+  it.each(['2026-13', '2026-00', '2026-7', '', 'not-a-month'])(
+    '不正な値 %s は空オブジェクトを返す',
+    (value) => {
+      expect(workRecordMonthRange(value)).toEqual({})
+    },
+  )
+})</code></pre>
+
+      <div class="cap">ports をスタブ化してユースケースを検証する</div>
+      <pre><code>import {describe, expect, it, vi} from 'vitest'
+import {loadDashboard} from './loadDashboard'
+
+describe('loadDashboard', () => {
+  it('取得失敗時も画面が描画できる形を返す', async () => {
+    const port = {
+      listProjects: vi.fn().mockRejectedValue(new Error('network')),
+      // ... 他の port も vi.fn() で用意する
+    }
+    // AGENTS.md §9: 業務検証は Django が正。ここでは表示用の
+    // 組み立てとエラー時の縮退だけを検証する。
+    await expect(loadDashboard(port)).resolves.toBeDefined()
+  })
+})</code></pre>
+    </div>
+
+    <p>
+      <code>shared/validation/validationRules.ts</code> は <code>HTMLFormElement</code> に依存するため、
+      そのファイルのテストだけ先頭に <code>// @vitest-environment jsdom</code> を書く。
+      検証規則は Django 側の <code>test_validation.py</code>（電話番号のハイフン拒否、郵便番号 7 桁、notes 1000 文字）と
+      対になっているので、<strong>両者が同じ境界値で同じ判定になること</strong>をテスト名に明示しておくと、
+      片側だけ変更されたときに気付ける。
+    </p>
+
+    <h3>5.7 CI で回す</h3>
+    <p>AGENTS.md §13 のチェック項目をそのままワークフロー化する。これがない限り §1 の検出事項は再発する。</p>
+
+    <div class="stack">
+      <div class="cap">.github/workflows/ci.yml（新規・骨子）</div>
+      <pre><code>name: CI
+on: [push, pull_request]
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_PASSWORD: postgres}
+        options: &gt;-
+          --health-cmd pg_isready --health-interval 10s --health-retries 5
+        ports: ['5432:5432']
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+    defaults: {run: {working-directory: flowance-api}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -r requirements.txt
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy .
+      - run: python manage.py check --settings=config.settings.test
+      - run: python manage.py makemigrations --check --dry-run --settings=config.settings.test
+      - run: pytest --cov=apps --cov-report=term-missing
+
+  web:
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: flowance-web}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: flowance-web/package-lock.json}
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>テスト数の下限を設けるより、まず「落ちる CI」を用意することが先。</strong>
+      <span>今回の調査で見つかった 2 件の重大事項（テスト 11 件の未実行、既存テスト 1 件の失敗）は、
+      いずれも上記ワークフローがあれば PR 時点で検出できていた。
+      カバレッジ閾値の設定は、Domain / Application のテストが揃ってから導入するのが順序として正しい。</span>
+    </div>
+  </section>
+
+  <!-- ============ ロードマップ ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§6</span><h2>対応ロードマップ</h2></div>
+    <p>依存関係の順に並べている。フェーズ 1 を飛ばすと、以降で追加したテストが実行されているかを確認できない。</p>
+
+    <div class="findings">
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 1 — 既存の穴を塞ぐ</b>
+          <span class="chip crit">最優先</span>
+          <span class="est">数時間規模</span>
+        </div>
+        <ol>
+          <li><code>apps/settings/tests/{,presentation/}__init__.py</code> を追加し、埋もれている 11 件を復活させる</li>
+          <li><code>breakMinutes</code> の境界仕様を <code>docs/14_schedule-generation</code> に明記し、<code>validate_weekly_schedule</code> と <code>validate_work_schedule</code> の演算子を統一。失敗テストを解消する</li>
+          <li><code>.github/workflows/ci.yml</code> を追加し、テスト・Ruff・mypy・system check・migration check を PR で走らせる</li>
+        </ol>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 2 — flowance-api の Domain / Application テスト</b>
+          <span class="chip warn">高</span>
+          <span class="est">投資対効果が最も高い</span>
+        </div>
+        <ol>
+          <li><code>pytest.ini</code> + ルート <code>conftest.py</code> + <code>apps/common/tests/factories.py</code> を整備する</li>
+          <li>Domain テストを追加：<code>settlements/domain/calculation.py</code>（4種契約 × 消費税 × 源泉徴収 × 丸め境界）、<code>contracts/domain/validation.py</code>（期間重複の境界日）、<code>schedules/domain/generation.py</code>（100日境界・手動上書き保護・dryRun）</li>
+          <li><code>apps/files</code> の Celery タスクテストを新規作成（EXIF 削除、SVG 拒否、retry、失敗時の補償）</li>
+          <li>Application テストを追加：settlements の再計算・確定・冪等性、schedules の生成、各アプリの OWNER/ADMIN/MEMBER 分岐と organization 境界</li>
+          <li>既存の <code>SettlementCalculationTests</code> / <code>WorkRecordCalculationTests</code> を <code>tests/domain/</code> へ移す</li>
+        </ol>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 3 — flowance-web のテスト基盤構築</b>
+          <span class="chip info">中</span>
+          <span class="est">ゼロからの立ち上げ</span>
+        </div>
+        <ol>
+          <li>Vitest + React Testing Library + jsdom + ESLint を導入し、<code>test</code> / <code>lint</code> スクリプトを追加</li>
+          <li>React 非依存のロジックから着手：<code>monthRange</code>、<code>calendarRange</code>、<code>domain/</code>、<code>shared/errors/</code>（約 900 行を <code>node</code> 環境でカバー）</li>
+          <li><code>shared/validation/validationRules.ts</code> を <code>jsdom</code> 環境で。Django 側 <code>test_validation.py</code> と境界値を突き合わせる</li>
+          <li><code>application/</code> のユースケースを ports スタブで検証</li>
+          <li><code>presentation/features/</code> の主要フォームを RTL で検証</li>
+          <li>Playwright は Phase1 受入条件のフローに限定：登録 → ログイン → クライアント登録 → 案件登録 → 契約登録 → 予定生成 → 稼働実績 → 月次精算</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    調査は feature/FLOW-4（作業ツリーはクリーン）に対して実施。テストは稼働中の flowance-api-api-1 コンテナ内で実行し、
+    カバレッジは coverage 7.15.2 で計測した。行数は migrations / __pycache__ / node_modules を除外している。<br>
+    §5 のコード例は方針提示であり、リポジトリには未適用。
+  </footer>
+
+</div>

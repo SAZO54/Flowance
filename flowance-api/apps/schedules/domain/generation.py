@@ -67,7 +67,7 @@ def validate_weekly_schedule(
     duration = (
         datetime.combine(date.min, end_time) - datetime.combine(date.min, start_time)
     ).total_seconds() // 60
-    if break_minutes < 0 or break_minutes > duration:
+    if break_minutes < 0 or break_minutes >= duration:
         raise InvalidBreakMinutesError()
     if valid_until is not None and valid_from > valid_until:
         raise InvalidScheduleDateRangeError()

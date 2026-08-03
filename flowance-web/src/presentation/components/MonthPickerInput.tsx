@@ -3,6 +3,7 @@
 import {useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {CalendarDays, ChevronLeft, ChevronRight, X} from 'lucide-react'
+import {pxToRem, remToPx} from './cssLength'
 
 type MonthPickerInputProps = {
   value: string
@@ -20,7 +21,7 @@ function initialYear(value: string): number {
 export function MonthPickerInput({value, ariaLabel = '月', onValueChange}: MonthPickerInputProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [year, setYear] = useState(() => initialYear(value))
-  const [position, setPosition] = useState({top: 0, left: 0})
+  const [position, setPosition] = useState({top: '0rem', left: '0rem'})
   const wrapperRef = useRef<HTMLSpanElement>(null)
   const pickerRef = useRef<HTMLDivElement>(null)
 
@@ -30,10 +31,11 @@ export function MonthPickerInput({value, ariaLabel = '月', onValueChange}: Mont
     const updatePosition = () => {
       const rect = wrapperRef.current?.getBoundingClientRect()
       if (!rect) return
-      const width = Math.min(288, window.innerWidth - 16)
+      const margin = remToPx(0.5)
+      const width = Math.min(remToPx(18), window.innerWidth - remToPx(1))
       setPosition({
-        top: Math.max(8, Math.min(rect.bottom + 4, window.innerHeight - 240)),
-        left: Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8)),
+        top: pxToRem(Math.max(margin, Math.min(rect.bottom + remToPx(0.25), window.innerHeight - remToPx(15)))),
+        left: pxToRem(Math.max(margin, Math.min(rect.right - width, window.innerWidth - width - margin))),
       })
     }
     updatePosition()

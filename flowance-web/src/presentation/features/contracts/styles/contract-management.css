@@ -135,7 +135,7 @@
 
 .contract-status {
   display: inline-flex;
-  border-radius: 999px;
+  border-radius: 999rem;
   background: #e5f2fa;
   color: #426c5a;
   padding: 0.1875rem 0.5rem;

@@ -279,6 +279,7 @@ colors: {
 - Neutral grays, white, black, success, warning, and error colors may be added for usability.
 - Do not rely on color alone to communicate status.
 - Maintain WCAG-conscious text contrast.
+- In flowance-web, all size-related styles must use relative units such as rem, em, %, vw, vh, svh, lvh, or dvh. Do not use absolute units such as px, pt, pc, cm, mm, or in for CSS lengths, media queries, inline styles, or icon size props, except for non-style user-facing text that literally describes pixel-based image dimensions.
 - Project labels may use user-selected colors, but the default application chrome must use the approved Flowance palette.
 - Use `#E5F2FA` and `#C3E7F6` for soft backgrounds rather than large areas of highly saturated color.
 - Use `#75A8C7` primarily for main actions, active navigation, focused calendar elements, and important highlights.

@@ -58,15 +58,15 @@ export default function LoginPage() {
         </div>
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
           <label><span>メールアドレス <i className="required-symbol">※</i></span><div className={styles.inputWrap}>
-            <Mail size={18}/><input type="email" name="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} required disabled={submitting}/>
+            <Mail size="1.125rem"/><input type="email" name="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} required disabled={submitting}/>
           </div></label>
           <label><span>パスワード <i className="required-symbol">※</i></span><div className={styles.inputWrap}>
-            <LockKeyhole size={18}/><input type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" data-max-length={128} placeholder="パスワードを入力" value={password} onChange={event => setPassword(event.target.value)} required disabled={submitting}/>
-            <button type="button" className={styles.visibility} onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}>{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+            <LockKeyhole size="1.125rem"/><input type={showPassword ? 'text' : 'password'} name="password" autoComplete="current-password" data-max-length={128} placeholder="パスワードを入力" value={password} onChange={event => setPassword(event.target.value)} required disabled={submitting}/>
+            <button type="button" className={styles.visibility} onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}>{showPassword ? <EyeOff size="1.125rem"/> : <Eye size="1.125rem"/>}</button>
           </div></label>
           {error && <div className={styles.error} role="alert" aria-live="polite">{error}</div>}
           <button className={styles.submit} type="submit" disabled={submitting || !email.trim() || !password}>
-            {submitting ? <><LoaderCircle className={styles.spinner} size={18}/>ログイン中...</> : 'ログイン'}
+            {submitting ? <><LoaderCircle className={styles.spinner} size="1.125rem"/>ログイン中...</> : 'ログイン'}
           </button>
         </form>
         <p className={styles.support}>はじめてご利用ですか？ <Link href="/register">アカウントを作成</Link></p>

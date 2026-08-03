@@ -3,6 +3,7 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {CalendarDays, Check, ChevronLeft, ChevronRight, X} from 'lucide-react'
+import {pxToRem, remToPx} from './cssLength'
 
 type DateTimePickerInputProps = {
   name?: string
@@ -49,7 +50,7 @@ export function DateTimePickerInput({
   const [internalValue, setInternalValue] = useState(defaultValue)
   const [isOpen, setIsOpen] = useState(false)
   const [viewMonth, setViewMonth] = useState(() => parseDate(value ?? defaultValue) ?? new Date())
-  const [position, setPosition] = useState({top: 0, left: 0})
+  const [position, setPosition] = useState({top: '0rem', left: '0rem'})
   const wrapperRef = useRef<HTMLSpanElement>(null)
   const pickerRef = useRef<HTMLDivElement>(null)
   const currentValue = value ?? internalValue
@@ -69,10 +70,11 @@ export function DateTimePickerInput({
     const updatePosition = () => {
       const rect = wrapperRef.current?.getBoundingClientRect()
       if (!rect) return
-      const width = Math.min(288, window.innerWidth - 16)
+      const margin = remToPx(0.5)
+      const width = Math.min(remToPx(18), window.innerWidth - remToPx(1))
       setPosition({
-        top: Math.max(8, Math.min(rect.bottom + 4, window.innerHeight - 368)),
-        left: Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8)),
+        top: pxToRem(Math.max(margin, Math.min(rect.bottom + remToPx(0.25), window.innerHeight - remToPx(23)))),
+        left: pxToRem(Math.max(margin, Math.min(rect.right - width, window.innerWidth - width - margin))),
       })
     }
     updatePosition()

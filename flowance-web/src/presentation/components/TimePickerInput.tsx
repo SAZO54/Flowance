@@ -3,6 +3,7 @@
 import {useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {Check, Clock3, X} from 'lucide-react'
+import {pxToRem, remToPx} from './cssLength'
 
 type TimePickerInputProps = {
   name?: string
@@ -16,7 +17,7 @@ const pad = (value: number) => String(value).padStart(2, '0')
 export function TimePickerInput({name, required, defaultValue = '', ariaLabel = '時刻'}: TimePickerInputProps) {
   const [value, setValue] = useState(defaultValue)
   const [isOpen, setIsOpen] = useState(false)
-  const [position, setPosition] = useState({top: 0, left: 0})
+  const [position, setPosition] = useState({top: '0rem', left: '0rem'})
   const wrapperRef = useRef<HTMLSpanElement>(null)
   const pickerRef = useRef<HTMLDivElement>(null)
   const [hour = '09', minute = '00'] = (value || '09:00').split(':')
@@ -28,10 +29,11 @@ export function TimePickerInput({name, required, defaultValue = '', ariaLabel = 
     const updatePosition = () => {
       const rect = wrapperRef.current?.getBoundingClientRect()
       if (!rect) return
-      const width = Math.min(288, window.innerWidth - 16)
+      const margin = remToPx(0.5)
+      const width = Math.min(remToPx(18), window.innerWidth - remToPx(1))
       setPosition({
-        top: Math.max(8, Math.min(rect.bottom + 4, window.innerHeight - 220)),
-        left: Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8)),
+        top: pxToRem(Math.max(margin, Math.min(rect.bottom + remToPx(0.25), window.innerHeight - remToPx(13.75)))),
+        left: pxToRem(Math.max(margin, Math.min(rect.right - width, window.innerWidth - width - margin))),
       })
     }
     updatePosition()
