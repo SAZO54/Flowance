@@ -63,12 +63,14 @@ Current main directories:
       docs/
       flowance-api/
       flowance-web/
+      flowance-e2e/
 
 Directory roles:
 
 - flowance-docs: Dedicated Docusaurus documentation site. Its `docs/` directory contains requirements, design documents, API design, database design, architecture, security, operations, testing, ADRs, and OpenAPI YAML.
 - flowance-api: Django / DRF backend API and Celery worker.
 - flowance-web: Next.js frontend.
+- flowance-e2e: Playwright based product E2E and Phase1 acceptance tests that exercise flowance-web, flowance-api, and backing services together.
 
 When a directory name in older documents differs from the current repository, prefer the actual current directory names while preserving the architecture described in /flowance-docs/docs/.
 

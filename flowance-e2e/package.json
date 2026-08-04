@@ -1,0 +1,12 @@
+{
+  "name": "flowance-e2e",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "test": "playwright test",
+    "test:list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

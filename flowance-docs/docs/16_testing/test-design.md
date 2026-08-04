@@ -19,6 +19,7 @@ sidebar_label: テスト設計
 - 金額計算、時間計算、契約期間重複、権限、テナント分離は必須テスト対象とする。
 - OpenAPI YAML は Swagger UI で読み込めることを検証する。
 - E2E は Phase1 受入条件に直結する主要フローへ絞る。
+- プロダクト横断の Playwright E2E は flowance-web や flowance-api 配下ではなく、トップレベルの flowance-e2e に配置する。
 
 ## 📦 Phase1 テスト対象
 
