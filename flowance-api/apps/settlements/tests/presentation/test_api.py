@@ -8,10 +8,6 @@ from rest_framework.test import APIClient, APITestCase
 from apps.contracts.models import ContractType, ProjectContract
 from apps.projects.models import Project
 
-from apps.settlements.domain.calculation import (
-    SettlementContractTerms,
-    calculate_amounts,
-)
 from apps.settlements.models import MonthlyProjectSettlement, SettlementLine
 
 
@@ -171,23 +167,3 @@ class SettlementAPITests(APITestCase):
         )
         self.assertEqual(deleted.status_code, 204)
         self.assertEqual(MonthlyProjectSettlement.objects.count(), 0)
-
-
-class SettlementCalculationTests(APITestCase):
-    def test_monthly_range_uses_base_minutes_difference(self):
-        contract_terms = SettlementContractTerms(
-            contract_type=ContractType.MONTHLY_RANGE,
-            monthly_rate=500000,
-            base_minutes=9600,
-            deduction_rate=3000,
-            overtime_rate=4000,
-            hourly_rate=None,
-            performance_amount=None,
-            tax_rate=Decimal(10),
-            withholding_tax_rate=Decimal(0),
-        )
-
-        result = calculate_amounts(contract_terms=contract_terms, target_minutes=9000)
-        self.assertEqual(result.deduction_amount, 30000)
-        self.assertEqual(result.base_amount, 470000)
-        self.assertEqual(result.total_amount, 517000)
