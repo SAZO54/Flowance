@@ -1,0 +1,935 @@
+<title>Flowance 結合テスト調査報告</title>
+<style>
+  :root {
+    --paper:      #FCFDFE;
+    --paper-sunk: #F2F7FA;
+    --ink:        #16232C;
+    --ink-2:      #47606E;
+    --ink-3:      #7A8F9C;
+    --rule:       #D6E2EA;
+    --rule-firm:  #B4C8D5;
+    --primary:    #4E88AA;
+    --primary-2:  #75A8C7;
+    --soft:       #E5F2FA;
+    --critical:   #A8443A;
+    --critical-bg:#F7E7E4;
+    --warn:       #946A15;
+    --warn-bg:    #F8EFDC;
+    --good:       #35735A;
+    --good-bg:    #E2F0E9;
+    --dead:       #B9C9D3;
+
+    --display: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "Noto Serif JP", "Songti SC", "Times New Roman", serif;
+    --body: "Hiragino Kaku Gothic ProN", "Yu Gothic", YuGothic, "Noto Sans JP", Meiryo, system-ui, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0D161C; --paper-sunk: #131F27;
+      --ink: #DCE8EF; --ink-2: #9DB3C0; --ink-3: #6E8593;
+      --rule: #22343F; --rule-firm: #35505F;
+      --primary: #8FC0DC; --primary-2: #75A8C7; --soft: #16303E;
+      --critical: #E8938A; --critical-bg: #331D1A;
+      --warn: #DDB667; --warn-bg: #302512;
+      --good: #7DBFA0; --good-bg: #12291F;
+      --dead: #3A4E5B;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0D161C; --paper-sunk: #131F27;
+    --ink: #DCE8EF; --ink-2: #9DB3C0; --ink-3: #6E8593;
+    --rule: #22343F; --rule-firm: #35505F;
+    --primary: #8FC0DC; --primary-2: #75A8C7; --soft: #16303E;
+    --critical: #E8938A; --critical-bg: #331D1A;
+    --warn: #DDB667; --warn-bg: #302512;
+    --good: #7DBFA0; --good-bg: #12291F;
+    --dead: #3A4E5B;
+  }
+  :root[data-theme="light"] {
+    --paper: #FCFDFE; --paper-sunk: #F2F7FA;
+    --ink: #16232C; --ink-2: #47606E; --ink-3: #7A8F9C;
+    --rule: #D6E2EA; --rule-firm: #B4C8D5;
+    --primary: #4E88AA; --primary-2: #75A8C7; --soft: #E5F2FA;
+    --critical: #A8443A; --critical-bg: #F7E7E4;
+    --warn: #946A15; --warn-bg: #F8EFDC;
+    --good: #35735A; --good-bg: #E2F0E9;
+    --dead: #B9C9D3;
+  }
+
+  body {
+    background: var(--paper); color: var(--ink); font-family: var(--body);
+    font-size: 1rem; line-height: 1.85; -webkit-font-smoothing: antialiased; text-size-adjust: 100%;
+  }
+
+  .sheet { max-width: 64rem; margin: 0 auto; padding: 3.5rem 1.75rem 7rem; display: flex; flex-direction: column; gap: 3.25rem; }
+
+  .masthead { display: flex; flex-direction: column; gap: 1.5rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-family: var(--display); font-weight: 600; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.28; letter-spacing: 0.01em; text-wrap: balance; }
+  .standfirst { max-width: 44rem; color: var(--ink-2); font-size: 1.03rem; }
+  .standfirst strong { color: var(--ink); font-weight: 600; }
+
+  .runsheet {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.1rem; background: var(--rule); border-block: 0.0625rem solid var(--rule); margin-top: 0.5rem;
+  }
+  .runsheet div { background: var(--paper); padding: 0.7rem 0.9rem 0.8rem; }
+  .runsheet dt { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); line-height: 1.6; }
+  .runsheet dd { font-family: var(--mono); font-size: 0.82rem; color: var(--ink); line-height: 1.5; word-break: break-all; }
+
+  section { display: flex; flex-direction: column; gap: 1.25rem; }
+  .sec-head { display: flex; align-items: baseline; gap: 0.85rem; border-bottom: 0.125rem solid var(--ink); padding-bottom: 0.55rem; }
+  .sec-num { font-family: var(--mono); font-size: 0.8rem; color: var(--primary); letter-spacing: 0.04em; flex: none; }
+  h2 { font-family: var(--display); font-weight: 600; font-size: clamp(1.35rem, 3vw, 1.7rem); line-height: 1.4; letter-spacing: 0.01em; }
+  h3 { font-family: var(--body); font-weight: 700; font-size: 1.02rem; line-height: 1.6; margin-top: 0.6rem; }
+
+  p { max-width: 46rem; }
+  section > p, section > ul, section > ol { max-width: 46rem; }
+
+  a { color: var(--primary); text-decoration-thickness: 0.0625rem; text-underline-offset: 0.18em; }
+  a:hover { text-decoration-thickness: 0.125rem; }
+  a:focus-visible { outline: 0.125rem solid var(--primary); outline-offset: 0.15rem; }
+
+  code { font-family: var(--mono); font-size: 0.88em; background: var(--paper-sunk); border: 0.0625rem solid var(--rule); padding: 0.05em 0.3em; word-break: break-word; }
+  ul, ol { padding-left: 1.4rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  li::marker { color: var(--ink-3); }
+
+  /* ---------- verdict ---------- */
+  .verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.1rem; background: var(--rule-firm); border: 0.0625rem solid var(--rule-firm); }
+  .verdict > article { background: var(--paper); padding: 1.4rem 1.35rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .repo { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; }
+  .score { font-family: var(--mono); font-size: 2.6rem; font-weight: 300; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.4rem; }
+  .score small { font-size: 0.9rem; font-weight: 400; color: var(--ink-3); }
+  .score.ok { color: var(--good); }
+  .score.mid { color: var(--warn); }
+  .score.bad { color: var(--critical); }
+  .verdict p { font-size: 0.88rem; color: var(--ink-2); margin: 0; }
+
+  /* ---------- chips ---------- */
+  .chip { display: inline-block; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.11em; text-transform: uppercase; padding: 0.18rem 0.5rem 0.2rem; border: 0.0625rem solid currentColor; line-height: 1.4; white-space: nowrap; vertical-align: 0.12em; }
+  .chip.crit { color: var(--critical); background: var(--critical-bg); }
+  .chip.warn { color: var(--warn); background: var(--warn-bg); }
+  .chip.info { color: var(--primary); background: var(--soft); }
+  .chip.good { color: var(--good); background: var(--good-bg); }
+
+  /* ---------- seam map ---------- */
+  .seam { display: flex; flex-direction: column; gap: 0.1rem; background: var(--rule); border: 0.0625rem solid var(--rule); }
+  .seam-band { background: var(--paper); padding: 1.1rem 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .seam-title { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+  .seam-title b { font-family: var(--mono); font-size: 0.84rem; font-weight: 600; }
+  .seam-title span { font-size: 0.76rem; color: var(--ink-3); }
+  .chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.3rem; }
+  .node {
+    font-family: var(--mono); font-size: 0.71rem; line-height: 1.35;
+    padding: 0.4rem 0.55rem; border: 0.0625rem solid var(--rule-firm);
+    background: var(--paper-sunk); color: var(--ink-2); white-space: nowrap;
+    display: flex; align-items: center;
+  }
+  .node.on { background: var(--good-bg); border-color: var(--good); color: var(--good); }
+  .node.off { background: var(--critical-bg); border-color: var(--critical); color: var(--critical); }
+  .node.part { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+  .node.dim { background: transparent; border-style: dashed; border-color: var(--dead); color: var(--dead); }
+  .link { display: flex; align-items: center; font-family: var(--mono); font-size: 0.75rem; color: var(--good); padding: 0 0.05rem; }
+  .link.cut { color: var(--critical); }
+  .link.weak { color: var(--dead); }
+  .seam-note { font-size: 0.83rem; color: var(--ink-2); margin: 0; }
+  .seam-note b { color: var(--ink); }
+  .seam-legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.72rem; font-family: var(--mono); color: var(--ink-3); }
+  .seam-legend i { display: inline-block; width: 0.8rem; height: 0.65rem; border: 0.0625rem solid; margin-right: 0.35rem; vertical-align: -0.05rem; }
+  .seam-legend i.on { background: var(--good-bg); border-color: var(--good); }
+  .seam-legend i.part { background: var(--warn-bg); border-color: var(--warn); }
+  .seam-legend i.off { background: var(--critical-bg); border-color: var(--critical); }
+  .seam-legend i.dim { border-style: dashed; border-color: var(--dead); }
+
+  /* ---------- findings ---------- */
+  .findings { display: flex; flex-direction: column; gap: 0; }
+  .finding { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.5rem 0; border-top: 0.0625rem solid var(--rule); }
+  .finding:last-child { border-bottom: 0.0625rem solid var(--rule); }
+  .finding-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; }
+  .finding-head h3 { margin: 0; font-size: 1.06rem; }
+  .finding p { margin: 0; }
+  .fix { background: var(--soft); border-left: 0.1875rem solid var(--primary-2); padding: 0.75rem 1rem; font-size: 0.92rem; max-width: 46rem; }
+
+  /* ---------- code ---------- */
+  pre { background: var(--paper-sunk); border: 0.0625rem solid var(--rule); padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.8rem; line-height: 1.7; tab-size: 2; }
+  pre code { background: none; border: none; padding: 0; font-size: inherit; }
+  .cap { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: -0.75rem; }
+  .stack { display: flex; flex-direction: column; gap: 1rem; }
+
+  /* ---------- tables ---------- */
+  .scroller { overflow-x: auto; border-block: 0.0625rem solid var(--rule-firm); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.87rem; min-width: 36rem; }
+  th, td { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 0.0625rem solid var(--rule); vertical-align: top; }
+  thead th { font-family: var(--mono); font-weight: 500; font-size: 0.68rem; letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-3); border-bottom: 0.0625rem solid var(--rule-firm); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.path { font-family: var(--mono); font-size: 0.78rem; word-break: break-all; }
+  td.st { white-space: nowrap; font-family: var(--mono); font-size: 0.78rem; }
+  td.st.y { color: var(--good); }
+  td.st.p { color: var(--warn); }
+  td.st.n { color: var(--critical); }
+
+  /* ---------- notes ---------- */
+  .note { border: 0.0625rem solid var(--rule-firm); border-left: 0.1875rem solid var(--ink-3); padding: 0.9rem 1.1rem; font-size: 0.9rem; color: var(--ink-2); max-width: 46rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .note strong { color: var(--ink); }
+  .note.crit { border-left-color: var(--critical); }
+  .note.good { border-left-color: var(--good); }
+
+  .rule-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.1rem; background: var(--rule); border: 0.0625rem solid var(--rule); }
+  .rule-map > div { background: var(--paper); padding: 1rem 1.1rem 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .rule-map cite { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--primary); font-style: normal; }
+  .rule-map q { font-size: 0.86rem; color: var(--ink-2); display: block; }
+  .rule-map p { font-size: 0.86rem; margin: 0; }
+
+  .phase { display: flex; flex-direction: column; gap: 0.9rem; padding: 1.5rem 0; border-top: 0.0625rem solid var(--rule); }
+  .phase:last-child { border-bottom: 0.0625rem solid var(--rule); }
+  .phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.7rem; }
+  .phase-head b { font-family: var(--display); font-size: 1.15rem; font-weight: 600; }
+  .phase-head .est { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); letter-spacing: 0.06em; }
+
+  footer { border-top: 0.0625rem solid var(--rule); padding-top: 1.25rem; font-size: 0.8rem; color: var(--ink-3); font-family: var(--mono); line-height: 1.8; }
+
+  @media (max-width: 34rem) {
+    .sheet { padding: 2.25rem 1.1rem 4rem; gap: 2.5rem; }
+    .node { font-size: 0.66rem; padding: 0.35rem 0.4rem; }
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="eyebrow">Flowance / 品質調査報告 — 結合テスト編</div>
+    <h1>結合テストの充足度調査と、<br>層と外部システムをまたぐ検証の整備方針</h1>
+    <p class="standfirst">
+      <code>flowance-api</code> と <code>flowance-web</code> の<strong>結合テスト</strong>の実装状況を、
+      全 25 + 8 テストファイルを精読して調査した。
+      単体テストは前回調査（8/5）で整備済みだが、<strong>結合レベルの検証は層ごとに大きな偏りがある</strong>。
+      API は HTTP → View → Service → Domain → ORM → PostgreSQL の縦串が 39 件で通っている一方、
+      <strong>Redis・Celery broker・R2 を通る経路は 1 本も存在しない</strong>。
+      Web は<strong>層をまたぐテストが 0 件</strong>、E2E は <code>flowance-e2e</code> に骨組みがあるが
+      <strong><code>describe.skip</code> で実行アサーション 0</strong> である。
+    </p>
+    <dl class="runsheet">
+      <div><dt>対象ブランチ</dt><dd>feature/FLOW-4</dd></div>
+      <div><dt>調査日</dt><dd>2026-08-08</dd></div>
+      <div><dt>調査対象</dt><dd>api 25本 / web 8本 / e2e 1本</dd></div>
+      <div><dt>API テスト総数</dt><dd>107（全通過）</dd></div>
+      <div><dt>Web テスト総数</dt><dd>28（全通過）</dd></div>
+      <div><dt>E2E 実行数</dt><dd>0（skip）</dd></div>
+    </dl>
+  </header>
+
+  <!-- ============ 概況 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§0</span><h2>概況</h2></div>
+
+    <p>
+      「結合テスト」を、<strong>複数の層・複数のコンポーネント・外部システムをまたいで検証しているテスト</strong>と定義して数え直した。
+      単体テスト（DB もフレームワークも通さない純粋な検証）とは区別している。
+    </p>
+
+    <div class="verdict">
+      <article>
+        <div class="repo">flowance-api</div>
+        <div class="score mid">65<small>/ 107 件が結合的</small></div>
+        <p>
+          HTTP を通る API テスト 39 件、DB を触る application / infrastructure テスト 26 件。
+          残り 42 件は <code>SimpleTestCase</code> による純粋な単体テスト。
+          縦方向（アプリ内部）の結合は成立しているが、<strong>横方向（外部システム）が空白</strong>。
+        </p>
+      </article>
+      <article>
+        <div class="repo">flowance-web</div>
+        <div class="score bad">0<small>/ 28 件が結合的</small></div>
+        <p>
+          8 ファイルすべてが単体テスト。
+          <strong>どのテストからも <code>@/infrastructure</code> が import されていない</strong>（grep 0 件）ことが決定的な証拠。
+          層と層の接続点はすべてモックで切断されている。
+        </p>
+      </article>
+      <article>
+        <div class="repo">flowance-e2e</div>
+        <div class="score bad">0<small>件の実行アサーション</small></div>
+        <p>
+          <code>test-design.md</code> の配置方針どおりトップレベルに存在し、Playwright も導入済み。
+          しかし唯一の spec が <code>test.describe.skip</code>。CI からも呼ばれていない。
+        </p>
+      </article>
+    </div>
+
+    <div class="note crit">
+      <strong>CI で実行される結合テストは flowance-api の分だけ。</strong>
+      <span><code>.github/workflows/ci.yml</code> のジョブは <code>flowance-api</code> の 1 つのみで、
+      <code>flowance-web</code> ジョブも <code>flowance-e2e</code> ジョブも存在しない（<code>grep -c "e2e\|playwright" ci.yml</code> → 0）。
+      Web の 28 件と E2E は、CI 上で一度も動いたことがない。</span>
+    </div>
+  </section>
+
+  <!-- ============ 継ぎ目マップ ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§1</span><h2>結合の継ぎ目マップ</h2></div>
+    <p>
+      結合テストの充足度は「どの層まで到達しているか」ではなく「<strong>どの継ぎ目を実際に通しているか</strong>」で決まる。
+      実装上の経路ごとに、テストがその継ぎ目を通過しているかを整理した。
+    </p>
+
+    <div class="seam">
+
+      <div class="seam-band">
+        <div class="seam-title"><b>API — 主経路</b><span>HTTP から PostgreSQL まで</span></div>
+        <div class="chain">
+          <div class="node on">HTTP Client</div><div class="link">→</div>
+          <div class="node on">DRF View</div><div class="link">→</div>
+          <div class="node on">Serializer</div><div class="link">→</div>
+          <div class="node on">Application Service</div><div class="link">→</div>
+          <div class="node on">Domain</div><div class="link">→</div>
+          <div class="node on">Django ORM</div><div class="link">→</div>
+          <div class="node on">PostgreSQL</div>
+        </div>
+        <p class="seam-note">
+          <b>成立している。</b>10 個の <code>APITestCase</code> クラス・39 件が、実際の PostgreSQL に対して
+          この縦串を通している。テナント分離・楽観ロック・エラーコードの検証はここで行われている。
+        </p>
+      </div>
+
+      <div class="seam-band">
+        <div class="seam-title"><b>API — 非同期経路</b><span>アイコン処理・ファイル削除</span></div>
+        <div class="chain">
+          <div class="node on">Application Service</div><div class="link cut">╳</div>
+          <div class="node off">.delay()</div><div class="link cut">╳</div>
+          <div class="node off">Redis broker</div><div class="link cut">╳</div>
+          <div class="node off">Celery Worker</div><div class="link">→</div>
+          <div class="node on">task 本体</div><div class="link">→</div>
+          <div class="node on">Storage (LOCAL)</div>
+        </div>
+        <p class="seam-note">
+          <b>継ぎ目がすべて切断されている。</b>実装で <code>.delay()</code> を呼ぶのは 4 箇所
+          （<code>clients/application/services.py:88,90</code> / <code>projects/application/services.py:111,113</code>）だが、
+          テストはこれを <code>@patch</code> でモックし、その後 <code>task.run()</code> を直接呼んでいる。
+          <code>.run()</code> は Celery のディスパッチ層を完全にバイパスするため、
+          <code>CELERY_TASK_ALWAYS_EAGER = True</code> という設定すら一度も通っていない。
+          タスク本体と Storage の検証は充実しているが、<strong>そこに至る経路が検証されていない</strong>。
+        </p>
+      </div>
+
+      <div class="seam-band">
+        <div class="seam-title"><b>API — 未接続の外部システム</b><span>設計上は Phase1 要素</span></div>
+        <div class="chain">
+          <div class="node dim">Redis cache</div>
+          <div class="node dim">rate limit</div>
+          <div class="node dim">Cloudflare R2</div>
+          <div class="node dim">CDN 配信</div>
+          <div class="node dim">traceId → Celery</div>
+        </div>
+        <p class="seam-note">
+          <b>テスト以前に実装が無い、または未接続。</b>
+          CI は <code>docker compose up -d postgres redis</code> で Redis を起動しているが、テストからは一切触られていない。
+          <code>storage_provider</code> は全テストで <code>"LOCAL"</code> 固定。
+          <code>apps/files/tasks.py</code> に <code>trace_id</code> は 1 度も登場しない。
+        </p>
+      </div>
+
+      <div class="seam-band">
+        <div class="seam-title"><b>Web — 画面から Django まで</b><span>実装は 4 段の DI 構成</span></div>
+        <div class="chain">
+          <div class="node dim">page.tsx</div><div class="link weak">→</div>
+          <div class="node dim">Composition</div><div class="link weak">→</div>
+          <div class="node dim">Container</div><div class="link weak">→</div>
+          <div class="node on">表示コンポーネント</div>
+          <div class="link weak">⋯</div>
+          <div class="node on">UseCase</div><div class="link weak">→</div>
+          <div class="node dim">API Adapter</div><div class="link weak">→</div>
+          <div class="node dim">fetch</div>
+        </div>
+        <p class="seam-note">
+          <b>両端の 2 点だけが個別に検証され、間の接続がすべて空白。</b>
+          <code>ClientCreate.test.tsx</code> は最下層の表示コンポーネントに <code>onCreate={vi.fn()}</code> を
+          直接渡しており、<code>Container</code>・<code>Composition</code>・<code>clientApi</code> は一切ロードされない。
+          DI 配線を取り違えても（例：編集画面に作成ユースケースを注入しても）テストは全て緑のまま通る。
+        </p>
+      </div>
+
+      <div class="seam-band">
+        <div class="seam-title"><b>E2E — ブラウザから Django まで</b><span>flowance-e2e</span></div>
+        <div class="chain">
+          <div class="node off">Chromium</div><div class="link cut">╳</div>
+          <div class="node off">Next.js dev</div><div class="link cut">╳</div>
+          <div class="node off">Django API</div><div class="link cut">╳</div>
+          <div class="node off">PostgreSQL</div>
+        </div>
+        <p class="seam-note">
+          <b>skip により 1 本も通っていない。</b>加えて <code>playwright.config.ts</code> の
+          <code>webServer</code> は Next.js dev サーバのみを起動し、<strong>Django API を起動しない</strong>。
+          skip を外しても、そのままでは API 通信が失敗する。
+        </p>
+      </div>
+
+    </div>
+
+    <div class="seam-legend">
+      <span><i class="on"></i>検証あり</span>
+      <span><i class="part"></i>部分的</span>
+      <span><i class="off"></i>切断・未実行</span>
+      <span><i class="dim"></i>テスト無し／未実装</span>
+    </div>
+  </section>
+
+  <!-- ============ API 詳細 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§2</span><h2>flowance-api の観点別充足度</h2></div>
+    <p>
+      <code>docs/16_testing/test-design.md</code> の「🔁 Application / Integration Test」と「🌐 API Test」が
+      要求する観点に沿って評価した。
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>観点</th><th class="st">充足</th><th>実態</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>version 不一致 → 409</td><td class="st y">○</td>
+            <td>clients / projects / contracts / weekly schedules / work_records / settlements / settings の 7 リソースで検証済み。<strong>最も網羅的</strong></td>
+          </tr>
+          <tr>
+            <td>background_tasks</td><td class="st y">○</td>
+            <td><code>SUCCEEDED</code> / <code>FAILED</code> / <code>progress</code> を検証。ただし <code>PENDING → PROCESSING → SUCCEEDED</code> の遷移順序と <code>retry_count</code> の増加は未検証</td>
+          </tr>
+          <tr>
+            <td>認証フロー全体</td><td class="st y">○</td>
+            <td>登録 → ログイン → refresh ローテーション → blacklist → logout → Cookie 失効を 7 件で通す。ただし<strong>blacklist 済み token の再利用が実際に 401 になること</strong>は未検証</td>
+          </tr>
+          <tr>
+            <td>organization 境界</td><td class="st p">△</td>
+            <td>7 リソース中 4 のみ、しかも<strong>すべて GET</strong>。settlements / settings は検証なし。contracts は関数名に <code>cross_tenant</code> とあるが本体に他組織ユーザーを作る処理が無い</td>
+          </tr>
+          <tr>
+            <td>OWNER / ADMIN / MEMBER 権限</td><td class="st n">✗</td>
+            <td><strong>ADMIN を使ったテストが 1 件も存在しない</strong>（<code>grep ADMIN test_*.py</code> → 0 件）。「ADMIN は clients を編集できるが settings の organization は編集できない」という実装分岐が完全に未検証</td>
+          </tr>
+          <tr>
+            <td>Idempotency-Key</td><td class="st p">△</td>
+            <td>実装があるのは <code>settlements:finalize</code> の 1 本のみ。同一キー・異なる内容の拒否はサービス層でのみ検証、HTTP 経由では未検証。キー欠落 → 400 も未検証</td>
+          </tr>
+          <tr>
+            <td>audit_logs</td><td class="st p">△</td>
+            <td><code>AuditLogService.record</code> の呼び出しは実装 29 箇所。API 経由で行が書かれることを検証しているのは <strong>contracts と settings の 2 箇所だけ</strong></td>
+          </tr>
+          <tr>
+            <td>PostgreSQL 制約</td><td class="st n">✗</td>
+            <td><strong>契約期間重複の <code>ExclusionConstraint</code> が DB レベルで効くことを検証したテストが無い</strong>。唯一の重複テストはアプリ層の事前チェックで弾かれており、<code>services.py</code> の <code>except IntegrityError</code> フォールバック経路は到達不能のまま。DB 制約テストは <code>normalized_email</code> unique の 1 件のみ</td>
+          </tr>
+          <tr>
+            <td>Celery（broker / retry）</td><td class="st n">✗</td>
+            <td><code>.delay</code> はモック、<code>.run()</code> 直呼び。EAGER 経路すら未通過。<code>apps/files/tasks.py</code> に <code>autoretry_for</code> / <code>self.retry()</code> が<strong>そもそも実装されていない</strong></td>
+          </tr>
+          <tr>
+            <td>Redis</td><td class="st n">✗</td>
+            <td>Redis を通るテストが 0 件。rate limit は <code>ErrorCode.RATE_LIMITED</code> とハンドラのマッピングは存在するが、<code>THROTTLE_RATES</code> の設定も Throttle クラスも未実装</td>
+          </tr>
+          <tr>
+            <td>Storage 障害時の整合性</td><td class="st n">✗</td>
+            <td>正常系（アップロード → WebP 変換 → EXIF 削除 → 削除）は実バイナリで検証されており充実。一方 <code>default_storage</code> が例外を投げるケースの障害注入は 0 件</td>
+          </tr>
+          <tr>
+            <td>トランザクション境界</td><td class="st p">△</td>
+            <td>settings 一括更新のロールバックのみ明示検証。<strong><code>TransactionTestCase</code> が 0 件</strong>のため、実 COMMIT を伴うロールバック・並行トランザクション競合・<code>select_for_update</code> は原理的に検証不能</td>
+          </tr>
+          <tr>
+            <td>traceId の一貫性</td><td class="st n">✗</td>
+            <td>実 API レスポンスに <code>traceId</code> が含まれること、<code>X-Trace-ID</code> ヘッダが付くことを検証したテストが 0 件。Celery 境界の伝播は実装もテストも無し</td>
+          </tr>
+          <tr>
+            <td>OpenAPI 整合性</td><td class="st n">✗</td>
+            <td>YAML と実レスポンスを突き合わせるテストが 0 件。あるのは URL 文字列のハードコード確認のみ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <strong>テスト実行基盤の死に設定。</strong>
+      <span><code>pytest.ini</code> は <code>domain</code> / <code>application</code> / <code>integration</code> マーカーを
+      <code>--strict-markers</code> 付きで定義しているが、<strong>テストコードでの使用は 0 件</strong>
+      （<code>grep "pytestmark\|@pytest.mark" test_*.py</code> → 0）。
+      ルート <code>conftest.py</code> の fixture 2 個も、全テストが unittest クラス形式のため利用者ゼロ。
+      さらに CI は <code>pytest</code> ではなく <code>manage.py test</code> を実行しているため、
+      <strong>結合テストだけを選択実行する手段が現状ない</strong>。</span>
+    </div>
+  </section>
+
+  <!-- ============ Web 詳細 ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§3</span><h2>flowance-web と E2E の実態</h2></div>
+
+    <div class="findings">
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip crit">重大</span>
+          <h3>層をまたぐテストが 0 件 — infrastructure が一度も import されていない</h3>
+        </div>
+        <p>
+          テスト 8 ファイルのいずれからも <code>@/infrastructure</code> への import が無く、
+          <code>vi.mock</code> / <code>global.fetch</code> / <code>vi.stubGlobal</code> の使用も 0 件である。
+          つまり<strong>フロントエンドが Django に対して実際にどんな HTTP リクエストを送るかを検証する手段が、
+          コードベース上に一つも存在しない</strong>。
+        </p>
+        <p>
+          未検証のまま残っている <code>apiClient.ts</code>（157 行）の責務：
+          全リクエストの <code>credentials: 'include'</code>、
+          unsafe メソッド時の <code>csrftoken</code> Cookie 読み取りと <code>X-CSRFToken</code> 付与、
+          401 時の<strong>リフレッシュ single-flight と 1 回だけの再送</strong>、
+          <code>payload.code ?? HTTP_${status}</code> のフォールバック、
+          <code>traceId</code> の 3 段解決、
+          そして <code>toApiError</code> が副作用としてグローバル <code>CustomEvent</code> を発火すること。
+        </p>
+        <div class="fix">
+          <strong>対処：</strong>MSW を導入し、<code>apiClient</code> を実際に走らせて
+          リクエストヘッダとエラー変換を検証する。並行リクエスト下の single-flight は
+          典型的なバグ源であり、結合テストでしか捕まらない。
+        </div>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip crit">重大</span>
+          <h3>E2E がスケルトンのみ — <code>describe.skip</code> で実行アサーション 0</h3>
+        </div>
+        <p>
+          <code>flowance-e2e/</code> はトップレベルに正しく配置され（<code>test-design.md</code> の配置方針に準拠）、
+          <code>@playwright/test</code> も導入済みである。しかし唯一の spec が全文 14 行で、
+          <code>test.describe.skip</code> により実行されるアサーションは 0 件。
+        </p>
+        <pre><code>test.describe.skip('Phase1 acceptance flow', () =&gt; {
+  test('registers, logs in, and completes the core freelancer workflow', async ({page}) =&gt; {
+    await page.goto('/register')
+    await expect(page).toHaveURL(/\/register/)
+
+    // TODO: Enable after API test fixtures are available:
+    // register -&gt; login -&gt; client -&gt; project -&gt; contract -&gt; schedule generation
+    // -&gt; work record -&gt; monthly settlement.
+  })
+})</code></pre>
+        <p>
+          ブロッカーは TODO が自認するとおり「API のテストフィクスチャが無いこと」。
+          加えて <code>playwright.config.ts</code> の <code>webServer</code> は
+          <code>npm --prefix ../flowance-web run dev</code> のみを起動し、<strong>Django API を起動しない</strong>ため、
+          skip を外しただけでは通らない。
+        </p>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip warn">高</span>
+          <h3>DI 配線（Composition 13 本）が完全に未検証</h3>
+        </div>
+        <p>
+          <code>src/app/**/*Composition.tsx</code> 13 本が、どのユースケースにどの API アダプタを注入するかを決めている。
+          これは<strong>層をまたぐ結合そのものの実体</strong>だが、1 本もテストされていない。
+          <code>src/app/</code> 全体（36 ファイル・780 行）にテストが 0 件である。
+        </p>
+      </article>
+
+      <article class="finding">
+        <div class="finding-head">
+          <span class="chip warn">高</span>
+          <h3>バックエンドとの契約整合を保証する仕組みが皆無</h3>
+        </div>
+        <p>
+          OpenAPI からの型生成（<code>openapi-typescript</code> / <code>orval</code>）も、
+          consumer-driven contract テストも導入されていない。
+          <code>src/domain/*.ts</code> の型はすべて手書きで、
+          <code>apiClient.ts</code> は <code>(await response.json()) as T</code> という<strong>無検証の型アサーション</strong>である。
+          Django のレスポンス形状が変わってもフロント側は気付かず、<code>undefined</code> が下流に流れる。
+        </p>
+        <p>
+          <code>validationRules.test.ts</code> のテスト名は「matches backend client validation」と主張しているが、
+          実際にはバックエンドの定義を参照せず期待値がハードコードされているだけで、契約検証にはなっていない。
+          Django 側の <code>phone</code> 検証が変わってもこのテストは緑のまま通る。
+        </p>
+      </article>
+
+    </div>
+
+    <h3>未テスト領域の定量</h3>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>ディレクトリ</th><th class="num">ファイル</th><th class="num">行数</th><th class="num">テスト</th><th>結合上の意味</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="path">src/app/</td><td class="num">36</td><td class="num">780</td><td class="num" style="color:var(--critical)">0</td><td>DI 合成ルート 13 本を含む。配線ミスが検出できない</td></tr>
+          <tr><td class="path">src/infrastructure/</td><td class="num">10</td><td class="num">650</td><td class="num" style="color:var(--critical)">0</td><td>Django との通信部。CSRF・Cookie・401 再送が未検証</td></tr>
+          <tr><td class="path">src/domain/</td><td class="num">14</td><td class="num">592</td><td class="num" style="color:var(--critical)">0</td><td>前回調査から未着手のまま</td></tr>
+          <tr><td class="path">src/presentation/</td><td class="num">44</td><td class="num">4,857</td><td class="num">1</td><td>7 機能中 clients の表示コンポーネント 1 本のみ</td></tr>
+          <tr><td class="path">src/application/</td><td class="num">43</td><td class="num">912</td><td class="num">5</td><td>ports をスタブした単体テスト。層はまたがない</td></tr>
+          <tr><td class="path">src/shared/</td><td class="num">6</td><td class="num">558</td><td class="num">2</td><td>単体テスト</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ すすめ ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§4</span><h2>AGENTS.md に則った結合テストのすすめ</h2></div>
+
+    <h3>4.1 条項をテスト方針に翻訳する</h3>
+    <div class="rule-map">
+      <div>
+        <cite>AGENTS.md §11</cite>
+        <q>Use PostgreSQL constraints for data integrity that must not be bypassed.</q>
+        <p>→「バイパスされてはならない」制約は、<strong>アプリ層を迂回して DB に直接書き込むテスト</strong>でしか検証できない。<code>TransactionTestCase</code> の導入が前提になる。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §12</cite>
+        <q>Tasks must be idempotent where retry is possible. / Preserve traceId across API and Celery task boundaries.</q>
+        <p>→ 現在 retry が未実装で traceId も渡っていない。<strong>テストを書く前に実装が必要</strong>な項目として切り分ける。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §12</cite>
+        <q>PostgreSQL background_tasks is the business-visible task state source.</q>
+        <p>→ Celery の内部状態ではなく <code>background_tasks</code> を見る設計。<code>.delay()</code> 経由で呼んでも状態が正しく遷移することを検証すべき箇所。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §9</cite>
+        <q>Put API communication in infrastructure adapters. / Put use-case orchestration in application layer.</q>
+        <p>→ 層が正しく分かれているからこそ、<strong>その接続点は明示的に検証しないと誰も守らない</strong>。Composition の配線テストがその役割。</p>
+      </div>
+      <div>
+        <cite>AGENTS.md §13</cite>
+        <q>Run the smallest meaningful verification that matches the risk of the change.</q>
+        <p>→ 結合テストは遅い。<code>pytest.ini</code> のマーカーを実際に使い、<code>-m integration</code> で選択実行できるようにする。</p>
+      </div>
+      <div>
+        <cite>test-design.md</cite>
+        <q>E2E は Phase1 受入条件に直結する主要フローへ絞る。</q>
+        <p>→ E2E を増やすのではなく、<strong>既にある 1 本を通す</strong>ことが目標。そのための API フィクスチャ整備が本丸。</p>
+      </div>
+    </div>
+
+    <h3>4.2 最優先：CI に web / e2e ジョブを追加する</h3>
+    <p>
+      前回調査でも指摘した <code>flowance-web</code> ジョブに加えて、E2E ジョブを別建てにする。
+      E2E は遅く不安定になりやすいため、単体・結合とは分けて失敗を切り分けられるようにする。
+    </p>
+    <div class="stack">
+      <div class="cap">.github/workflows/ci.yml — 追記</div>
+      <pre><code>  flowance-web:
+    name: flowance-web
+    runs-on: ubuntu-latest
+    defaults: {run: {working-directory: flowance-web}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: flowance-web/package-lock.json}
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build
+
+  flowance-e2e:
+    name: flowance-e2e
+    runs-on: ubuntu-latest
+    needs: [flowance-api, flowance-web]
+    steps:
+      - uses: actions/checkout@v4
+      # Django API を先に起動する。playwright.config.ts の webServer は
+      # Next.js しか起動しないため、API はここで用意する
+      - run: docker compose up -d --build api postgres redis
+        working-directory: flowance-api
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: npm ci && npx playwright install --with-deps chromium
+        working-directory: flowance-e2e
+      - run: npm --prefix ../flowance-web ci
+        working-directory: flowance-e2e
+      - run: npm test
+        working-directory: flowance-e2e</code></pre>
+    </div>
+
+    <h3>4.3 DB 制約を実際に踏むテストを追加する</h3>
+    <p>
+      契約期間重複の <code>ExclusionConstraint</code> は AGENTS.md §6.3 が
+      「Enforce overlap with both Application validation and PostgreSQL exclusion constraint」と定める二重防御である。
+      現状は<strong>アプリ層の検証しか通っておらず、DB 側の防御が生きているか誰も知らない</strong>。
+      マイグレーションのミスで制約が落ちても気付けない。
+    </p>
+    <div class="stack">
+      <div class="cap">apps/contracts/tests/infrastructure/test_constraints.py（新規）</div>
+      <pre><code>from django.db import IntegrityError, transaction
+from django.test import TransactionTestCase
+
+from apps.common.tests.factories import ProjectFactory
+from apps.contracts.models import ProjectContract
+
+
+class ContractPeriodExclusionConstraintTests(TransactionTestCase):
+    """AGENTS.md §6.3 の二重防御のうち、PostgreSQL 側を検証する。
+
+    アプリ層の services.py を通さず ORM から直接書き込むことで、
+    exclusion constraint そのものが効いていることを確かめる。
+    """
+
+    def test_同一案件で期間が重なる契約はDB制約で拒否される(self):
+        project = ProjectFactory()
+        ProjectContract.objects.create(
+            project=project, contract_type="HOURLY", hourly_rate=5000,
+            valid_from="2026-01-01", valid_until="2026-06-30",
+        )
+
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ProjectContract.objects.create(
+                project=project, contract_type="HOURLY", hourly_rate=6000,
+                valid_from="2026-06-30",   # 境界日が重なる
+                valid_until="2026-12-31",
+            )
+
+    def test_別案件なら期間が重なっても許可される(self):
+        # AGENTS.md §6.3「Overlap is allowed across different projects」
+        ...</code></pre>
+    </div>
+
+    <div class="note">
+      <strong><code>TransactionTestCase</code> が必要な理由。</strong>
+      <span>通常の <code>TestCase</code> は各テストをトランザクションで包んでロールバックするため、
+      COMMIT 時に評価される制約や <code>transaction.on_commit</code> が発火しない。
+      現に既存テストは <code>captureOnCommitCallbacks(execute=True)</code> で
+      <code>on_commit</code> を人工的に実行している。
+      DB 制約・並行トランザクション・<code>select_for_update</code> を検証するなら
+      <code>TransactionTestCase</code> が前提になる。実行は遅くなるので
+      <code>@pytest.mark.integration</code> を付けて選択実行できるようにする。</span>
+    </div>
+
+    <h3>4.4 Celery を <code>.delay()</code> 経由で通す</h3>
+    <p>
+      <code>CELERY_TASK_ALWAYS_EAGER = True</code> は既に設定済みなので、
+      <strong><code>.delay</code> のモックを外すだけ</strong>で dispatch 層を通せるようになる。
+      これでサービス → <code>.delay()</code> → タスク本体 → <code>background_tasks</code> 更新までが一本の結合テストになる。
+    </p>
+    <div class="stack">
+      <div class="cap">既存テストの変更方針</div>
+      <pre><code># 現状: apps/clients/tests/presentation/test_api.py:115
+@patch("apps.clients.application.services.process_client_icon.delay")
+def test_icon_upload_processing_and_delete(self, delay):
+    ...
+    delay.assert_called_once()          # ここで経路が切れている
+    process_client_icon.run(task_id)    # 手動で本体を呼び直している
+
+# 変更後: モックを外し EAGER に任せる
+def test_icon_upload_processing_and_delete(self):
+    with self.captureOnCommitCallbacks(execute=True):
+        response = self.client.post(..., format="multipart", **self.headers)
+    # .delay() → EAGER 実行 → タスク本体 → BackgroundTask 更新まで通る
+    self.assertEqual(BackgroundTask.objects.get(...).status, "SUCCEEDED")</code></pre>
+    </div>
+
+    <h3>4.5 権限マトリクスとテナント境界を埋める</h3>
+    <p>
+      ADMIN ロールのテストが 1 件も無い点は、実装に明確な分岐がある以上そのまま残せない。
+      <code>settings/application/service.py</code> は organization / business を <strong>OWNER 限定</strong>にしており、
+      ADMIN は拒否されるはずだが、これを確かめたテストが存在しない。
+    </p>
+    <div class="stack">
+      <div class="cap">apps/common/tests/test_permission_matrix.py（新規・横断テスト）</div>
+      <pre><code>import pytest
+from rest_framework.test import APITestCase
+
+pytestmark = pytest.mark.integration
+
+
+class PermissionMatrixTests(APITestCase):
+    """AGENTS.md §6.2 の 3 ロール × 主要リソース × 操作を一括で検証する。
+
+    リソースごとに個別テストを書くと抜けが生じるため、
+    期待値を表として持ち、パラメータで回す。
+    """
+
+    MATRIX = [
+        # (role,    resource,     method, path,                 expected)
+        ("ADMIN",   "clients",    "POST",  "/api/v1/clients",   201),
+        ("ADMIN",   "settings",   "PATCH", "/api/v1/settings",  403),  # OWNER 限定
+        ("MEMBER",  "clients",    "POST",  "/api/v1/clients",   403),
+        ("MEMBER",  "projects",   "DELETE", ...,                403),
+        # ... 3 ロール × 7 リソース × 4 操作
+    ]
+
+
+class CrossTenantWriteTests(APITestCase):
+    """他組織リソースへの更新・削除も 404 になることを確認する。
+
+    現状は GET のみ検証されており、書き込み系が空白になっている。
+    """
+    ...</code></pre>
+    </div>
+
+    <h3>4.6 Web に MSW を導入して apiClient を通す</h3>
+    <p>
+      HTTP レベルでモックすることで、<code>apiClient</code> の実装を実際に走らせたまま
+      Django の応答だけを差し替えられる。ports を <code>vi.fn()</code> で差し替える現在の方式では届かない領域である。
+    </p>
+    <div class="stack">
+      <div class="cap">導入</div>
+      <pre><code>npm i -D msw</code></pre>
+      <div class="cap">src/infrastructure/api/apiClient.test.ts（新規・方針例）</div>
+      <pre><code>// @vitest-environment jsdom
+import {http, HttpResponse} from 'msw'
+import {setupServer} from 'msw/node'
+import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
+
+const server = setupServer()
+beforeAll(() =&gt; server.listen({onUnhandledRequest: 'error'}))
+afterEach(() =&gt; server.resetHandlers())
+afterAll(() =&gt; server.close())
+
+describe('apiClient', () =&gt; {
+  it('unsafe メソッドでは csrftoken Cookie を X-CSRFToken に載せる', async () =&gt; {
+    document.cookie = 'csrftoken=abc123'
+    let received: string | null = null
+    server.use(http.post('*/api/v1/clients', ({request}) =&gt; {
+      received = request.headers.get('X-CSRFToken')
+      return HttpResponse.json({id: 'x'}, {status: 201})
+    }))
+    // AGENTS.md §6.1: Cookie 認証の unsafe メソッドは CSRF 保護が必須
+    expect(received).toBe('abc123')
+  })
+
+  it('GET には X-CSRFToken を付けない', async () =&gt; { /* ... */ })
+
+  it('401 を受けたら refresh を 1 回だけ呼んで元のリクエストを再送する', async () =&gt; {
+    // single-flight: 並行 3 リクエストが 401 でも refresh 呼び出しは 1 回
+  })
+
+  it('ErrorResponse を ApiError に変換し traceId を保持する', async () =&gt; {
+    // {code, message, details, traceId} → ApiError
+    // traceId が body に無ければ X-Trace-Id ヘッダから拾う
+  })
+})</code></pre>
+    </div>
+
+    <h3>4.7 E2E の skip を外す</h3>
+    <p>
+      TODO が指摘する「API テストフィクスチャ」を用意すれば通せる。
+      Django に E2E 専用のシード投入コマンドを追加するのが最も素直である。
+    </p>
+    <div class="stack">
+      <div class="cap">対処の順序</div>
+      <pre><code>1. flowance-api に管理コマンドを追加
+   apps/common/management/commands/seed_e2e.py
+   → E2E 用組織・OWNER ユーザーを冪等に作成（既存なら何もしない）
+
+2. playwright.config.ts の webServer を配列にして Django も起動
+   webServer: [
+     {command: 'docker compose -f ../flowance-api/docker-compose.yaml up api',
+      url: 'http://127.0.0.1:8000/api/v1/health', reuseExistingServer: true},
+     {command: 'npm --prefix ../flowance-web run dev',
+      url: 'http://127.0.0.1:3000', reuseExistingServer: true},
+   ]
+
+3. describe.skip を外し、受入条件フローを段階的に実装
+   登録 → ログイン → クライアント → 案件 → 契約
+   → 予定生成 → 稼働実績 → 月次精算</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>E2E は 1 本に留める。</strong>
+      <span><code>test-design.md</code> は「E2E は Phase1 受入条件に直結する主要フローへ絞る」と明記している。
+      単体テストが 135 件（API 107 + Web 28）あり、API 結合テストも 65 件ある現状では、
+      E2E の役割は<strong>ブラウザから PostgreSQL まで実際に繋がることの確認</strong>だけでよい。
+      権限分岐や境界値を E2E で網羅しようとすると、実行時間と不安定さが一気に増える。</span>
+    </div>
+  </section>
+
+  <!-- ============ ロードマップ ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§5</span><h2>対応ロードマップ</h2></div>
+    <p>
+      依存関係の順に並べている。実装が先に必要な項目（Celery retry、traceId 伝播、rate limit）は
+      テスト整備とは切り分けてフェーズ 9 に置いた。
+    </p>
+
+    <div class="findings">
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 7 — 結合テストを CI で回す土台</b>
+          <span class="chip crit">最優先</span>
+          <span class="est">1 日規模</span>
+        </div>
+        <ol>
+          <li><code>ci.yml</code> に <code>flowance-web</code> ジョブと <code>flowance-e2e</code> ジョブを追加</li>
+          <li>CI のバックエンドテストを <code>pytest --cov=apps</code> に切り替え、<code>pytest.ini</code> のマーカーを有効化する</li>
+          <li>既存テストに <code>pytestmark = pytest.mark.integration</code> 等を付与し、<code>-m "not integration"</code> で高速実行できるようにする</li>
+        </ol>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 8 — API の結合の穴を塞ぐ</b>
+          <span class="chip warn">高</span>
+          <span class="est">—</span>
+        </div>
+        <ol>
+          <li><code>TransactionTestCase</code> を導入し、契約期間重複の <code>ExclusionConstraint</code> が DB レベルで効くことを検証</li>
+          <li>権限マトリクステストを横断で追加（<strong>ADMIN ロールを最優先</strong>）</li>
+          <li>テナント境界の検証を PATCH / DELETE / POST に拡大し、settlements / settings / contracts を追加</li>
+          <li>Celery の <code>.delay</code> モックを外し、EAGER 経由で <code>background_tasks</code> の遷移まで通す</li>
+          <li>audit_logs の記録検証を主要操作（CLIENT / PROJECT / WORK_RECORD / SETTLEMENT）へ拡大</li>
+          <li>実 API レスポンスに <code>traceId</code> と <code>X-Trace-ID</code> が含まれることを検証</li>
+        </ol>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 9 — Web の結合テストと E2E</b>
+          <span class="chip warn">高</span>
+          <span class="est">—</span>
+        </div>
+        <ol>
+          <li>MSW を導入し、<code>apiClient.ts</code> の CSRF / Cookie / 401 single-flight / エラー変換を検証</li>
+          <li>Composition 13 本の DI 配線テストを追加（注入先の取り違えを検出する）</li>
+          <li><code>seed_e2e</code> 管理コマンドと <code>webServer</code> の Django 起動を用意し、<strong>E2E の <code>describe.skip</code> を外す</strong></li>
+          <li>受入条件フローを段階的に実装（登録 → … → 月次精算）</li>
+        </ol>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <b>フェーズ 10 — テスト以前に実装が必要な項目</b>
+          <span class="chip info">中</span>
+          <span class="est">設計判断を伴う</span>
+        </div>
+        <ol>
+          <li>Celery タスクの retry（<code>autoretry_for</code> / <code>max_retries</code>）— AGENTS.md §12「Tasks must be idempotent where retry is possible」に対して<strong>現状 retry 自体が未実装</strong></li>
+          <li>traceId の Celery 境界伝播 — <code>apps/files/tasks.py</code> に <code>trace_id</code> が一度も登場しない</li>
+          <li>rate limit の Throttle 実装 — エラーコードとハンドラのマッピングだけが存在する状態</li>
+          <li>Storage 障害注入テスト（R2 タイムアウト時の補償）</li>
+          <li>OpenAPI からの型生成、または契約テストの導入</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>付随して見つかった要掃除ファイル。</strong>
+      <span>マージコンフリクトの残骸が 6 件残っている：
+      <code>flowance-web/src/presentation/layout/AppShell.tsx.orig</code>、
+      <code>.../providers/RealtimeValidationProvider.tsx.orig</code>、
+      <code>.../shared/validation/validationRules.ts.orig</code>、
+      <code>flowance-api/config/urls.py.orig</code>、
+      <code>flowance-api/apps/projects/models.py.orig</code>、
+      <code>.../migrations/0001_initial.py.orig</code>。
+      テストとは無関係だが、<code>.orig</code> を <code>.gitignore</code> に追加するか削除しておくとよい。</span>
+    </div>
+  </section>
+
+  <footer>
+    調査は feature/FLOW-4 に対して実施。flowance-api の全 25 テストファイル（3,097 行）、
+    flowance-web の全 8 テストファイル（486 行）、flowance-e2e の 1 spec を精読し、
+    テスト実行・grep・カバレッジ計測で裏付けを取った。<br>
+    §4 のコード例は方針提示であり、リポジトリには未適用。単体テストの調査は別紙
+    test-coverage-audit.html（2026-08-05 時点）を参照。
+  </footer>
+
+</div>
